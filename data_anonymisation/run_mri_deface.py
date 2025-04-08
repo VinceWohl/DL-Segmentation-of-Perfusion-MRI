@@ -1,4 +1,6 @@
 # author: VW
+#
+# This file requires the freesurfer toolbox to be installed containing the mri_defacing tool.
 #____________________________________________________________________________________________________________________________________________
 
 import sys
