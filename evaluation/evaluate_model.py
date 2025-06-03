@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 
 
 # Modify this path to your results folder root
-RESULTS_DIR = "/mnt/volume/nnUNet_results/Dataset001_PerfusionTerritories_250522-PerfTerr-06/nnUNetTrainer__nnUNetPlans__2d"
-
+RESULTS_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories_250522-PerfTerr-06/nnUNetTrainer__nnUNetPlans__2d"
+#GT_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_raw/Dataset001_PerfusionTerritories"
 
 
 def collect_dice_scores(results_dir):
@@ -76,47 +76,6 @@ def plot_dice_violin(dice_scores, save_path=None):
     plt.show()
 
 
-
-
-def find_closest_to_mean_case(summary):
-    """Return prediction path of the case with Dice closest to the mean."""
-    cases = summary.get("metric_per_case", [])
-    mean_dice = np.mean([c["metrics"]["1"]["Dice"] for c in cases])
-    closest_case = min(cases, key=lambda c: abs(c["metrics"]["1"]["Dice"] - mean_dice))
-    return closest_case["prediction_file"], closest_case["metrics"]["1"]["Dice"]
-
-
-
-def plot_nii_slices(image_path, dice, output_path, max_slices=16):
-    """Plot a grid of slices from a .nii file and save as PNG."""
-    img = nib.load(image_path).get_fdata()
-    img = np.squeeze(img)
-    
-    n_slices = img.shape[2]
-    step = max(1, n_slices // max_slices)
-    slices = range(0, n_slices, step)[:max_slices]
-    
-    cols = 4
-    rows = int(np.ceil(len(slices) / cols))
-    
-    fig, axes = plt.subplots(rows, cols, figsize=(12, 8))
-    fig.suptitle(f"{os.path.basename(image_path)} (Dice: {dice:.3f})", fontsize=14)
-    
-    for ax, i in zip(axes.flat, slices):
-        ax.imshow(img[:, :, i], cmap="gray")
-        ax.set_title(f"Slice {i}")
-        ax.axis('off')
-    
-    for ax in axes.flat[len(slices):]:  # Hide unused axes
-        ax.axis('off')
-
-    plt.tight_layout()
-    plt.subplots_adjust(top=0.9)
-    plt.savefig(output_path, dpi=300)
-    plt.close()
-
-
-
 if __name__ == "__main__":
     dice_data = collect_dice_scores(RESULTS_DIR)
 
@@ -128,13 +87,3 @@ if __name__ == "__main__":
 
     output_path = os.path.join(output_dir, "dice_violin_plot.png")
     plot_dice_violin(dice_data, save_path=output_path)
-
-    # Sample slices:
-
-    # for fold in range(5):
-    #     summary_path = f"{RESULTS_DIR}/fold_{fold}/validation/summary.json"
-    #     with open(summary_path, "r") as f:
-    #         summary = json.load(f)
-    #     pred_file, dice = find_closest_to_mean_case(summary)
-    #     output_file = os.path.join("evaluation_results", f"fold_{fold}_closest_sample.png")
-    #     plot_nii_slices(pred_file, dice, output_file)
