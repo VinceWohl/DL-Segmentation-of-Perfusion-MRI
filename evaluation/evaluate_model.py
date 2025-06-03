@@ -95,7 +95,8 @@ def plot_dice_violin(dice_scores, save_path=None, title="Validation Dice Scores 
     # Add mean values
     for i, d in enumerate(data):
         mean_val = np.mean(d)
-        ax.text(positions[i] + 0.25, mean_val, f"{mean_val:.3f}", ha='left', va='center', fontsize=10, color='blue')
+        ax.text(positions[i] + 0.25, mean_val, f"{mean_val:.4f}", ha='left', va='center', fontsize=10, color='blue')
+
 
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches="tight")
