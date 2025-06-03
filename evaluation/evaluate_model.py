@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 # Modify this path to your results folder root
-RESULTS_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories_250523-PerfTerr-07/nnUNetTrainer__nnUNetPlans__2d"
+RESULTS_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories_250525-PerfTerr-10/nnUNetTrainer__nnUNetPlans__3d_fullres"
 #GT_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_raw/Dataset001_PerfusionTerritories"
 
 
