@@ -10,14 +10,30 @@ import matplotlib.pyplot as plt
 
 
 # Modify this path to your results folder root
-RESULTS_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories_250522-PerfTerr-06/nnUNetTrainer__nnUNetPlans__2d"
+RESULTS_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories_250523-PerfTerr-07/nnUNetTrainer__nnUNetPlans__2d"
 #GT_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_raw/Dataset001_PerfusionTerritories"
 
 
 def collect_dice_scores_per_class(results_dir):
-    """Collect Dice scores per fold and per class from summary.json files. Automatically detects classes."""
+    """Collect Dice scores per fold and per class from summary.json files."""
     dice_scores = {}
+    discovered_class_ids = set()
 
+    # First pass: determine class IDs
+    for fold in range(5):
+        summary_path = os.path.join(results_dir, f"fold_{fold}", "validation", "summary.json")
+        if not os.path.exists(summary_path):
+            continue
+        with open(summary_path) as f:
+            summary = json.load(f)
+        for case in summary.get("metric_per_case", []):
+            discovered_class_ids.update(case["metrics"].keys())
+        break  # Just get classes from one summary file
+
+    class_ids = sorted([int(cid) for cid in discovered_class_ids])
+    dice_scores = {cls: {} for cls in class_ids}
+
+    # Second pass: collect dice scores
     for fold in range(5):
         fold_dir = os.path.join(results_dir, f"fold_{fold}", "validation")
         summary_path = os.path.join(fold_dir, "summary.json")
@@ -25,24 +41,20 @@ def collect_dice_scores_per_class(results_dir):
             print(f"⚠️ Warning: summary.json not found in fold {fold}")
             continue
 
-        with open(summary_path, "r") as f:
+        with open(summary_path) as f:
             summary = json.load(f)
 
-        for case in summary.get("metric_per_case", []):
-            for cls_str, metrics in case["metrics"].items():
-                cls = int(cls_str)
-                dice = metrics.get("Dice", None)
-                if dice is None:
+        for cls in class_ids:
+            fold_dices = []
+            for case in summary.get("metric_per_case", []):
+                try:
+                    dice = case["metrics"][str(cls)]["Dice"]
+                    fold_dices.append(dice)
+                except KeyError:
                     continue
+            dice_scores[cls][f"fold_{fold}"] = fold_dices
 
-                if cls not in dice_scores:
-                    dice_scores[cls] = {}
-                if f"fold_{fold}" not in dice_scores[cls]:
-                    dice_scores[cls][f"fold_{fold}"] = []
-                dice_scores[cls][f"fold_{fold}"].append(dice)
-
-    return dice_scores
-
+    return dice_scores, class_ids
 
 
 def plot_dice_violin(dice_scores, save_path=None, title="Validation Dice Scores per Fold"):
@@ -91,14 +103,23 @@ def plot_dice_violin(dice_scores, save_path=None, title="Validation Dice Scores 
 
 
 if __name__ == "__main__":
-    dice_data_per_class = collect_dice_scores_per_class(RESULTS_DIR)
+    dice_data_per_class, class_ids = collect_dice_scores_per_class(RESULTS_DIR)
 
     output_dir = os.path.join(os.path.dirname(__file__), "evaluation_results")
     os.makedirs(output_dir, exist_ok=True)
 
+    for cls in class_ids:
+        print(f"\nClass {cls}:")
+        for fold_name, values in dice_data_per_class[cls].items():
+            print(f"  {fold_name}: {len(values)} cases")
+
     for cls, fold_data in dice_data_per_class.items():
+        total_values = sum(len(v) for v in fold_data.values())
+        if total_values == 0:
+            print(f"⚠️ Skipping class {cls} (no values)")
+            continue
+
         output_path = os.path.join(output_dir, f"dice_violin_plot_class{cls}.png")
         title = f"Validation Dice Scores per Fold – Class {cls}"
         plot_dice_violin(fold_data, save_path=output_path, title=title)
-        total_values = sum(len(v) for v in fold_data.values())
         print(f"✅ Saved plot for class {cls} with {total_values} values.")
