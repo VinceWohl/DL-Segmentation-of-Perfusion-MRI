@@ -3,17 +3,21 @@ import os
 import json
 import numpy as np
 import nibabel as nib
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend (safe for servers)
 import matplotlib.pyplot as plt
 
 
+
 # Modify this path to your results folder root
-RESULTS_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories_250522-PerfTerr-06/nnUNetTrainer__nnUNetPlans__2d"
+RESULTS_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories_250521-PerfTerr-05/nnUNetTrainer__nnUNetPlans__2d"
 #GT_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_raw/Dataset001_PerfusionTerritories"
 
 
-def collect_dice_scores(results_dir):
-    """Collect Dice scores per fold from summary.json files."""
-    dice_scores = {}
+def collect_dice_scores_per_class(results_dir, class_ids=[1, 2, 3]):
+    """Collect Dice scores per fold and per class from summary.json files."""
+    dice_scores = {cls: {} for cls in class_ids}
+
     for fold in range(5):
         fold_dir = os.path.join(results_dir, f"fold_{fold}", "validation")
         summary_path = os.path.join(fold_dir, "summary.json")
@@ -23,18 +27,22 @@ def collect_dice_scores(results_dir):
 
         with open(summary_path, "r") as f:
             summary = json.load(f)
-        
-        fold_dices = []
-        for case in summary.get("metric_per_case", []):
-            dice = case["metrics"]["1"]["Dice"]
-            fold_dices.append(dice)
 
-        dice_scores[f"fold_{fold}"] = fold_dices
+        for cls in class_ids:
+            fold_dices = []
+            for case in summary.get("metric_per_case", []):
+                try:
+                    dice = case["metrics"][str(cls)]["Dice"]
+                    fold_dices.append(dice)
+                except KeyError:
+                    continue
+            dice_scores[cls][f"fold_{fold}"] = fold_dices
+
     return dice_scores
 
 
 
-def plot_dice_violin(dice_scores, save_path=None):
+def plot_dice_violin(dice_scores, save_path=None, title="Validation Dice Scores per Fold"):
     """Generate a violin plot of Dice scores across folds, with enhancements."""
     import numpy as np
 
@@ -56,7 +64,7 @@ def plot_dice_violin(dice_scores, save_path=None):
     ax.set_xticks(positions)
     ax.set_xticklabels(sorted(dice_scores.keys()))
     ax.set_ylabel("Dice Score", fontsize=12)
-    ax.set_title("Validation Dice Scores per Fold", fontsize=14)
+    ax.set_title(title, fontsize=14)
     ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
 
     # Overlay scatter of actual values
@@ -73,17 +81,18 @@ def plot_dice_violin(dice_scores, save_path=None):
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches="tight")
     plt.tight_layout()
-    plt.show()
 
 
 if __name__ == "__main__":
-    dice_data = collect_dice_scores(RESULTS_DIR)
+    # You can modify class_ids if you have more/fewer classes
+    class_ids = [1, 2, 3]
+    dice_data_per_class = collect_dice_scores_per_class(RESULTS_DIR, class_ids)
 
-    # Violin plot:
-    
-    # Ensure output dir exists
     output_dir = os.path.join(os.path.dirname(__file__), "evaluation_results")
     os.makedirs(output_dir, exist_ok=True)
 
-    output_path = os.path.join(output_dir, "dice_violin_plot.png")
-    plot_dice_violin(dice_data, save_path=output_path)
+    for cls in class_ids:
+        output_path = os.path.join(output_dir, f"dice_violin_plot_class{cls}.png")
+        title = f"Validation Dice Scores per Fold – Class {cls}"
+        plot_dice_violin(dice_data_per_class[cls], save_path=output_path, title=title)
+        print(f"Saving plot for class {cls} with {sum(len(v) for v in dice_data_per_class[cls].values())} values.")
