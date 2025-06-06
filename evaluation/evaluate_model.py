@@ -10,8 +10,7 @@ import matplotlib.pyplot as plt
 
 
 # Modify this path to your results folder root
-RESULTS_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories_250525-PerfTerr-10/nnUNetTrainer__nnUNetPlans__3d_fullres"
-#GT_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_raw/Dataset001_PerfusionTerritories"
+RESULTS_DIR = "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories/nnUNetTrainer__nnUNetPlans__2d"
 
 
 def collect_dice_scores_per_class(results_dir):
