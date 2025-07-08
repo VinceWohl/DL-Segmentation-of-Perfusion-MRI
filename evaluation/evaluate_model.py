@@ -18,7 +18,7 @@ def collect_dice_scores_per_class(results_dir):
     dice_scores = {}
     discovered_class_ids = set()
 
-    # First pass: determine class IDs
+    # First pass: determine all class IDs across available folds
     for fold in range(5):
         summary_path = os.path.join(results_dir, f"fold_{fold}", "validation", "summary.json")
         if not os.path.exists(summary_path):
@@ -27,7 +27,6 @@ def collect_dice_scores_per_class(results_dir):
             summary = json.load(f)
         for case in summary.get("metric_per_case", []):
             discovered_class_ids.update(case["metrics"].keys())
-        break  # Just get classes from one summary file
 
     class_ids = sorted([int(cid) for cid in discovered_class_ids])
     dice_scores = {cls: {} for cls in class_ids}
@@ -100,6 +99,7 @@ def plot_dice_violin(dice_scores, save_path=None, title="Validation Dice Scores 
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches="tight")
     plt.tight_layout()
+    plt.close(fig)
 
 
 if __name__ == "__main__":
