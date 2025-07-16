@@ -1,9 +1,5 @@
 venv/
 data/
 nnUNet/
-*.nii
-*.nii.gz
-*.pt
-*.h5
-__pycache__/
-*.pkl
+nnUNet_master/
+nnUNet_multi-label/
