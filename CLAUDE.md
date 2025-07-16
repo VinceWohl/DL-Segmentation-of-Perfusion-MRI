@@ -120,7 +120,6 @@ The project implements dual-channel binary segmentation where:
 - Sigmoid activation instead of softmax for binary output
 - Per-channel BCE loss with balanced weighting
 - Independent hemisphere optimization
-- Volume-based Dice computation
 - Custom validation with detailed per-channel metrics
 
 ### Loss Function Implementation
