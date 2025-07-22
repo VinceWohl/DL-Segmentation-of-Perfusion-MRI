@@ -6,16 +6,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository contains a deep learning segmentation performance project focused on brain perfusion territory segmentation using nnUNet v2. The project implements a **comprehensive 9-trainer experimental setup** for dual-channel binary segmentation approaches evaluating architecture variants and loss function enhancements.
 
-## Current Project Status (Updated: 2025-07-17)
+## Current Project Status (Updated: 2025-07-22)
 
 ### Recent Major Development
-- **Completed comprehensive 9-trainer experimental setup** for systematic comparison
-- **All trainers configured with 1000 epochs** and ready for training
-- **Sequential training script prepared** for fold_0 evaluation
-- **Complete documentation updated** in README_MultiLabel_Setup.md
+- **Completed comprehensive 9-trainer fold_0 training** for systematic comparison
+- **All 9 trainers successfully trained with 1000 epochs** 
+- **Comprehensive performance analysis completed** with detailed validation results
+- **Best performing trainer identified**: SeparateDecoders_SpatialLoss (91.63% mean Dice)
 
-### Ready for Execution
-The project is now ready for comprehensive training and evaluation with all 9 trainers:
+### Training Results Summary (Fold 0)
+**Performance Ranking by Mean Dice Score:**
+1. **SeparateDecoders_SpatialLoss**: 91.63% (Best performer)
+2. SharedDecoder_SpatialLoss: 91.38% 
+3. SharedDecoder_ComplementaryLoss: 90.57%
+4. SeparateDecoders_CrossAttention: 90.38%
+5. SharedDecoder (baseline): 90.17%
+6. SeparateDecoders_SpatialLoss_ComplementaryLoss: 90.11%
+7. SeparateDecoders (baseline): 90.06%
+8. SharedDecoder_SpatialLoss_ComplementaryLoss: 90.02%
+9. SeparateDecoders_ComplementaryLoss: 90.00%
+
+**Key Findings:**
+- **Spatial Loss provides strongest enhancement**: +1.57% improvement over baseline
+- **Combined losses underperform**: Spatial + Complementary shows interference effects
+- **Architecture differences**: Separate decoders excel with enhancements, shared decoder more consistent
+- **Hemisphere asymmetry**: Left hemisphere consistently outperforms right (91-92% vs 89-91%)
+
+### Next Phase: Cross-Validation
+Ready for 5-fold cross-validation training with top-performing trainers:
 1. nnUNetTrainer_SeparateDecoders (baseline)
 2. nnUNetTrainer_SeparateDecoders_SpatialLoss (enhanced)
 3. nnUNetTrainer_SeparateDecoders_ComplementaryLoss (complementary)
@@ -276,36 +294,84 @@ total_loss = bce_loss + dice_loss + 0.1 * spatial_loss + 0.1 * complementary_los
 - Sigmoid activation for independent hemisphere predictions
 - Volume-based evaluation metrics
 
-## Performance Expectations (Preliminary Results)
+## Comprehensive Performance Results (Fold 0 - 1000 Epochs)
 
-### Current Performance Ranking
-1. **SeparateDecoders_SpatialLoss_ComplementaryLoss**: 90.61% mean Dice
-2. **SharedDecoder (baseline)**: 90.49% mean Dice
-3. **SeparateDecoders_SpatialLoss**: 90.26% mean Dice
-4. **SeparateDecoders_CrossAttention**: 90.23% mean Dice
-5. **SharedDecoder_SpatialLoss_ComplementaryLoss**: 90.09% mean Dice
-6. **SeparateDecoders (baseline)**: 89.94% mean Dice
-7. **SharedDecoder_ComplementaryLoss**: 89.93% mean Dice
+### Detailed Performance Analysis
 
-### Key Insights
-- **Spatial Loss**: Provides consistent +0.3-0.7% improvement
-- **Complementary Loss**: Most effective when combined with spatial loss
-- **Architecture Impact**: Separate decoders show slight advantage in enhanced configurations
-- **Cross-Attention**: Competitive baseline performance
+| Rank | Trainer | Mean Dice | Left Hem. | Right Hem. | Enhancement | Improvement |
+|------|---------|-----------|-----------|------------|-------------|-------------|
+| 1 | **SeparateDecoders_SpatialLoss** | **91.63%** | 92.24% | 91.01% | Spatial | **+1.57%** |
+| 2 | SharedDecoder_SpatialLoss | 91.38% | 92.04% | 90.73% | Spatial | +1.21% |
+| 3 | SharedDecoder_ComplementaryLoss | 90.57% | 91.70% | 89.44% | Complementary | +0.40% |
+| 4 | SeparateDecoders_CrossAttention | 90.38% | 91.45% | 89.32% | Cross-Attention | +0.32% |
+| 5 | SharedDecoder (baseline) | 90.17% | 91.30% | 89.05% | - | - |
+| 6 | SeparateDecoders_SpatialLoss_ComplementaryLoss | 90.11% | 90.37% | 89.86% | Both | +0.05% |
+| 7 | SeparateDecoders (baseline) | 90.06% | 91.18% | 88.93% | - | - |
+| 8 | SharedDecoder_SpatialLoss_ComplementaryLoss | 90.02% | 90.48% | 89.56% | Both | -0.15% |
+| 9 | SeparateDecoders_ComplementaryLoss | 90.00% | 91.01% | 88.99% | Complementary | -0.06% |
+
+### Critical Insights from Fold 0 Training
+
+#### 1. **Spatial Loss Dominance**
+- Most effective single enhancement across both architectures
+- **SeparateDecoders**: +1.57% improvement (90.06% → 91.63%)
+- **SharedDecoder**: +1.21% improvement (90.17% → 91.38%)
+- Particularly improves right hemisphere performance
+
+#### 2. **Loss Function Interference Effects**
+- **Surprising finding**: Combined losses underperform single spatial loss
+- Suggests potential hyperparameter conflicts between loss components
+- Current loss weights (0.1 each) may require optimization
+
+#### 3. **Architecture-Specific Performance Patterns**
+- **Separate Decoders**: Higher variance, peaks with spatial enhancement
+- **Shared Decoder**: More consistent baseline, gradual improvements
+- **Cross-Attention**: Competitive baseline without additional losses
+
+#### 4. **Hemisphere Asymmetry**
+- **Left hemisphere**: Consistently higher performance (91-92% range)
+- **Right hemisphere**: Lower but more benefited by spatial regularization
+- May indicate anatomical or data distribution differences
+
+#### 5. **Training Stability Analysis**
+- All models completed 1000 epochs successfully
+- Validation performed on 6 cases (PerfTerr014-v1,v2,v3 and PerfTerr015-v1,v2,v3)
+- Consistent convergence patterns across trainers
 
 ## Next Steps
 
-1. **Execute comprehensive training** of all 9 trainers for fold_0
-2. **Analyze systematic performance comparison** across architectures and loss functions
-3. **Extend best performers** to 5-fold cross-validation
-4. **Perform statistical significance testing** on results
-5. **Fine-tune hyperparameters** based on comprehensive results
+1. ✅ **Execute comprehensive fold_0 training** - COMPLETED (All 9 trainers)
+2. ✅ **Analyze systematic performance comparison** - COMPLETED
+3. **Extend best performers to 5-fold cross-validation**:
+   - Priority: `SeparateDecoders_SpatialLoss` (91.63% performance)
+   - Secondary: `SharedDecoder_SpatialLoss` (91.38% performance)
+4. **Hyperparameter optimization**:
+   - Investigate spatial loss weight tuning (currently 0.1)
+   - Explore complementary loss weight optimization
+   - Test alternative loss combination strategies
+5. **Statistical significance testing** on cross-validation results
 6. **Clinical validation** against radiologist annotations
+
+## Current Status Summary
+
+### ✅ Completed
+- **Fold 0 Training**: All 9 trainers successfully trained (1000 epochs each)
+- **Performance Analysis**: Comprehensive validation results analyzed
+- **Architecture Comparison**: Detailed insights on separate vs shared decoders
+- **Loss Function Evaluation**: Spatial loss identified as most effective
+
+### 🔄 In Progress  
+- **Documentation Updates**: Results incorporated into CLAUDE.md
+
+### 📋 Next Priority
+- **5-Fold Cross-Validation**: Focus on top 2-3 performing trainers
+- **Hyperparameter Tuning**: Optimize loss weights based on fold_0 findings
 
 ## Important Notes for Future Sessions
 
-- **All trainers are ready for execution** with 1000 epochs
-- **Sequential training script available** for systematic comparison
-- **Comprehensive documentation completed** in README_MultiLabel_Setup.md
-- **CSV comparison table available** at `nnUNet/nnunetv2/training/nnUNetTrainer/trainer_comparison.csv`
-- **Project is at execution phase** - ready for comprehensive training and analysis
+- **Best performer identified**: `SeparateDecoders_SpatialLoss` at 91.63% mean Dice
+- **Key insight**: Spatial loss provides strongest enhancement (+1.57%)
+- **Unexpected finding**: Combined losses show interference effects
+- **Training infrastructure proven**: All 9 trainers stable through 1000 epochs
+- **Results location**: `/data/nnUNet_results/Dataset001_PerfusionTerritories/`
+- **Validation summaries**: Available in each trainer's `fold_0/validation/validation_summary.json`
