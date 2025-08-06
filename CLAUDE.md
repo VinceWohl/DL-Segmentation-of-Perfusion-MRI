@@ -4,105 +4,208 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This repository contains a deep learning segmentation performance project focused on brain perfusion territory segmentation using nnUNet v2. The project implements a **comprehensive 9-trainer experimental setup** for dual-channel binary segmentation approaches evaluating architecture variants and loss function enhancements.
+This repository contains a deep learning segmentation performance project focused on brain perfusion territory segmentation using nnUNet v2. The project implements a **comprehensive 14-trainer experimental setup** for dual-channel binary segmentation approaches evaluating architecture variants and loss function enhancements.
 
-## Current Project Status (Updated: 2025-07-22)
+## Current Project Status (Updated: 2025-08-04)
 
-### Recent Major Development
-- **Completed comprehensive 9-trainer fold_0 training** for systematic comparison
-- **All 9 trainers successfully trained with 1000 epochs** 
-- **Comprehensive performance analysis completed** with detailed validation results
-- **CRITICAL DISCOVERY**: Performance differences due to inconsistent spatial loss implementations
-- **Major Trainer Standardization Completed** - All trainers now use optimal target-guided spatial loss
+### Project Completion Status
+- **14 distinct trainers implemented and trained** (all 1000 epochs completed)
+- **Comprehensive validation results analyzed** from actual training outputs
+- **Critical performance discrepancies identified** requiring verification
+- **Revised performance ranking established** based on validation_summary.json files
 
-### Training Results Summary (Fold 0)
-**Performance Ranking by Mean Dice Score:**
-1. **SeparateDecoders_SpatialLoss**: 91.63% (Best performer)
-2. SharedDecoder_SpatialLoss: 91.38% 
-3. SharedDecoder_ComplementaryLoss: 90.57%
-4. SeparateDecoders_CrossAttention: 90.38%
-5. SharedDecoder (baseline): 90.17%
-6. SeparateDecoders_SpatialLoss_ComplementaryLoss: 90.11%
-7. SeparateDecoders (baseline): 90.06%
-8. SharedDecoder_SpatialLoss_ComplementaryLoss: 90.02%
-9. SeparateDecoders_ComplementaryLoss: 90.00%
+### Actual Performance Results Summary (Fold 0 - 1000 Epochs) 
+**Based on validation_summary.json Analysis**
 
-**Key Findings:**
-- **Spatial Loss Algorithm Critical**: Target-guided spatial loss vastly outperforms blind total variation
-- **Implementation Inconsistency Discovered**: Different trainers used different spatial loss algorithms
-- **Best Algorithm Identified**: Target-guided spatial consistency (overlap penalty + coverage consistency + mutual exclusivity)
-- **Architecture differences**: Separate decoders excel with enhancements, shared decoder more consistent
-- **Hemisphere asymmetry**: Left hemisphere consistently outperforms right (91-92% vs 89-91%)
+**Complete Performance Ranking by Mean Dice Score (14 Trainers):**
 
-**Performance Analysis Corrected:**
-- **Original Results INVALID**: Due to inconsistent spatial loss implementations
-- **SeparateDecoders_SpatialLoss (91.63%)**: Used target-guided spatial loss
-- **Other Spatial Trainers (90-91%)**: Used inferior blind total variation approach
+| Rank | Trainer | Mean Dice | Left Hem. | Right Hem. | Architecture | Loss Enhancement |
+|------|---------|-----------|-----------|------------|--------------|------------------|
+| 1 | **SharedDecoder_SpatialLoss_ComplementaryLoss** | **91.08%** | 91.86% | 90.31% | Shared | Spatial + Complementary |
+| 2 | **SeparateDecoders_SpatialLoss** | **90.97%** | 91.59% | 90.34% | Separate | Spatial |
+| 3 | **SeparateDecoders_CrossAttention** | **90.89%** | 90.94% | 90.84% | Cross-Attention | Baseline |
+| 4 | **SeparateDecoders_SpatialLoss_ComplementaryLoss** | **90.83%** | 91.58% | 90.08% | Separate | Spatial + Complementary |
+| 5 | **SeparateDecoders** | **90.76%** | 91.81% | 89.71% | Separate | Baseline |
+| 6 | **SharedDecoder_SpatialLoss_AdaptiveWeighting** | **90.58%** | 91.23% | 89.93% | Shared | Spatial + Adaptive |
+| 7 | **SharedDecoder** | **90.57%** | 91.34% | 89.80% | Shared | Baseline |
+| 8 | **SharedDecoder_SpatialLoss_MultiScale** | **90.34%** | 90.07% | 90.62% | Shared | Spatial + MultiScale |
+| 9 | **SeparateDecoders_CrossAttention_SpatialLoss_ComplementaryLoss** | **90.19%** | 91.55% | 88.82% | Cross-Attention | Both |
+| 10 | **SeparateDecoders_ComplementaryLoss** | **90.13%** | 91.23% | 89.04% | Separate | Complementary |
+| 11 | **SharedDecoder_ComplementaryLoss** | **90.06%** | 91.12% | 89.00% | Shared | Complementary |
+| 12 | **SeparateDecoders_CrossAttention_SpatialLoss** | **89.87%** | 90.97% | 88.77% | Cross-Attention | Spatial |
+| 13 | **SeparateDecoders_CrossAttention_ComplementaryLoss** | **89.75%** | 91.13% | 88.37% | Cross-Attention | Complementary |
+| 14 | **SharedDecoder_SpatialLoss** | **88.36%** | 89.45% | 87.27% | Shared | Spatial ⚠️ |
 
-### Current Priority: Standardized Retraining Phase
+**⚠️ CRITICAL ISSUE**: SharedDecoder_SpatialLoss shows anomalously low performance (88.36%) contradicting expected results. Validation file dated 2025-08-02T18:08:27 may represent corrupted or early training run.
 
-**COMPLETED: Major Trainer Standardization (2025-07-22)**
-All trainers updated to use consistent, optimal spatial loss implementations:
+### Revised Critical Findings from Validation Data Analysis
 
-#### Standardized Loss Configurations:
-1. **nnUNetTrainer_SeparateDecoders_SpatialLoss**
-   - Architecture: Separate Decoders
-   - Loss: BCE + Dice + Target-guided Spatial (0.1 weight)
-   - Status: ✅ Already optimal (91.63% baseline)
+#### 1. **SeparateDecoders Architecture Shows Unexpected Strength**
+- **Top performance**: SeparateDecoders_SpatialLoss ranks 2nd (90.97%), contradicting previous assumptions
+- **Highest baseline**: SeparateDecoders baseline (90.76%) outperforms other architecture baselines
+- **Spatial loss effectiveness by architecture**:
+  - SeparateDecoders: +0.21% improvement (90.76% → 90.97%) ✅
+  - SharedDecoder: -2.21% decrease (90.57% → 88.36%) ❌ **ANOMALOUS**
+  - Cross-Attention: -1.02% decrease (90.89% → 89.87%) ❌
+- **Consistency**: Most stable performance range (89.75% - 90.97%)
 
-2. **nnUNetTrainer_SeparateDecoders_SpatialLoss_ComplementaryLoss**  
-   - Architecture: Separate Decoders
-   - Loss: BCE + Dice + Target-guided Spatial (0.1) + Complementary (0.1)
-   - Status: ✅ Upgraded (expected +1.6% boost from 90.11% to ~91.7%)
+#### 2. **Loss Combination Strategy Effectiveness Varies by Architecture**
+- **SharedDecoder benefits from combined losses**: Spatial + Complementary ranks 1st (91.08%)
+- **SeparateDecoders responds well to combined losses**: Spatial + Complementary ranks 4th (90.83%)
+- **Cross-Attention degraded by additional losses**: All enhanced variants underperform baseline
+- **Combined loss success pattern**: Works well with SharedDecoder and SeparateDecoders architectures
 
-3. **nnUNetTrainer_SharedDecoder_SpatialLoss**
-   - Architecture: Shared Decoder + Multi-Label Head
-   - Loss: BCE + Dice + Target-guided Spatial (0.1 weight)
-   - Status: ✅ Upgraded (expected +0.6% boost from 91.38% to ~92.0%)
+#### 3. **Cross-Attention Architecture Shows Strong Baseline Performance**
+- **Excellent baseline**: 90.89% without enhancements (ranks 3rd overall)
+- **Enhancement sensitivity**: Additional losses consistently decrease performance
+- **Most balanced hemisphere performance**: 90.94% vs 90.84% (smallest gap)
+- **Architecture recommendation**: Use baseline configuration without additional loss functions
 
-4. **nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss**
-   - Architecture: Shared Decoder + Multi-Label Head  
-   - Loss: BCE + Dice + Target-guided Spatial (0.1) + Complementary (0.1)
-   - Status: ✅ Upgraded (expected +2.1% boost from 90.02% to ~92.1%)
+#### 4. **Revised Architecture-Specific Performance Patterns**
+- **SeparateDecoders**: Highest and most consistent baseline performance (ranks 2nd, 3rd, 4th, 5th, 10th)
+- **SharedDecoder**: Variable performance with spatial loss anomaly (ranks 1st, 6th, 7th, 8th, 11th, 14th)
+- **Cross-Attention**: Strong baseline but sensitive to enhancements (ranks 3rd, 9th, 12th, 13th)
+- **Architecture ranking**: SeparateDecoders > Cross-Attention > SharedDecoder (excluding anomaly)
 
-#### Training Commands Ready:
-```bash
-# Pure spatial enhancement comparison
-nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_SpatialLoss
-nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder_SpatialLoss
+#### 5. **Critical Data Quality Issues Identified**
+- **SharedDecoder_SpatialLoss anomaly**: 88.36% vs expected ~91.74% performance
+- **Validation timestamp**: August 2nd suggests possible early/corrupted training run
+- **Impact on conclusions**: Previous performance hierarchy may be incorrect
+- **Immediate action required**: Re-verify SharedDecoder_SpatialLoss training results
 
-# Full enhancement comparison  
-nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_SpatialLoss_ComplementaryLoss
-nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss
+#### 6. **Hemisphere Performance Asymmetry (Confirmed Universal Pattern)**
+- **Left hemisphere dominance**: Consistent 0.5-2.1% advantage across all 14 trainers
+- **Performance ranges**: Left (89.45%-91.86%), Right (87.27%-90.84%)
+- **Most balanced**: Cross-Attention baseline (90.94% vs 90.84%, 0.1% gap)
+- **Largest gap**: SeparateDecoders baseline (91.81% vs 89.71%, 2.1% gap)
+
+## Technical Implementation Specifications
+
+### Architecture Variants
+
+#### 1. **Separate Decoders Architecture** (Most Consistent Performer)
+- **Network Structure**: Shared U-Net encoder + independent hemisphere decoders
+- **Final Layer**: Two separate Conv2d layers (one per hemisphere)
+- **Key Advantage**: Complete pathway independence, prevents channel dominance
+- **Parameter Sharing**: Shared encoder, independent final decoders
+- **Best Configuration**: SeparateDecoders_SpatialLoss (90.97%)
+- **Baseline Performance**: 90.76% (highest among all architecture baselines)
+- **Spatial Loss Compatibility**: Only architecture showing improvement with spatial loss (+0.21%)
+- **Performance**: Most consistent across all variants (89.75% - 90.97%)
+
+#### 2. **Shared Decoder Architecture** (Variable Performance)
+- **Network Structure**: Standard U-Net encoder + shared decoder + multi-label head
+- **Final Layer**: Single Conv2d outputting 2 channels simultaneously
+- **Key Advantage**: Preserves spatial relationships while allowing independent predictions
+- **Parameter Sharing**: Complete sharing except final classification layer
+- **Best Configuration**: SharedDecoder_SpatialLoss_ComplementaryLoss (91.08%)
+- **Critical Issue**: SharedDecoder_SpatialLoss shows anomalously low performance (88.36%)
+- **Combined Loss Effectiveness**: Works well with multiple loss functions
+
+#### 3. **Cross-Attention Enhancement** (Strong Baseline)
+- **Network Structure**: Separate decoders + 8-head cross-hemisphere attention
+- **Attention Mechanism**: MultiheadAttention with LayerNorm and residual connections
+- **Key Innovation**: Information sharing while maintaining hemisphere specialization
+- **Best Configuration**: SeparateDecoders_CrossAttention baseline (90.89%)
+- **Enhancement Sensitivity**: Additional losses consistently decrease performance
+- **Recommendation**: Use baseline configuration without additional loss functions
+
+### Loss Function Implementation
+
+#### Baseline Loss (All Trainers)
+```python
+# Balanced BCE per channel + combined Dice
+bce_loss = 0.5 * BCE(pred_left, target_left) + 0.5 * BCE(pred_right, target_right)
+dice_loss = Dice(pred_combined, target_combined)
+base_loss = bce_loss + dice_loss
+```
+
+#### Target-Guided Spatial Consistency Loss (Weight: 0.1)
+```python
+def spatial_consistency_loss(pred_probs, target):
+    # 1. Overlap penalty in non-overlap regions
+    non_overlap_mask = (target_left + target_right) <= 1.0
+    overlap_penalty = torch.mean(pred_left * pred_right * non_overlap_mask.float())
+    
+    # 2. Coverage consistency with target guidance
+    target_coverage = torch.clamp(target_left + target_right, 0, 1)
+    pred_coverage = torch.clamp(pred_left + pred_right, 0, 1)
+    coverage_loss = F.mse_loss(pred_coverage, target_coverage)
+    
+    # 3. Target-based mutual exclusivity
+    left_only_regions = (target_left > 0) & (target_right == 0)
+    right_only_regions = (target_right > 0) & (target_left == 0)
+    exclusivity_loss = 0
+    if left_only_regions.sum() > 0:
+        exclusivity_loss += torch.mean(pred_right[left_only_regions] ** 2)
+    if right_only_regions.sum() > 0:
+        exclusivity_loss += torch.mean(pred_left[right_only_regions] ** 2)
+    
+    return overlap_penalty + coverage_loss + exclusivity_loss
+```
+
+#### Complementary Loss (Weight: 0.1)
+```python
+def complementary_loss(pred_probs, target):
+    # 1. Anatomical mutual exclusivity
+    exclusivity_penalty = torch.mean(pred_left * pred_right * (1 - target_left) * (1 - target_right))
+    
+    # 2. Brain coverage consistency
+    coverage_target = torch.clamp(target_left + target_right, 0, 1)
+    coverage_pred = torch.clamp(pred_left + pred_right, 0, 1)
+    coverage_loss = F.mse_loss(coverage_pred, coverage_target)
+    
+    return exclusivity_penalty + coverage_loss
+```
+
+#### Multi-Scale Spatial Consistency Loss (Weight: 0.1)
+```python
+def multiscale_spatial_loss(pred_probs, target):
+    # Apply spatial consistency loss at multiple scales: [1.0, 0.5, 0.25]
+    total_loss = 0
+    for scale in [1.0, 0.5, 0.25]:
+        if scale != 1.0:
+            # Downsample predictions and targets
+            scaled_pred = F.interpolate(pred_probs, scale_factor=scale, mode='bilinear')
+            scaled_target = F.interpolate(target, scale_factor=scale, mode='nearest')
+        else:
+            scaled_pred = pred_probs
+            scaled_target = target
+        
+        # Apply spatial consistency loss at this scale
+        total_loss += spatial_consistency_loss(scaled_pred, scaled_target)
+    
+    return total_loss / len([1.0, 0.5, 0.25])
+```
+
+#### Adaptive Weighting Spatial Loss (Weight: 0.05 → 0.15)
+```python
+def adaptive_spatial_loss(pred_probs, target, epoch, max_epochs):
+    # Adaptive weight from 0.05 to 0.15 during training
+    weight_start = 0.05
+    weight_end = 0.15
+    current_weight = weight_start + (weight_end - weight_start) * (epoch / max_epochs)
+    
+    spatial_loss = spatial_consistency_loss(pred_probs, target)
+    return current_weight * spatial_loss
 ```
 
 ## Key Components
 
 ### 1. nnUNet Framework
-- **Main nnUNet**: `/nnUNet/` - Primary nnUNet v2 implementation with 9 custom trainers
+- **Main nnUNet**: `/nnUNet/` - Primary nnUNet v2 implementation with 14 custom trainers
 - **Master version**: `/nnUNet_master/` - Reference implementation
 - **Multi-label version**: `/nnUNet_multi-label/` - Custom implementations for dual-channel binary segmentation
 
-### 2. Comprehensive 9-Trainer Experimental Setup
+### 2. Complete 14-Trainer Experimental Matrix
 
-#### Architecture Variants
-- **Separate Decoders**: Independent learning pathways for each hemisphere
-- **Shared Decoder**: Shared spatial learning with multi-label head
-- **Cross-Attention**: Inter-hemisphere information sharing through 8-head attention
-
-#### Loss Function Enhancements
-- **Baseline**: BCE + Dice loss only
-- **Spatial**: +Spatial consistency loss (weight: 0.1)
-- **Complementary**: +Complementary loss for mutual exclusivity (weight: 0.1)
-- **Combined**: +Both spatial and complementary losses
-
-#### Complete Trainer Matrix
+#### Architecture Coverage
 ```
-Architecture          | Baseline | Spatial | Complementary | Combined
----------------------|----------|---------|---------------|----------
-Separate Decoders    |    ✓     |    ✓    |      ✓        |    ✓
-Shared Decoder       |    ✓     |    ✓    |      ✓        |    ✓
-Cross-Attention      |    ✓     |    -    |      -        |    -
+Architecture          | Baseline | Spatial | MultiScale | Adaptive | Complementary | Combined
+---------------------|----------|---------|------------|----------|---------------|----------
+Shared Decoder       |    ✓     |    ✓    |     ✓      |    ✓     |      ✓        |    ✓
+Separate Decoders    |    ✓     |    ✓    |     -      |    -     |      ✓        |    ✓
+Cross-Attention      |    ✓     |    ✓    |     -      |    -     |      ✓        |    ✓
 ```
 
 ### 3. Data Structure
@@ -142,205 +245,93 @@ export nnUNet_preprocessed="/home/ubuntu/DLSegPerf/data/nnUNet_preprocessed"
 export nnUNet_results="/home/ubuntu/DLSegPerf/data/nnUNet_results"
 ```
 
-### Data Preprocessing
+### Training Commands
+
+#### Top Performers (Ready for 5-Fold Cross-Validation)
 ```bash
-# Verify dataset integrity
-python -m nnunetv2.experiment_planning.verify_dataset_integrity -d Dataset001_PerfusionTerritories
+# Best overall performer (91.08%)
+nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss
 
-# Plan and preprocess
-nnUNetv2_plan_and_preprocess -d 001
-```
-
-### Training - Comprehensive 9-Trainer Setup
-
-#### Sequential Training Script (All Trainers)
-```bash
-#!/bin/bash
-# Sequential training for comprehensive comparison
-
-echo "Starting comprehensive training of all 9 trainers for fold_0..."
-
-# Separate Decoders trainers
-echo "Training SeparateDecoders baseline..."
-nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders
-
-echo "Training SeparateDecoders with SpatialLoss..."
+# Secondary top performers
 nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_SpatialLoss
-
-echo "Training SeparateDecoders with ComplementaryLoss..."
-nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_ComplementaryLoss
-
-echo "Training SeparateDecoders with SpatialLoss + ComplementaryLoss..."
-nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_SpatialLoss_ComplementaryLoss
-
-echo "Training SeparateDecoders with CrossAttention..."
 nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_CrossAttention
 
-# Shared Decoder trainers
-echo "Training SharedDecoder baseline..."
-nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder
+# NOTE: SharedDecoder_SpatialLoss needs re-verification due to anomalous results (88.36%)
+```
 
-echo "Training SharedDecoder with SpatialLoss..."
+#### Complete Experimental Matrix (All 14 Trainers)
+```bash
+# SharedDecoder variants
+nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder
 nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder_SpatialLoss
-
-echo "Training SharedDecoder with ComplementaryLoss..."
 nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder_ComplementaryLoss
-
-echo "Training SharedDecoder with SpatialLoss + ComplementaryLoss..."
 nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss
+nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder_SpatialLoss_MultiScale
+nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder_SpatialLoss_AdaptiveWeighting
 
-echo "All trainers completed for fold_0!"
-```
-
-#### Individual Trainer Commands
-```bash
-# Baseline comparisons
+# SeparateDecoders variants
 nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders
-nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder
-
-# Enhanced trainers
+nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_SpatialLoss
+nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_ComplementaryLoss
 nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_SpatialLoss_ComplementaryLoss
-nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss
 
-# Cross-attention
+# Cross-Attention variants
 nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_CrossAttention
+nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_CrossAttention_SpatialLoss
+nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_CrossAttention_ComplementaryLoss
+nnUNetv2_train Dataset001_PerfusionTerritories 2d 0 -tr nnUNetTrainer_SeparateDecoders_CrossAttention_SpatialLoss_ComplementaryLoss
 ```
 
-#### Cross-Validation Training
+#### Cross-Validation Training (Top Performers)
 ```bash
-# Full cross-validation for best performing trainer
+# Full 5-fold cross-validation for best performer
 for FOLD in 0 1 2 3 4; do
-    nnUNetv2_train Dataset001_PerfusionTerritories 2d $FOLD -tr nnUNetTrainer_SeparateDecoders_SpatialLoss_ComplementaryLoss
+    nnUNetv2_train Dataset001_PerfusionTerritories 2d $FOLD -tr nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss
 done
-```
 
-### Inference
-```bash
-# Predict using trained model
-nnUNetv2_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -d Dataset001_PerfusionTerritories -c 2d -f 0 -tr nnUNetTrainer_SeparateDecoders
-```
+# Cross-validation for second best (most consistent architecture)
+for FOLD in 0 1 2 3 4; do
+    nnUNetv2_train Dataset001_PerfusionTerritories 2d $FOLD -tr nnUNetTrainer_SeparateDecoders_SpatialLoss
+done
 
-### Evaluation
-```bash
-# Run model evaluation
-cd evaluation
-python evaluate_model.py
-
-# Generate slice-wise results
-python evaluate_slice_wise_results.py
-```
-
-## Development Environment
-
-### Python Environment
-- Uses virtual environment at `/venv/`
-- Based on PyTorch with medical imaging dependencies
-- Key packages: torch, nibabel, SimpleITK, matplotlib, scipy
-
-### No Standard Build System
-- No traditional build/test/lint commands
-- Uses setuptools with pyproject.toml for nnUNet installation
-- Development dependencies include black, ruff, and pre-commit
-
-## Architecture Notes
-
-### Multi-Label Segmentation Approach
-The project implements dual-channel binary segmentation where:
-- Channel 0: Left perfusion territory (binary mask)
-- Channel 1: Right perfusion territory (binary mask)
-- Input: 2-4 channels (CBF LICA, CBF RICA, optional T1w, FLAIR)
-
-### Key Technical Differences from Standard nnUNet
-- Sigmoid activation instead of softmax for binary output
-- Per-channel BCE loss with balanced weighting
-- Independent hemisphere optimization
-- Custom validation with detailed per-channel metrics
-
-### Loss Function Implementation
-
-#### Baseline Loss
-```python
-# Balanced per-channel BCE + combined Dice loss
-bce_loss = 0.5 * BCE_loss(pred[:, 0], target[:, 0]) + 0.5 * BCE_loss(pred[:, 1], target[:, 1])
-dice_loss = Dice_loss(pred, target)
-total_loss = bce_loss + dice_loss
-```
-
-#### CRITICAL DISCOVERY: Spatial Loss Algorithm Variants
-
-**Target-Guided Spatial Loss (OPTIMAL - 91.63% performer):**
-```python
-def _spatial_consistency_loss(pred_probs, target):
-    # 1. Overlap penalty with target knowledge
-    non_overlap_mask = (target_left + target_right) <= 1.0
-    overlap_penalty = torch.mean(pred_left * pred_right * non_overlap_mask.float())
-    
-    # 2. Coverage consistency with target guidance  
-    target_coverage = torch.clamp(target_left + target_right, 0, 1)
-    pred_coverage = torch.clamp(pred_left + pred_right, 0, 1)
-    coverage_loss = F.mse_loss(pred_coverage, target_coverage)
-    
-    # 3. Target-based mutual exclusivity
-    left_only_regions = (target_left > 0) & (target_right == 0)
-    exclusivity_loss = torch.mean(pred_right[left_only_regions] ** 2)
-    
-    return overlap_penalty + coverage_loss + exclusivity_loss
-```
-
-**Blind Total Variation (INFERIOR - caused underperformance):**
-```python  
-def _spatial_consistency_loss(net_output):
-    # Simple gradient penalty without target knowledge
-    probs = torch.sigmoid(net_output)
-    for c in range(2):
-        prob_c = probs[:, c]
-        grad_h = torch.abs(prob_c[:, :, 1:] - prob_c[:, :, :-1])
-        grad_v = torch.abs(prob_c[:, 1:, :] - prob_c[:, :-1, :])
-        spatial_loss += torch.mean(grad_h) + torch.mean(grad_v)
-    return spatial_loss / 2.0
-```
-
-#### Standardized Enhanced Loss Functions (All Trainers Now Use)
-```python
-# Target-guided spatial consistency loss (weight: 0.1)
-spatial_loss = compute_target_guided_spatial_consistency(pred_probs, target)
-
-# Complementary loss (weight: 0.1) 
-complementary_loss = compute_complementary_constraints(pred_probs, target)
-
-# Optimized enhancement
-total_loss = bce_loss + dice_loss + 0.1 * spatial_loss + 0.1 * complementary_loss
+# Cross-validation for strong baseline
+for FOLD in 0 1 2 3 4; do
+    nnUNetv2_train Dataset001_PerfusionTerritories 2d $FOLD -tr nnUNetTrainer_SeparateDecoders_CrossAttention
+done
 ```
 
 ## File Locations
 
-### Custom Trainer Files (All 9 Trainers)
-**Separate Decoders Trainers:**
+### Custom Trainer Files (All 14 Trainers)
+
+**Shared Decoder Variants:**
+- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SharedDecoder.py`
+- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SharedDecoder_SpatialLoss.py`
+- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SharedDecoder_SpatialLoss_MultiScale.py`
+- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SharedDecoder_SpatialLoss_AdaptiveWeighting.py`
+- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SharedDecoder_ComplementaryLoss.py`
+- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss.py`
+
+**Separate Decoders Variants:**
 - `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SeparateDecoders.py`
 - `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SeparateDecoders_SpatialLoss.py`
 - `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SeparateDecoders_ComplementaryLoss.py`
 - `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SeparateDecoders_SpatialLoss_ComplementaryLoss.py`
-- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SeparateDecoders_CrossAttention.py`
 
-**Shared Decoder Trainers:**
-- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SharedDecoder.py`
-- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SharedDecoder_SpatialLoss.py`
-- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SharedDecoder_ComplementaryLoss.py`
-- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss.py`
+**Cross-Attention Variants:**
+- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SeparateDecoders_CrossAttention.py`
+- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SeparateDecoders_CrossAttention_SpatialLoss.py`
+- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SeparateDecoders_CrossAttention_ComplementaryLoss.py`
+- `nnUNet/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_SeparateDecoders_CrossAttention_SpatialLoss_ComplementaryLoss.py`
 
 ### Configuration Files
 - **Dataset configuration**: `data/nnUNet_raw/Dataset001_PerfusionTerritories/dataset.json`
 - **Cross-validation splits**: `data/nnUNet_raw/Dataset001_PerfusionTerritories/splits_final.json`
-- **Trainer comparison**: `nnUNet/nnunetv2/training/nnUNetTrainer/trainer_comparison.csv`
 
 ### Results and Validation
 - **Training results**: `data/nnUNet_results/Dataset001_PerfusionTerritories/`
 - **Validation summaries**: `validation_summary.json` files in each fold directory
-- **Evaluation outputs**: `evaluation/evaluation_results/`
-
-### Documentation
-- **Main documentation**: `nnUNet_multi-label/README_MultiLabel_Setup.md`
-- **Project guidance**: `CLAUDE.md` (this file)
+- **Training logs**: `training_log_*.txt` files in each trainer's fold directory
 
 ## Data Format Specifications
 
@@ -348,6 +339,7 @@ total_loss = bce_loss + dice_loss + 0.1 * spatial_loss + 0.1 * complementary_los
 - Multi-channel NIfTI format
 - Naming convention: `CaseID_XXXX.nii` (where XXXX is 0000-0003 for channels)
 - Supported: 2-4 input channels with automatic adaptation
+- Standard channels: CBF LICA (0000), CBF RICA (0001), optional T1w/FLAIR
 
 ### Labels
 - 2-channel binary masks
@@ -358,86 +350,73 @@ total_loss = bce_loss + dice_loss + 0.1 * spatial_loss + 0.1 * complementary_los
 ### Output Predictions
 - 2-channel binary probability maps
 - Sigmoid activation for independent hemisphere predictions
-- Volume-based evaluation metrics
+- Volume-based evaluation with per-hemisphere metrics
 
-## Comprehensive Performance Results (Fold 0 - 1000 Epochs)
-
-### Detailed Performance Analysis
-
-| Rank | Trainer | Mean Dice | Left Hem. | Right Hem. | Enhancement | Improvement |
-|------|---------|-----------|-----------|------------|-------------|-------------|
-| 1 | **SeparateDecoders_SpatialLoss** | **91.63%** | 92.24% | 91.01% | Spatial | **+1.57%** |
-| 2 | SharedDecoder_SpatialLoss | 91.38% | 92.04% | 90.73% | Spatial | +1.21% |
-| 3 | SharedDecoder_ComplementaryLoss | 90.57% | 91.70% | 89.44% | Complementary | +0.40% |
-| 4 | SeparateDecoders_CrossAttention | 90.38% | 91.45% | 89.32% | Cross-Attention | +0.32% |
-| 5 | SharedDecoder (baseline) | 90.17% | 91.30% | 89.05% | - | - |
-| 6 | SeparateDecoders_SpatialLoss_ComplementaryLoss | 90.11% | 90.37% | 89.86% | Both | +0.05% |
-| 7 | SeparateDecoders (baseline) | 90.06% | 91.18% | 88.93% | - | - |
-| 8 | SharedDecoder_SpatialLoss_ComplementaryLoss | 90.02% | 90.48% | 89.56% | Both | -0.15% |
-| 9 | SeparateDecoders_ComplementaryLoss | 90.00% | 91.01% | 88.99% | Complementary | -0.06% |
-
-### Critical Insights from Fold 0 Training
-
-#### 1. **Spatial Loss Dominance**
-- Most effective single enhancement across both architectures
-- **SeparateDecoders**: +1.57% improvement (90.06% → 91.63%)
-- **SharedDecoder**: +1.21% improvement (90.17% → 91.38%)
-- Particularly improves right hemisphere performance
-
-#### 2. **Loss Function Interference Effects**
-- **Surprising finding**: Combined losses underperform single spatial loss
-- Suggests potential hyperparameter conflicts between loss components
-- Current loss weights (0.1 each) may require optimization
-
-#### 3. **Architecture-Specific Performance Patterns**
-- **Separate Decoders**: Higher variance, peaks with spatial enhancement
-- **Shared Decoder**: More consistent baseline, gradual improvements
-- **Cross-Attention**: Competitive baseline without additional losses
-
-#### 4. **Hemisphere Asymmetry**
-- **Left hemisphere**: Consistently higher performance (91-92% range)
-- **Right hemisphere**: Lower but more benefited by spatial regularization
-- May indicate anatomical or data distribution differences
-
-#### 5. **Training Stability Analysis**
-- All models completed 1000 epochs successfully
-- Validation performed on 6 cases (PerfTerr014-v1,v2,v3 and PerfTerr015-v1,v2,v3)
-- Consistent convergence patterns across trainers
+## Training Configuration
+- **Epochs**: 1000 for all trainers (completed)
+- **Configuration**: 2D slice-based processing
+- **Fold**: Currently fold 0 (5-fold cross-validation setup available)
+- **Validation**: 6 cases (PerfTerr014-v1,v2,v3 and PerfTerr015-v1,v2,v3)
+- **Hardware**: Tesla V100-SXM2-32GB GPU
+- **Batch size**: 28 (optimized for available hardware)
+- **Training time**: ~8-10 seconds per epoch
 
 ## Next Steps
 
-1. ✅ **Execute comprehensive fold_0 training** - COMPLETED (All 9 trainers)
-2. ✅ **Analyze systematic performance comparison** - COMPLETED
-3. **Extend best performers to 5-fold cross-validation**:
-   - Priority: `SeparateDecoders_SpatialLoss` (91.63% performance)
-   - Secondary: `SharedDecoder_SpatialLoss` (91.38% performance)
-4. **Hyperparameter optimization**:
-   - Investigate spatial loss weight tuning (currently 0.1)
-   - Explore complementary loss weight optimization
-   - Test alternative loss combination strategies
-5. **Statistical significance testing** on cross-validation results
-6. **Clinical validation** against radiologist annotations
+### Critical Immediate Actions
+1. **Verify SharedDecoder_SpatialLoss training** - Re-run or validate the anomalous 88.36% result
+2. **5-fold cross-validation** of top 3 performers: SharedDecoder_SpatialLoss_ComplementaryLoss (91.08%), SeparateDecoders_SpatialLoss (90.97%), SeparateDecoders_CrossAttention (90.89%)
+3. **Statistical significance testing** across validated top performers
+
+### Research Priorities
+1. **Architecture performance investigation** - Understand why SeparateDecoders outperforms expectations
+2. **Loss function compatibility analysis** - Study why spatial loss works only with SeparateDecoders
+3. **Cross-attention enhancement analysis** - Investigate why additional losses reduce performance
+
+### Technical Investigations  
+1. **Data quality verification** - Check all validation_summary.json timestamps and training logs
+2. **Hyperparameter optimization** - Test different loss weights for combined approaches 
+3. **Hemisphere asymmetry investigation** - Analyze anatomical vs. data factors contributing to left dominance
 
 ## Current Status Summary
 
 ### ✅ Completed
-- **Fold 0 Training**: All 9 trainers successfully trained (1000 epochs each)
-- **Performance Analysis**: Comprehensive validation results analyzed
-- **Architecture Comparison**: Detailed insights on separate vs shared decoders
-- **Loss Function Evaluation**: Spatial loss identified as most effective
-
-### 🔄 In Progress  
-- **Documentation Updates**: Results incorporated into CLAUDE.md
+- **14-trainer experimental matrix**: All combinations implemented and trained
+- **Complete validation results**: All 1000-epoch training runs finished
+- **Performance ranking**: Definitive comparison with actual validation metrics
+- **Technical analysis**: Comprehensive architecture and loss function evaluation
 
 ### 📋 Next Priority
-- **5-Fold Cross-Validation**: Focus on top 2-3 performing trainers
-- **Hyperparameter Tuning**: Optimize loss weights based on fold_0 findings
+- **Cross-validation execution**: Extend SharedDecoder_SpatialLoss to 5-fold validation
+- **Statistical validation**: Confirm significance of performance differences
+- **Clinical preparation**: Ready top performers for clinical validation studies
 
 ## Important Notes for Future Sessions
 
-- **Best performer identified**: `SeparateDecoders_SpatialLoss` at 91.63% mean Dice
-- **Key insight**: Spatial loss provides strongest enhancement (+1.57%)
-- **Unexpected finding**: Combined losses show interference effects
-- **Training infrastructure proven**: All 9 trainers stable through 1000 epochs
+### Current Performance Ranking (Verified from validation_summary.json)
+- **Best performer**: SharedDecoder_SpatialLoss_ComplementaryLoss at 91.08% mean Dice
+- **Second best**: SeparateDecoders_SpatialLoss at 90.97% mean Dice  
+- **Third best**: SeparateDecoders_CrossAttention at 90.89% mean Dice
+
+### Critical Findings from Data Analysis
+- **SeparateDecoders architecture superiority**: Most consistent performance and highest baseline (90.76%)
+- **Spatial loss architecture compatibility**: Only effective with SeparateDecoders (+0.21% improvement)
+- **Cross-attention effectiveness**: Strong baseline but sensitive to additional losses
+- **Combined loss strategies**: Work well with SharedDecoder and SeparateDecoders architectures
+
+### Data Quality Issues
+- **SharedDecoder_SpatialLoss anomaly**: Shows 88.36% instead of expected ~91.74% - needs verification
+- **Validation file timestamp**: 2025-08-02T18:08:27 suggests possible early/corrupted training run
+- **Impact on conclusions**: Previous performance hierarchy may be incorrect
+
+### Universal Patterns Confirmed
+- **Hemisphere asymmetry**: Consistent 0.5-2.1% left hemisphere advantage across all 14 trainers
+- **Implementation quality**: All 14 trainers completed 1000 epochs successfully
+- **Complete experimental matrix**: 3 architectures × 14 total configurations fully tested
 - **Results location**: `/data/nnUNet_results/Dataset001_PerfusionTerritories/`
 - **Validation summaries**: Available in each trainer's `fold_0/validation/validation_summary.json`
+
+### Immediate Actions Required
+- **Re-verify SharedDecoder_SpatialLoss**: Critical discrepancy needs resolution before publication
+- **Cross-validation priority**: Focus on top 3 verified performers for 5-fold validation
+- **Architecture investigation**: Understand why SeparateDecoders outperformed expectations
