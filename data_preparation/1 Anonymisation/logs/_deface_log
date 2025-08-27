@@ -1,0 +1,372 @@
+>> A_execute_SPM_deface
+✓ Copied for defacing: output/sub-p001/FLAIR/sub-p001_FLAIR.nii
+✓ Copied for defacing: output/sub-p001/T1w/sub-p001_T1w.nii
+✓ Copied for defacing: output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied for defacing: output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied (no defacing): output/sub-p001/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p001/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p001/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p001/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p002/FLAIR/sub-p002_FLAIR.nii
+✓ Copied for defacing: output/sub-p002/T1w/sub-p002_T1w.nii
+✓ Copied for defacing: output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied for defacing: output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p003/FLAIR/sub-p003_FLAIR.nii
+✓ Copied for defacing: output/sub-p003/T1w/sub-p003_T1w.nii
+✓ Copied for defacing: output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied for defacing: output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p004/FLAIR/sub-p004_FLAIR.nii
+✓ Copied for defacing: output/sub-p004/T1w/sub-p004_T1w.nii
+✓ Copied for defacing: output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied for defacing: output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p005/FLAIR/sub-p005_FLAIR.nii
+✓ Copied for defacing: output/sub-p005/T1w/sub-p005_T1w.nii
+✓ Copied for defacing: output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied for defacing: output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p006/FLAIR/sub-p006_FLAIR.nii
+✓ Copied for defacing: output/sub-p006/T1w/sub-p006_T1w.nii
+✓ Copied for defacing: output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied for defacing: output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p007/FLAIR/sub-p007_FLAIR.nii
+✓ Copied for defacing: output/sub-p007/T1w/sub-p007_T1w.nii
+✓ Copied for defacing: output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied for defacing: output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p008/FLAIR/sub-p008_FLAIR.nii
+✓ Copied for defacing: output/sub-p008/T1w/sub-p008_T1w.nii
+✓ Copied for defacing: output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied for defacing: output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied (no defacing): output/sub-p008/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p008/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p008/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p008/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p009/FLAIR/sub-p009_FLAIR.nii
+✓ Copied for defacing: output/sub-p009/T1w/sub-p009_T1w.nii
+✓ Copied for defacing: output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied for defacing: output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p010/FLAIR/sub-p010_FLAIR.nii
+✓ Copied for defacing: output/sub-p010/T1w/sub-p010_T1w.nii
+✓ Copied for defacing: output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied for defacing: output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p011/FLAIR/sub-p011_FLAIR.nii
+✓ Copied for defacing: output/sub-p011/T1w/sub-p011_T1w.nii
+✓ Copied for defacing: output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied for defacing: output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p012/FLAIR/sub-p012_FLAIR.nii
+✓ Copied for defacing: output/sub-p012/T1w/sub-p012_T1w.nii
+✓ Copied for defacing: output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied for defacing: output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p013/FLAIR/sub-p013_FLAIR.nii
+✓ Copied for defacing: output/sub-p013/T1w/sub-p013_T1w.nii
+✓ Copied for defacing: output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied for defacing: output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p014/FLAIR/sub-p014_FLAIR.nii
+✓ Copied for defacing: output/sub-p014/T1w/sub-p014_T1w.nii
+✓ Copied for defacing: output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied for defacing: output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p015/FLAIR/sub-p015_FLAIR.nii
+✓ Copied for defacing: output/sub-p015/T1w/sub-p015_T1w.nii
+✓ Copied for defacing: output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied for defacing: output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p001/FLAIR/sub-p001_FLAIR.nii
+✓ Copied for defacing: output/sub-p001/T1w/sub-p001_T1w.nii
+✓ Copied for defacing: output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied for defacing: output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied (no defacing): output/sub-p001/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p001/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p001/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p001/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p002/FLAIR/sub-p002_FLAIR.nii
+✓ Copied for defacing: output/sub-p002/T1w/sub-p002_T1w.nii
+✓ Copied for defacing: output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied for defacing: output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p003/FLAIR/sub-p003_FLAIR.nii
+✓ Copied for defacing: output/sub-p003/T1w/sub-p003_T1w.nii
+✓ Copied for defacing: output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied for defacing: output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p004/FLAIR/sub-p004_FLAIR.nii
+✓ Copied for defacing: output/sub-p004/T1w/sub-p004_T1w.nii
+✓ Copied for defacing: output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied for defacing: output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p005/FLAIR/sub-p005_FLAIR.nii
+✓ Copied for defacing: output/sub-p005/T1w/sub-p005_T1w.nii
+✓ Copied for defacing: output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied for defacing: output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p006/FLAIR/sub-p006_FLAIR.nii
+✓ Copied for defacing: output/sub-p006/T1w/sub-p006_T1w.nii
+✓ Copied for defacing: output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied for defacing: output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p007/FLAIR/sub-p007_FLAIR.nii
+✓ Copied for defacing: output/sub-p007/T1w/sub-p007_T1w.nii
+✓ Copied for defacing: output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied for defacing: output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p008/FLAIR/sub-p008_FLAIR.nii
+✓ Copied for defacing: output/sub-p008/T1w/sub-p008_T1w.nii
+✓ Copied for defacing: output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied for defacing: output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied (no defacing): output/sub-p008/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p008/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p008/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p008/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p009/FLAIR/sub-p009_FLAIR.nii
+✓ Copied for defacing: output/sub-p009/T1w/sub-p009_T1w.nii
+✓ Copied for defacing: output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied for defacing: output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p010/FLAIR/sub-p010_FLAIR.nii
+✓ Copied for defacing: output/sub-p010/T1w/sub-p010_T1w.nii
+✓ Copied for defacing: output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied for defacing: output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p011/FLAIR/sub-p011_FLAIR.nii
+✓ Copied for defacing: output/sub-p011/T1w/sub-p011_T1w.nii
+✓ Copied for defacing: output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied for defacing: output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p012/FLAIR/sub-p012_FLAIR.nii
+✓ Copied for defacing: output/sub-p012/T1w/sub-p012_T1w.nii
+✓ Copied for defacing: output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied for defacing: output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p013/FLAIR/sub-p013_FLAIR.nii
+✓ Copied for defacing: output/sub-p013/T1w/sub-p013_T1w.nii
+✓ Copied for defacing: output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied for defacing: output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p014/FLAIR/sub-p014_FLAIR.nii
+✓ Copied for defacing: output/sub-p014/T1w/sub-p014_T1w.nii
+✓ Copied for defacing: output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied for defacing: output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Second_visit/output/sub-p015/FLAIR/sub-p015_FLAIR.nii
+✓ Copied for defacing: output/sub-p015/T1w/sub-p015_T1w.nii
+✓ Copied for defacing: output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied for defacing: output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+✓ Copied for defacing: output/sub-p001/FLAIR/sub-p001_FLAIR.nii
+✓ Copied for defacing: output/sub-p001/T1w/sub-p001_T1w.nii
+✓ Copied for defacing: output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied for defacing: output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied (no defacing): output/sub-p001/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p001/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p001/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p001/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p002/FLAIR/sub-p002_FLAIR.nii
+✓ Copied for defacing: output/sub-p002/T1w/sub-p002_T1w.nii
+✓ Copied for defacing: output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied for defacing: output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p002/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p003/FLAIR/sub-p003_FLAIR.nii
+✓ Copied for defacing: output/sub-p003/T1w/sub-p003_T1w.nii
+✓ Copied for defacing: output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied for defacing: output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p003/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p004/FLAIR/sub-p004_FLAIR.nii
+✓ Copied for defacing: output/sub-p004/T1w/sub-p004_T1w.nii
+✓ Copied for defacing: output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied for defacing: output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p004/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p005/FLAIR/sub-p005_FLAIR.nii
+✓ Copied for defacing: output/sub-p005/T1w/sub-p005_T1w.nii
+✓ Copied for defacing: output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied for defacing: output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p005/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p006/FLAIR/sub-p006_FLAIR.nii
+✓ Copied for defacing: output/sub-p006/T1w/sub-p006_T1w.nii
+✓ Copied for defacing: output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied for defacing: output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p006/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p007/FLAIR/sub-p007_FLAIR.nii
+✓ Copied for defacing: output/sub-p007/T1w/sub-p007_T1w.nii
+✓ Copied for defacing: output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied for defacing: output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p007/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p008/FLAIR/sub-p008_FLAIR.nii
+✓ Copied for defacing: output/sub-p008/T1w/sub-p008_T1w.nii
+✓ Copied for defacing: output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied for defacing: output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied (no defacing): output/sub-p008/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p008/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p008/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p008/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p009/FLAIR/sub-p009_FLAIR.nii
+✓ Copied for defacing: output/sub-p009/T1w/sub-p009_T1w.nii
+✓ Copied for defacing: output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied for defacing: output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p009/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p010/FLAIR/sub-p010_FLAIR.nii
+✓ Copied for defacing: output/sub-p010/T1w/sub-p010_T1w.nii
+✓ Copied for defacing: output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied for defacing: output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p010/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p011/FLAIR/sub-p011_FLAIR.nii
+✓ Copied for defacing: output/sub-p011/T1w/sub-p011_T1w.nii
+✓ Copied for defacing: output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied for defacing: output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p011/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p012/FLAIR/sub-p012_FLAIR.nii
+✓ Copied for defacing: output/sub-p012/T1w/sub-p012_T1w.nii
+✓ Copied for defacing: output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied for defacing: output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p012/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p013/FLAIR/sub-p013_FLAIR.nii
+✓ Copied for defacing: output/sub-p013/T1w/sub-p013_T1w.nii
+✓ Copied for defacing: output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied for defacing: output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p013/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p014/FLAIR/sub-p014_FLAIR.nii
+✓ Copied for defacing: output/sub-p014/T1w/sub-p014_T1w.nii
+✓ Copied for defacing: output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied for defacing: output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p014/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA/Third_visit/output/sub-p015/FLAIR/sub-p015_FLAIR.nii
+✓ Copied for defacing: output/sub-p015/T1w/sub-p015_T1w.nii
+✓ Copied for defacing: output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied for defacing: output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual.nii
+✓ Copied (no defacing): output/sub-p015/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual.nii
+
+
+------------------------------------------------------------------------
+04-Jun-2025 16:59:55 - Running job #1
+------------------------------------------------------------------------
+04-Jun-2025 16:59:55 - Running 'De-face Images'
+04-Jun-2025 17:07:30 - Done    'De-face Images'
+04-Jun-2025 17:07:30 - Done
+
+--- Data extraction and SPM defacing complete ---
+

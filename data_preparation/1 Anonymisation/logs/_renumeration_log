@@ -1,0 +1,202 @@
+>> C_renumerate_subjects
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p007/FLAIR/anon_sub-p007_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p007/T1w/anon_sub-p007_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p007_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p007_T1w.nii
+✓ Renamed folder: sub-p001 -> sub-p007
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p001/FLAIR/anon_sub-p001_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p001/T1w/anon_sub-p001_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p001_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p001_T1w.nii
+✓ Renamed folder: sub-p002 -> sub-p001
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p015/FLAIR/anon_sub-p015_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p015/T1w/anon_sub-p015_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p015_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p015_T1w.nii
+✓ Renamed folder: sub-p003 -> sub-p015
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p013/FLAIR/anon_sub-p013_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p013/T1w/anon_sub-p013_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p013_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p013_T1w.nii
+✓ Renamed folder: sub-p004 -> sub-p013
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p002/FLAIR/anon_sub-p002_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p002/T1w/anon_sub-p002_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p002_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p002_T1w.nii
+✓ Renamed folder: sub-p005 -> sub-p002
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p014/FLAIR/anon_sub-p014_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p014/T1w/anon_sub-p014_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p014_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p014_T1w.nii
+✓ Renamed folder: sub-p006 -> sub-p014
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p006/FLAIR/anon_sub-p006_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p006/T1w/anon_sub-p006_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p006_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p006_T1w.nii
+✓ Renamed folder: sub-p007 -> sub-p006
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p010/FLAIR/anon_sub-p010_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p010/T1w/anon_sub-p010_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p010_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p010_T1w.nii
+✓ Renamed folder: sub-p008 -> sub-p010
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p012/FLAIR/anon_sub-p012_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p012/T1w/anon_sub-p012_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p012_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p012_T1w.nii
+✓ Renamed folder: sub-p009 -> sub-p012
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p011/FLAIR/anon_sub-p011_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p011/T1w/anon_sub-p011_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p011_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p011_T1w.nii
+✓ Renamed folder: sub-p010 -> sub-p011
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p004/FLAIR/anon_sub-p004_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p004/T1w/anon_sub-p004_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p004_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p004_T1w.nii
+✓ Renamed folder: sub-p011 -> sub-p004
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p008/FLAIR/anon_sub-p008_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p008/T1w/anon_sub-p008_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p008_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p008_T1w.nii
+✓ Renamed folder: sub-p012 -> sub-p008
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p003/FLAIR/anon_sub-p003_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p003/T1w/anon_sub-p003_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p003_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p003_T1w.nii
+✓ Renamed folder: sub-p013 -> sub-p003
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p009/FLAIR/anon_sub-p009_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p009/T1w/anon_sub-p009_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p009_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p009_T1w.nii
+✓ Renamed folder: sub-p014 -> sub-p009
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p005/FLAIR/anon_sub-p005_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p005/T1w/anon_sub-p005_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p005_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/First_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p005_T1w.nii
+✓ Renamed folder: sub-p015 -> sub-p005
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p007/FLAIR/anon_sub-p007_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p007/T1w/anon_sub-p007_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p007_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p007_T1w.nii
+✓ Renamed folder: sub-p001 -> sub-p007
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p001/T1w/anon_sub-p001_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p001_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p001_T1w.nii
+✓ Renamed folder: sub-p002 -> sub-p001
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p015/T1w/anon_sub-p015_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p015_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p015_T1w.nii
+✓ Renamed folder: sub-p003 -> sub-p015
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p013/T1w/anon_sub-p013_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p013_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p013_T1w.nii
+✓ Renamed folder: sub-p004 -> sub-p013
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p002/T1w/anon_sub-p002_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p002_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p002_T1w.nii
+✓ Renamed folder: sub-p005 -> sub-p002
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p014/T1w/anon_sub-p014_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p014_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p014_T1w.nii
+✓ Renamed folder: sub-p006 -> sub-p014
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p006/T1w/anon_sub-p006_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p006_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p006_T1w.nii
+✓ Renamed folder: sub-p007 -> sub-p006
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p010/T1w/anon_sub-p010_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p010_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p010_T1w.nii
+✓ Renamed folder: sub-p008 -> sub-p010
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p012/T1w/anon_sub-p012_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p012_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p012_T1w.nii
+✓ Renamed folder: sub-p009 -> sub-p012
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p011/T1w/anon_sub-p011_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p011_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p011_T1w.nii
+✓ Renamed folder: sub-p010 -> sub-p011
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p004/T1w/anon_sub-p004_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p004_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p004_T1w.nii
+✓ Renamed folder: sub-p011 -> sub-p004
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p008/T1w/anon_sub-p008_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p008_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p008_T1w.nii
+✓ Renamed folder: sub-p012 -> sub-p008
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p003/T1w/anon_sub-p003_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p003_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p003_T1w.nii
+✓ Renamed folder: sub-p013 -> sub-p003
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p009/T1w/anon_sub-p009_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p009_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p009_T1w.nii
+✓ Renamed folder: sub-p014 -> sub-p009
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p005/T1w/anon_sub-p005_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p005_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Second_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p005_T1w.nii
+✓ Renamed folder: sub-p015 -> sub-p005
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p007/FLAIR/anon_sub-p007_FLAIR.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p007/T1w/anon_sub-p007_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p007_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p007_T1w.nii
+✓ Renamed folder: sub-p001 -> sub-p007
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p001/T1w/anon_sub-p001_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p001_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p001_T1w.nii
+✓ Renamed folder: sub-p002 -> sub-p001
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p015/T1w/anon_sub-p015_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p015_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p015_T1w.nii
+✓ Renamed folder: sub-p003 -> sub-p015
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p013/T1w/anon_sub-p013_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p013_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p013_T1w.nii
+✓ Renamed folder: sub-p004 -> sub-p013
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p002/T1w/anon_sub-p002_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p002_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p002_T1w.nii
+✓ Renamed folder: sub-p005 -> sub-p002
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p014/T1w/anon_sub-p014_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p014_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p014_T1w.nii
+✓ Renamed folder: sub-p006 -> sub-p014
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p006/T1w/anon_sub-p006_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p006_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p006_T1w.nii
+✓ Renamed folder: sub-p007 -> sub-p006
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p010/T1w/anon_sub-p010_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p010_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p010_T1w.nii
+✓ Renamed folder: sub-p008 -> sub-p010
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p012/T1w/anon_sub-p012_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p012_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p012_T1w.nii
+✓ Renamed folder: sub-p009 -> sub-p012
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p011/T1w/anon_sub-p011_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p011_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p011_T1w.nii
+✓ Renamed folder: sub-p010 -> sub-p011
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p004/T1w/anon_sub-p004_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p004_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p004_T1w.nii
+✓ Renamed folder: sub-p011 -> sub-p004
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p008/T1w/anon_sub-p008_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p008_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p008_T1w.nii
+✓ Renamed folder: sub-p012 -> sub-p008
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p003/T1w/anon_sub-p003_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p003_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p003_T1w.nii
+✓ Renamed folder: sub-p013 -> sub-p003
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p009/T1w/anon_sub-p009_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p009_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p009_T1w.nii
+✓ Renamed folder: sub-p014 -> sub-p009
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p005/T1w/anon_sub-p005_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p005_T1w.nii
+  → Renamed file: /shome/BRAIN/vwohlfarth/Documents/anon_Data/Third_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p005_T1w.nii
+✓ Renamed folder: sub-p015 -> sub-p005
+
+✔ Subject renumeration complete. Mapping loaded from: /shome/BRAIN/vwohlfarth/Documents/MATLAB/DLSegPerf/data_preparation/data_anonymisation/renumeration.csv
+>> BRAIN/vwohlfarth/Documents/renumeration.csv
+>> 
