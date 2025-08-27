@@ -3,4 +3,4 @@ data/
 nnUNet/
 nnUNet_master/
 nnUNet_multi-label/
-thresholding_segmentation/
+threshold_segmentation/
