@@ -21,7 +21,7 @@ Input folder structure:
   - fold_4/validation/
 
 Ground truth reference:
-- data/nnUNet_preprocessed/Dataset001_PerfusionTerritories/gt_segmentations/
+- data/nnUNet_raw/Dataset001_PerfusionTerritories/labelsTr/
 
 Output:
 - Excel file with detailed results and summary statistics
@@ -66,7 +66,7 @@ class CrossValidationEvaluator:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
         # Define paths
-        self.gt_dir = Path("/home/ubuntu/DLSegPerf/data/nnUNet_preprocessed/Dataset001_PerfusionTerritories/gt_segmentations")
+        self.gt_dir = Path("/home/ubuntu/DLSegPerf/data/nnUNet_raw/Dataset001_PerfusionTerritories/labelsTr")
         
         # Results storage
         self.results = []
@@ -412,6 +412,26 @@ class CrossValidationEvaluator:
             
             fold_summary_df = pd.DataFrame(fold_summary_stats)
             
+            # Create per-hemisphere summary statistics
+            hemisphere_summary_stats = []
+            for hemisphere in ['L', 'R']:
+                hemisphere_data = df[df['Hemisphere'] == hemisphere]
+                if len(hemisphere_data) > 0:
+                    hemisphere_summary_stats.append({
+                        'Hemisphere': hemisphere,
+                        'Cases': len(hemisphere_data),
+                        'Mean_Dice': hemisphere_data['Dice_Score'].mean(),
+                        'Std_Dice': hemisphere_data['Dice_Score'].std(),
+                        'Mean_Dice_Slicewise': hemisphere_data['Dice_Score_Slicewise'].mean(),
+                        'Std_Dice_Slicewise': hemisphere_data['Dice_Score_Slicewise'].std(),
+                        'Mean_HD95': hemisphere_data['HD95_mm'].replace([np.inf, -np.inf], np.nan).mean(),
+                        'Std_HD95': hemisphere_data['HD95_mm'].replace([np.inf, -np.inf], np.nan).std(),
+                        'Mean_Sensitivity': hemisphere_data['Sensitivity'].mean(),
+                        'Mean_Specificity': hemisphere_data['Specificity'].mean()
+                    })
+            
+            hemisphere_summary_df = pd.DataFrame(hemisphere_summary_stats)
+            
             # Create overall summary statistics
             numeric_columns = ['Dice_Score', 'Dice_Score_Slicewise', 'HD95_mm', 'Sensitivity', 'Specificity',
                               'True_Positives', 'False_Positives', 'False_Negatives', 'True_Negatives',
@@ -448,6 +468,9 @@ class CrossValidationEvaluator:
                 
                 # Per-fold summary
                 fold_summary_df.to_excel(writer, sheet_name='Per_Fold_Summary', index=False)
+                
+                # Per-hemisphere summary
+                hemisphere_summary_df.to_excel(writer, sheet_name='Per_Hemisphere_Summary', index=False)
                 
                 # Overall summary statistics
                 overall_summary_df.to_excel(writer, sheet_name='Overall_Summary', index=False)
