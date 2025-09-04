@@ -575,7 +575,33 @@ class MultiClassCrossValidationEvaluator:
             
             fold_summary_df = pd.DataFrame(fold_summary_stats)
             
-            # 5. nnUNet fold summaries if available
+            # 5. Overall summary statistics
+            # Get all numeric columns for overall statistics
+            numeric_columns = []
+            for col in df.columns:
+                if any(metric in col for metric in ['Dice_Score', 'HD95_mm', 'Sensitivity', 'Specificity', 
+                                                   'True_Positives', 'False_Positives', 'False_Negatives', 'True_Negatives',
+                                                   'GT_Volume_mm3', 'Pred_Volume_mm3', 'Volume_Difference_mm3']):
+                    numeric_columns.append(col)
+            
+            overall_summary_stats = []
+            for col in numeric_columns:
+                if col in df.columns:
+                    values = df[col].replace([np.inf, -np.inf], np.nan).dropna()
+                    if len(values) > 0:
+                        overall_summary_stats.append({
+                            'Metric': col,
+                            'Mean': values.mean(),
+                            'Std': values.std(),
+                            'Min': values.min(),
+                            'Max': values.max(),
+                            'Median': values.median(),
+                            'Count': len(values)
+                        })
+            
+            overall_summary_df = pd.DataFrame(overall_summary_stats)
+            
+            # 6. nnUNet fold summaries if available
             nnunet_fold_df = None
             if self.fold_summaries:
                 nnunet_fold_df = pd.DataFrame(self.fold_summaries)
@@ -597,6 +623,9 @@ class MultiClassCrossValidationEvaluator:
                 
                 # Per-fold summary
                 fold_summary_df.to_excel(writer, sheet_name='Per_Fold_Summary', index=False)
+                
+                # Overall summary statistics
+                overall_summary_df.to_excel(writer, sheet_name='Overall_Summary', index=False)
                 
                 # nnUNet fold summaries if available
                 if nnunet_fold_df is not None:
@@ -742,9 +771,9 @@ class MultiClassCrossValidationEvaluator:
             
             print(f"\nHEMISPHERE PERFORMANCE SUMMARY:")
             if len(left_dice) > 0:
-                print(f"Left Hemisphere       - Mean: {left_dice.mean():.4f} ± {left_dice.std():.4f}")
+                print(f"Left Hemisphere       - Mean: {left_dice.mean():.4f} +/- {left_dice.std():.4f}")
             if len(right_dice) > 0:
-                print(f"Right Hemisphere      - Mean: {right_dice.mean():.4f} ± {right_dice.std():.4f}")
+                print(f"Right Hemisphere      - Mean: {right_dice.mean():.4f} +/- {right_dice.std():.4f}")
             
             # Per-class performance summary
             print(f"\nPER-CLASS PERFORMANCE SUMMARY:")
@@ -753,7 +782,7 @@ class MultiClassCrossValidationEvaluator:
                 if dice_col in df.columns:
                     values = df[dice_col].dropna()
                     if len(values) > 0:
-                        print(f"{class_name:<17} - Mean: {values.mean():.4f} ± {values.std():.4f}")
+                        print(f"{class_name:<17} - Mean: {values.mean():.4f} +/- {values.std():.4f}")
             
             # Per-fold performance
             print(f"\nPER-FOLD PERFORMANCE (HEMISPHERE DICE):")
