@@ -1,4 +1,3 @@
-# nnunetv2/inference/export_prediction_multilabel.py
 from __future__ import annotations
 import os
 import numpy as np

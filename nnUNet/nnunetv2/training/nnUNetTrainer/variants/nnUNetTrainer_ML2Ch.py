@@ -1,4 +1,3 @@
-# nnunetv2/training/nnUNetTrainer/variants/nnUNetTrainer_ML2Ch.py
 from __future__ import annotations
 from typing import Dict, Any
 import os, json, torch
@@ -17,18 +16,16 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
       - Overlap allowed (both channels can be 1).
     """
 
-    # --- IMPORTANT: disable stock online evaluation & noise ---
+    # --- tame the base trainer logging/eval ---
     def initialize(self, *args, **kwargs):
         super().initialize(*args, **kwargs)
         self.enable_online_evaluation = False
         self.print_to_log_file("[ML2Ch] custom trainer initialized (online eval disabled).")
 
     def finish_online_evaluation(self):
-        # Some nnU-Net versions still call this; make it a no-op
-        return
+        return  # no-op
 
     def print_to_log_file(self, *args, also_print_to_console: bool = True, add_timestamp: bool = True):
-        # Swallow the base class "Pseudo dice [...]" line to avoid confusion
         msg = " ".join(str(a) for a in args if a is not None)
         if "Pseudo dice" in msg:
             return
@@ -36,13 +33,12 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
                                          also_print_to_console=also_print_to_console,
                                          add_timestamp=add_timestamp)
 
-    # --- outputs ---
+    # --- outputs & loss ---
     def determine_num_output_channels(self, plans_manager, dataset_json) -> int:
         return 2
 
     def configure_loss(self):
-        # tip: bump pos_weight for a rarer/right class, e.g. torch.tensor([1.0, 1.2], device=self.device)
-        pos_weight = None
+        pos_weight = None  # e.g., torch.tensor([1.0, 1.3], device=self.device) if right is rarer
         self.loss = BCEDiceLossMultiLabel(bce_weight=0.5, dice_weight=0.5, pos_weight=pos_weight)
 
     @staticmethod
@@ -64,12 +60,13 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
         ch_right = (tgt == 2) | (tgt == 3)
         return torch.stack([ch_left, ch_right], dim=1).float()
 
+    # --- training step ---
     def run_training_iteration(self, data: Dict[str, torch.Tensor]) -> Dict[str, float]:
         self.optimizer.zero_grad(set_to_none=True)
-        x = data['data']     # (N, Cin, ...)
-        y = self._to_multilabel(data['target'])  # (N, 2, ...)
+        x = data['data']
+        y = self._to_multilabel(data['target'])
 
-        # (optional) quick probe every ~200 iters to confirm class presence in batch
+        # optional probe every ~200 iters
         if getattr(self, "iteration", 0) % 200 == 0:
             ysum = y.sum(dim=list(range(2, y.ndim))).float().mean(0)
             self.print_to_log_file(f"[probe] avg GT voxels in batch -> L={ysum[0].item():.1f}, R={ysum[1].item():.1f}")
@@ -94,20 +91,14 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
 
         return {"loss": float(loss.detach().cpu().item())}
 
+    # --- validation: write .nii into validation_ml/ and summarize ---
     @torch.no_grad()
     def validate(self, do_mirroring: bool = True, use_gaussian: bool = True, tiled: bool = True) -> Dict[str, Any]:
-        """
-        Multilabel validation:
-          - sigmoid -> threshold
-          - export 2ch + per-channel masks into validation_ml/ (all .nii)
-          - compute Dice per channel in [0,1]
-          - write summary_ml.json
-        """
         self.network.eval()
         outdir = os.path.join(self.output_folder, 'validation_ml')
         os.makedirs(outdir, exist_ok=True)
 
-        pred_thresh = 0.45  # try 0.35–0.5 if one channel is weaker
+        pred_thresh = 0.45  # you can sweep 0.35–0.5 if needed
         meter = {"n": 0, "dice_L": 0.0, "dice_R": 0.0}
         per_case = []
 
@@ -149,14 +140,16 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
         else:
             meter["dice_mean"] = 0.0
 
-        # log + write multilabel summary WITHOUT touching nnU-Net's single-label summary.json
-        self.print_to_log_file(f"ML Dice -> left={meter['dice_L']:.4f}, right={meter['dice_R']:.4f}, mean={meter['dice_mean']:.4f}")
+        # log + write multilabel summary (separate file/folder!)
+        self.print_to_log_file(
+            f"ML Dice -> left={meter['dice_L']:.4f}, right={meter['dice_R']:.4f}, mean={meter['dice_mean']:.4f}"
+        )
         with open(os.path.join(outdir, "summary_ml.json"), "w") as f:
             json.dump({"summary": meter, "metric_per_case": per_case}, f, indent=2)
 
         return meter
 
-    # (optional) also make "best model" selection use our ML Dice:
+    # use our ML Dice to drive 'best' tracking
     def _on_epoch_end_do_validation(self):
         meter = self.validate()
         current = float(meter["dice_mean"])
