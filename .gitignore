@@ -1,6 +1,5 @@
 venv/
-data/
-nnUNet/
+data/nnUNet_raw/
 nnUNet_master/
 nnUNet_multi-label/
 threshold_segmentation/
