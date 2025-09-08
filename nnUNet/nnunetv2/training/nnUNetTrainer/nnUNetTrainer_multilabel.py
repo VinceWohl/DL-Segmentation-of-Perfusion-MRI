@@ -237,17 +237,17 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         # Get median image size from plans (preprocessed resolution)
         median_shape = self.configuration_manager.median_image_size_in_voxels
         
-        # Use raw data resolution (80x80) for full-resolution training
-        # Raw images are 80x80 pixels, but preprocessed to ~71x55
-        raw_image_size = [80, 80]  # Actual raw data dimensions
+        # Use slightly larger patches than default but not full resolution
+        # Default: 72x56, Original images: 71x55, Raw: 80x80
+        # Compromise: Use 76x60 (slightly larger for better context)
+        larger_patch_size = [int(s * 1.07) for s in median_shape]  # 7% larger than median
         
-        # Use raw dimensions for training to match validation better
-        full_res_patch_size = raw_image_size
+        # Use moderately larger patches for better context
+        full_res_patch_size = larger_patch_size
         
         print(f"Original patch size: {initial_patch_size}")
         print(f"Median image size (preprocessed): {median_shape}")
-        print(f"Raw image size: {raw_image_size}")
-        print(f"Using full-resolution patch size: {full_res_patch_size}")
+        print(f"Using moderately larger patch size: {full_res_patch_size} (7% larger than default)")
         
         # Return the modified patch size instead of the original
         return rotation_for_DA, do_dummy_2d_data_aug, full_res_patch_size, mirror_axes
