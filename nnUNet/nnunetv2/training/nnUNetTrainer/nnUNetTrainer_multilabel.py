@@ -206,8 +206,8 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         # Override label manager
         self.label_manager._num_segmentation_heads = 2
         
-        # Set max epochs for quick testing
-        self.num_epochs = 30
+        # Set max epochs for full training
+        self.num_epochs = 100
         
         # Set loss weights
         self.spatial_weight = 0.1
@@ -222,10 +222,33 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         print(f"Spatial loss weight: {self.spatial_weight}")
         print(f"Complementary loss weight: {self.complementary_weight}")
         print(f"Max epochs set to: {self.num_epochs}")
+        print("Using full-resolution training for better test-time consistency")
         
     @property  
     def num_segmentation_heads(self):
         return 2
+        
+    def configure_rotation_dummyDA_mirroring_and_inital_patch_size(self):
+        """Override to use full image resolution instead of patches for training."""
+        
+        # Call parent method first to get baseline configuration
+        patch_size = super().configure_rotation_dummyDA_mirroring_and_inital_patch_size()
+        
+        # Get median image size from plans (this is the target full resolution)
+        median_shape = self.configuration_manager.median_image_size_in_voxels
+        
+        # Use full resolution for training to match validation
+        # Add small margin to ensure we cover the full image
+        full_res_patch_size = [int(s * 1.1) for s in median_shape]  # 10% larger than median
+        
+        print(f"Original patch size: {patch_size}")
+        print(f"Median image size: {median_shape}")
+        print(f"Modified to full-resolution patch size: {full_res_patch_size}")
+        
+        # Update patch size in configuration manager
+        self.configuration_manager.patch_size = full_res_patch_size
+        
+        return full_res_patch_size
         
     @staticmethod
     def build_network_architecture(architecture_class_name: str,
