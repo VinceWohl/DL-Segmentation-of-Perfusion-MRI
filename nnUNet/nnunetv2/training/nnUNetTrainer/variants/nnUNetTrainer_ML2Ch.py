@@ -137,7 +137,7 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
         n_batches = 0
         diceL, diceR = 0.0, 0.0
 
-        for batch in self.val_data_loader:
+        for batch in self.dataloader_val:
             x = batch['data'].to(self.device, non_blocking=True)
             y = batch['target']
             if isinstance(y, (list, tuple)): y = y[0]
@@ -168,6 +168,8 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
 
     # Hook into base validation lifecycle **without** exporting files every epoch
     def on_validation_epoch_start(self):
+        if self.dataloader_val is None:
+            self.get_dataloaders()
         self.network.eval()
 
     def validation_step(self, batch: dict) -> dict:
@@ -219,7 +221,7 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
         pred_thresh = 0.5
 
         # Traverse val set and write 2-ch + per-channel NIfTIs
-        for batch in self.val_data_loader:
+        for batch in self.dataloader_val:
             x = batch['data'].to(self.device, non_blocking=True)
             props_list = batch.get('properties', [None] * x.shape[0])
 
