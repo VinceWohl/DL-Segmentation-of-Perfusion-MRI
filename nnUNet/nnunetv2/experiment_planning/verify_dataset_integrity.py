@@ -58,19 +58,44 @@ def check_cases(image_files: List[str], label_file: str, expected_num_channels: 
         print(f'Segmentation contains NaN pixel values. You need to fix that.\nSegmentation:\n{label_file}')
         ret = False
 
-    # check shapes
-    shape_image = images.shape[1:]
-    shape_seg = segmentation.shape[1:]
-    if shape_image != shape_seg:
+    # check shapes - handle multi-label case
+    shape_image = images.shape[1:]  # Remove batch dimension
+    shape_seg = segmentation.shape
+    
+    # For multi-label, seg might have format (slices, H, W, channels) or (channels, slices, H, W)
+    # We need to compare spatial dimensions only
+    if len(shape_seg) == len(shape_image) + 1:
+        # Multi-label case: seg has extra channel dimension
+        if shape_seg[-1] == 2 or shape_seg[-1] == 1:  # Channel-last format
+            shape_seg_spatial = shape_seg[:-1]
+        elif shape_seg[0] == 2 or shape_seg[0] == 1:  # Channel-first format  
+            shape_seg_spatial = shape_seg[1:]
+        else:
+            shape_seg_spatial = shape_seg
+    else:
+        shape_seg_spatial = shape_seg
+    
+    if shape_image != shape_seg_spatial:
         print('Error: Shape mismatch between segmentation and corresponding images. \nShape images: %s. '
-              '\nShape seg: %s. \nImage files: %s. \nSeg file: %s\n' %
-              (shape_image, shape_seg, image_files, label_file))
+              '\nShape seg: %s (spatial: %s). \nImage files: %s. \nSeg file: %s\n' %
+              (shape_image, shape_seg, shape_seg_spatial, image_files, label_file))
         ret = False
 
-    # check spacings
+    # check spacings - handle potential dimension mismatch
     spacing_images = properties_image['spacing']
     spacing_seg = properties_seg['spacing']
-    if not np.allclose(spacing_seg, spacing_images):
+    
+    # Handle case where spacing might have different dimensions for multi-label
+    if len(spacing_images) != len(spacing_seg):
+        # Compare only spatial dimensions (first 3 or minimum available)
+        min_dims = min(len(spacing_images), len(spacing_seg))
+        spacing_images_spatial = spacing_images[:min_dims]
+        spacing_seg_spatial = spacing_seg[:min_dims]
+    else:
+        spacing_images_spatial = spacing_images
+        spacing_seg_spatial = spacing_seg
+        
+    if not np.allclose(spacing_seg_spatial, spacing_images_spatial):
         print('Error: Spacing mismatch between segmentation and corresponding images. \nSpacing images: %s. '
               '\nSpacing seg: %s. \nImage files: %s. \nSeg file: %s\n' %
               (spacing_images, spacing_seg, image_files, label_file))
@@ -99,13 +124,36 @@ def check_cases(image_files: List[str], label_file: str, expected_num_channels: 
         # spacing has already been checked, only check direction and origin
         origin_image = properties_image['sitk_stuff']['origin']
         origin_seg = properties_seg['sitk_stuff']['origin']
-        if not np.allclose(origin_image, origin_seg):
+        
+        # Handle multi-label case where seg might have extra dimension
+        if len(origin_image) != len(origin_seg):
+            # For multi-label, compare only spatial dimensions (first 3)
+            min_dims = min(len(origin_image), len(origin_seg))
+            origin_image_spatial = origin_image[:min_dims]
+            origin_seg_spatial = origin_seg[:min_dims]
+        else:
+            origin_image_spatial = origin_image
+            origin_seg_spatial = origin_seg
+            
+        if not np.allclose(origin_image_spatial, origin_seg_spatial):
             print('Warning: Origin mismatch between segmentation and corresponding images. \nOrigin images: %s. '
                   '\nOrigin seg: %s. \nImage files: %s. \nSeg file: %s\n' %
                   (origin_image, origin_seg, image_files, label_file))
+        
         direction_image = properties_image['sitk_stuff']['direction']
         direction_seg = properties_seg['sitk_stuff']['direction']
-        if not np.allclose(direction_image, direction_seg):
+        
+        # Handle multi-label case where seg might have extra dimension
+        if len(direction_image) != len(direction_seg):
+            # For multi-label, compare only spatial dimensions
+            min_dims = min(len(direction_image), len(direction_seg))
+            direction_image_spatial = direction_image[:min_dims]
+            direction_seg_spatial = direction_seg[:min_dims]
+        else:
+            direction_image_spatial = direction_image
+            direction_seg_spatial = direction_seg
+            
+        if not np.allclose(direction_image_spatial, direction_seg_spatial):
             print('Warning: Direction mismatch between segmentation and corresponding images. \nDirection images: %s. '
                   '\nDirection seg: %s. \nImage files: %s. \nSeg file: %s\n' %
                   (direction_image, direction_seg, image_files, label_file))
