@@ -232,23 +232,25 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         """Override to use full image resolution instead of patches for training."""
         
         # Call parent method first to get baseline configuration
-        patch_size = super().configure_rotation_dummyDA_mirroring_and_inital_patch_size()
+        rotation_for_DA, do_dummy_2d_data_aug, initial_patch_size, mirror_axes = super().configure_rotation_dummyDA_mirroring_and_inital_patch_size()
         
-        # Get median image size from plans (this is the target full resolution)
+        # Get median image size from plans (preprocessed resolution)
         median_shape = self.configuration_manager.median_image_size_in_voxels
         
-        # Use full resolution for training to match validation
-        # Add small margin to ensure we cover the full image
-        full_res_patch_size = [int(s * 1.1) for s in median_shape]  # 10% larger than median
+        # Use raw data resolution (80x80) for full-resolution training
+        # Raw images are 80x80 pixels, but preprocessed to ~71x55
+        raw_image_size = [80, 80]  # Actual raw data dimensions
         
-        print(f"Original patch size: {patch_size}")
-        print(f"Median image size: {median_shape}")
-        print(f"Modified to full-resolution patch size: {full_res_patch_size}")
+        # Use raw dimensions for training to match validation better
+        full_res_patch_size = raw_image_size
         
-        # Update patch size in configuration manager
-        self.configuration_manager.patch_size = full_res_patch_size
+        print(f"Original patch size: {initial_patch_size}")
+        print(f"Median image size (preprocessed): {median_shape}")
+        print(f"Raw image size: {raw_image_size}")
+        print(f"Using full-resolution patch size: {full_res_patch_size}")
         
-        return full_res_patch_size
+        # Return the modified patch size instead of the original
+        return rotation_for_DA, do_dummy_2d_data_aug, full_res_patch_size, mirror_axes
         
     @staticmethod
     def build_network_architecture(architecture_class_name: str,
