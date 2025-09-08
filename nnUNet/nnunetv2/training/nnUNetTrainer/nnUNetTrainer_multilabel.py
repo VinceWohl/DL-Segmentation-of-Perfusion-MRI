@@ -85,18 +85,18 @@ class SharedDecoderNetwork(nn.Module):
         return self.base_network(x)
 
 
-class MultiScaleSpatialSharedDecoderLoss(nn.Module):
+class SpatialComplementarySharedDecoderLoss(nn.Module):
     """
-    SharedDecoder loss with multi-scale spatial consistency enhancement.
-    Applies spatial loss at multiple resolution scales for better boundary coherence.
+    SharedDecoder loss with both spatial and complementary enhancements.
+    Combines BCE + Dice + Spatial consistency + Complementary loss.
     """
     def __init__(self, bce_kwargs, soft_dice_kwargs, weight_ce=1, weight_dice=1, 
-                 spatial_weight=0.1, scales=[1.0, 0.5, 0.25], dice_class=MemoryEfficientSoftDiceLoss):
+                 spatial_weight=0.1, complementary_weight=0.1, dice_class=MemoryEfficientSoftDiceLoss):
         super().__init__()
         self.weight_dice = weight_dice
         self.weight_ce = weight_ce
         self.spatial_weight = spatial_weight
-        self.scales = scales
+        self.complementary_weight = complementary_weight
         
         # BCE loss for each channel
         self.bce = nn.BCEWithLogitsLoss(**bce_kwargs)
@@ -104,39 +104,18 @@ class MultiScaleSpatialSharedDecoderLoss(nn.Module):
         # Dice loss with sigmoid activation
         self.dice = dice_class(apply_nonlin=torch.sigmoid, **soft_dice_kwargs)
         
-    def _downsample_tensor(self, tensor, scale):
-        """Downsample tensor to specified scale using bilinear interpolation."""
-        if scale == 1.0:
-            return tensor
-        
-        # Calculate target size
-        _, _, h, w = tensor.shape
-        target_h = int(h * scale)
-        target_w = int(w * scale)
-        
-        # Ensure minimum size
-        target_h = max(target_h, 4)
-        target_w = max(target_w, 4)
-        
-        return F.interpolate(tensor, size=(target_h, target_w), mode='bilinear', align_corners=False)
-        
-    def _spatial_consistency_loss_single_scale(self, pred_probs: torch.Tensor, target: torch.Tensor, scale: float):
+    def _spatial_consistency_loss(self, pred_probs: torch.Tensor, target: torch.Tensor):
         """
-        Compute target-guided spatial consistency losses at a single scale.
+        Compute target-guided spatial consistency losses for perfusion territories (vectorized).
         
         Args:
             pred_probs: Sigmoid probabilities (B, 2, H, W)
-            target: Ground truth masks (B, 2, H, W) 
-            scale: Resolution scale (1.0 = full resolution)
+            target: Ground truth masks (B, 2, H, W)
         """
-        # Downsample to target scale
-        pred_scaled = self._downsample_tensor(pred_probs, scale)
-        target_scaled = self._downsample_tensor(target, scale)
-        
-        pred_left = pred_scaled[:, 0]   # (B, H', W')
-        pred_right = pred_scaled[:, 1]  # (B, H', W')
-        target_left = target_scaled[:, 0]     # (B, H', W')
-        target_right = target_scaled[:, 1]    # (B, H', W')
+        pred_left = pred_probs[:, 0]   # (B, H, W)
+        pred_right = pred_probs[:, 1]  # (B, H, W)
+        target_left = target[:, 0]     # (B, H, W)
+        target_right = target[:, 1]    # (B, H, W)
         
         # 1. Overlap penalty: discourage simultaneous high confidence in non-overlap regions
         non_overlap_mask = (target_left + target_right) <= 1.0
@@ -158,32 +137,29 @@ class MultiScaleSpatialSharedDecoderLoss(nn.Module):
         if right_only_regions.sum() > 0:
             exclusivity_loss += torch.mean(pred_left[right_only_regions] ** 2)
         
-        # Scale-weighted contribution (higher resolution gets more weight)
-        scale_weight = scale  # Full resolution gets weight 1.0, half resolution gets 0.5, etc.
+        return overlap_penalty + coverage_loss + exclusivity_loss
         
-        return scale_weight * (overlap_penalty + coverage_loss + exclusivity_loss)
-    
-    def _spatial_consistency_loss(self, pred_probs: torch.Tensor, target: torch.Tensor):
+    def _complementary_loss(self, pred_probs: torch.Tensor, target: torch.Tensor):
         """
-        Compute multi-scale spatial consistency losses.
-        
-        Args:
-            pred_probs: Sigmoid probabilities (B, 2, H, W)
-            target: Ground truth masks (B, 2, H, W)
+        Complementary information loss for perfusion territories.
+        Encourages mutual exclusivity and proper brain coverage.
         """
-        total_loss = 0.0
-        total_weight = 0.0
+        pred_left = pred_probs[:, 0]   # (B, H, W)
+        pred_right = pred_probs[:, 1]  # (B, H, W)
+        target_left = target[:, 0]     # (B, H, W)
+        target_right = target[:, 1]    # (B, H, W)
         
-        for scale in self.scales:
-            scale_loss = self._spatial_consistency_loss_single_scale(pred_probs, target, scale)
-            total_loss += scale_loss
-            total_weight += scale
+        # 1. Encourage mutual exclusivity where appropriate
+        # Penalize simultaneous predictions in non-overlap regions
+        exclusivity_loss = torch.mean(pred_left * pred_right * (1 - target_left) * (1 - target_right))
         
-        # Normalize by total weight to maintain consistent loss magnitude
-        if total_weight > 0:
-            total_loss = total_loss / total_weight
-            
-        return total_loss
+        # 2. Encourage coverage of the brain region
+        # Ensure predicted coverage matches target coverage
+        coverage_target = torch.clamp(target_left + target_right, 0, 1)
+        coverage_pred = torch.clamp(pred_left + pred_right, 0, 1)
+        coverage_loss = F.mse_loss(coverage_pred, coverage_target)
+        
+        return exclusivity_loss + coverage_loss
         
     def forward(self, net_output: torch.Tensor, target: torch.Tensor):
         target = target.float()
@@ -198,21 +174,29 @@ class MultiScaleSpatialSharedDecoderLoss(nn.Module):
         else:
             bce_loss = 0
         
-        # Enhanced multi-scale spatial consistency losses
+        # Enhanced consistency losses
         pred_probs = torch.sigmoid(net_output)
+        
+        # Spatial consistency loss (now target-guided)
         spatial_loss = self._spatial_consistency_loss(pred_probs, target) if self.spatial_weight > 0 else 0
+        
+        # Complementary loss
+        complementary_loss = 0
+        if self.complementary_weight > 0:
+            complementary_loss = self._complementary_loss(pred_probs, target)
         
         total_loss = (self.weight_ce * bce_loss + 
                      self.weight_dice * dice_loss + 
-                     self.spatial_weight * spatial_loss)
+                     self.spatial_weight * spatial_loss +
+                     self.complementary_weight * complementary_loss)
         
         return total_loss
 
 
-class nnUNetTrainer_SharedDecoder_SpatialLoss_MultiScale(nnUNetTrainer):
+class nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss(nnUNetTrainer):
     """
-    Trainer with shared decoder and multi-scale spatial consistency enhancement.
-    Applies spatial loss at multiple scales (1x, 0.5x, 0.25x) for better boundary coherence.
+    Trainer with shared decoder and both spatial and complementary loss enhancements.
+    Uses shared spatial features with spatial smoothness and complementary constraints.
     """
     
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, 
@@ -222,22 +206,21 @@ class nnUNetTrainer_SharedDecoder_SpatialLoss_MultiScale(nnUNetTrainer):
         # Override label manager
         self.label_manager._num_segmentation_heads = 2
         
-        # Set max epochs for full training
-        self.num_epochs = 1000
+        # Set max epochs for quick testing
+        self.num_epochs = 30
         
-        # Set multi-scale spatial loss configuration  
+        # Set loss weights
         self.spatial_weight = 0.1
-        self.spatial_scales = [1.0, 0.5, 0.25]  # Full, half, quarter resolution
-        self.complementary_weight = 0.0  # Disabled - focus on spatial loss only
+        self.complementary_weight = 0.1
         
         # Get number of input channels
         num_input_channels = len(self.dataset_json.get('channel_names', {'0': 'CBF LICA', '1': 'CBF RICA'}))
         channel_names = list(self.dataset_json.get('channel_names', {'0': 'CBF LICA', '1': 'CBF RICA'}).values())
         
-        print("Shared Decoder with Multi-Scale Spatial Loss Enhancement")
+        print("Shared Decoder with Spatial + Complementary Loss Enhancement")
         print(f"Input channels ({num_input_channels}): {', '.join(channel_names)}")
         print(f"Spatial loss weight: {self.spatial_weight}")
-        print(f"Spatial loss scales: {self.spatial_scales}")
+        print(f"Complementary loss weight: {self.complementary_weight}")
         print(f"Max epochs set to: {self.num_epochs}")
         
     @property  
@@ -263,8 +246,8 @@ class nnUNetTrainer_SharedDecoder_SpatialLoss_MultiScale(nnUNetTrainer):
         return network
         
     def _build_loss(self):
-        """Build multi-scale spatial-enhanced loss function with BCE + Dice + Multi-scale Spatial consistency."""
-        loss = MultiScaleSpatialSharedDecoderLoss(
+        """Build enhanced loss function with BCE + Dice + Spatial + Complementary."""
+        loss = SpatialComplementarySharedDecoderLoss(
             bce_kwargs={},
             soft_dice_kwargs={
                 'batch_dice': self.configuration_manager.batch_dice,
@@ -275,7 +258,7 @@ class nnUNetTrainer_SharedDecoder_SpatialLoss_MultiScale(nnUNetTrainer):
             weight_ce=1,
             weight_dice=1,
             spatial_weight=self.spatial_weight,
-            scales=self.spatial_scales,
+            complementary_weight=self.complementary_weight,
             dice_class=MemoryEfficientSoftDiceLoss
         )
         
@@ -709,14 +692,14 @@ class nnUNetTrainer_SharedDecoder_SpatialLoss_MultiScale(nnUNetTrainer):
             
             summary = {
                 "experiment_info": {
-                    "trainer": "nnUNetTrainer_SharedDecoder_SpatialLoss_MultiScale",
+                    "trainer": "nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss",
                     "dataset": "Dataset001_PerfusionTerritories",
                     "configuration": "2d",
                     "fold": self.fold,
                     "num_epochs": self.num_epochs,
-                    "loss_type": "bce_dice_spatial_multiscale",
+                    "loss_type": "bce_dice_spatial_complementary",
                     "spatial_weight": self.spatial_weight,
-                    "spatial_scales": self.spatial_scales,
+                    "complementary_weight": self.complementary_weight,
                     "timestamp": datetime.now().isoformat(),
                     "num_validation_cases": len(validation_results)
                 },
@@ -757,7 +740,7 @@ class nnUNetTrainer_SharedDecoder_SpatialLoss_MultiScale(nnUNetTrainer):
         else:
             summary = {
                 "experiment_info": {
-                    "trainer": "nnUNetTrainer_SharedDecoder_SpatialLoss_MultiScale",
+                    "trainer": "nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss",
                     "dataset": "Dataset001_PerfusionTerritories",
                     "configuration": "2d",
                     "fold": self.fold,
