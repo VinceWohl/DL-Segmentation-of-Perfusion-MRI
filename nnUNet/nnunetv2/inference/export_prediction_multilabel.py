@@ -1,52 +1,72 @@
 from __future__ import annotations
 import os
+from typing import Dict, Optional
 import numpy as np
 import nibabel as nib
 
-def _case_id_from_props(props: dict | None) -> str:
-    if props is None:
-        return "pred"
-    cid = props.get('case_identifier', None)
-    if cid is None:
-        ldf = props.get('list_of_data_files', None)
-        if ldf:
-            cid = os.path.basename(ldf[0]).split('_0000')[0]
-    return cid or "pred"
+def _make_like(props: dict) -> nib.Nifti1Image:
+    # Build an identity image using props' affine/shape as template
+    # props follow nnU-Net conventions (see export_prediction.py)
+    # We default to identity affine if not present.
+    affine = props.get('sitk_stuff', {}).get('affine', None)
+    if affine is None:
+        affine = np.eye(4, dtype=float)
+    # Return a dummy to harvest header when needed
+    return nib.Nifti1Image(np.zeros((1, 1, 1), dtype=np.float32), affine)
 
-def _affine_from_props(props: dict | None):
-    if props is not None and 'nifti_affine' in props:
-        return props['nifti_affine']
-    return np.eye(4, dtype=float)
+def _save(path: str, arr: np.ndarray, props: Optional[dict]) -> None:
+    # arr is 3D or 4D numpy; props can carry affine
+    if props is not None:
+        affine = props.get('sitk_stuff', {}).get('affine', None)
+        if affine is None:
+            affine = np.eye(4, dtype=float)
+    else:
+        affine = np.eye(4, dtype=float)
+    img = nib.Nifti1Image(arr.astype(np.float32), affine)
+    nib.save(img, path)
 
-def export_multilabel_pred(pred_bin_czyx: np.ndarray,
-                           props: dict | None,
-                           out_dir: str) -> dict:
+def export_multilabel_pred(
+    pred_2ch: np.ndarray,
+    props: Optional[dict],
+    out_dir: str,
+    case_id: Optional[str] = None,
+) -> Dict[str, str]:
     """
-    pred_bin_czyx: (2, Z, Y, X) or (2, H, W) with values {0,1}
-    Writes:
-      - <case>_2ch.nii (4D channels-last)
-      - <case>_L.nii   (3D left)
-      - <case>_R.nii   (3D right)
+    Parameters
+    ----------
+    pred_2ch : np.ndarray
+        Shape (2, Z, Y, X) binary prediction after thresholding (0/1).
+    props : dict or None
+        nnU-Net case properties from the dataloader (for affine/origin).
+    out_dir : str
+        Output directory.
+    case_id : str or None
+        Used for filenames. If None, derive from props if possible.
+
+    Returns
+    -------
+    dict with file paths { "2ch", "left", "right", "case_id" }.
     """
     os.makedirs(out_dir, exist_ok=True)
+    assert pred_2ch.ndim == 4 and pred_2ch.shape[0] == 2, "expected (2, Z, Y, X)"
 
-    arr = pred_bin_czyx
-    if arr.ndim == 3:  # (2, H, W) -> (2, 1, H, W)
-        arr = arr[:, None, ...]
-    assert arr.ndim == 4 and arr.shape[0] == 2, "Expect (2, Z, Y, X) or (2, H, W)"
+    if case_id is None:
+        case_id = props.get('case_identifier', 'case') if isinstance(props, dict) else 'case'
 
-    case_id = _case_id_from_props(props)
-    A = _affine_from_props(props)
+    base = os.path.join(out_dir, case_id)
 
-    # channels-last for easier viewing: (Z, Y, X, 2)
-    arr_last = np.moveaxis(arr, 0, -1).astype(np.uint8)
-    p_2ch = os.path.join(out_dir, f"{case_id}_2ch.nii")
-    nib.save(nib.Nifti1Image(arr_last, A), p_2ch)
+    # Save 4D two-channel NIfTI (C as 4th dim to play nice with most viewers)
+    twoch_path = f"{base}_pred2ch.nii"
+    _save(np.transpose(pred_2ch, (1, 2, 3, 0)), props, twoch_path)
 
-    # per-channel 3D
-    p_L = os.path.join(out_dir, f"{case_id}_L.nii")
-    p_R = os.path.join(out_dir, f"{case_id}_R.nii")
-    nib.save(nib.Nifti1Image(arr[0].astype(np.uint8), A), p_L)
-    nib.save(nib.Nifti1Image(arr[1].astype(np.uint8), A), p_R)
+    left_path = f"{base}_pred_left.nii"
+    right_path = f"{base}_pred_right.nii"
+    _save(pred_2ch[0], props, left_path)
+    _save(pred_2ch[1], props, right_path)
 
-    return {"case_id": case_id, "2ch": p_2ch, "left": p_L, "right": p_R}
+    return {
+        "2ch": twoch_path,
+        "left": left_path,
+        "right": right_path,
+        "case_id": case_id
+    }
