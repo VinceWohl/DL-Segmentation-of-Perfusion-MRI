@@ -8,27 +8,24 @@ def _flatten_per_channel(x: torch.Tensor) -> torch.Tensor:
     return x.reshape(x.shape[0], c, -1).permute(1, 0, 2).reshape(c, -1)
 
 class SoftDiceLossMultiLabel(nn.Module):
-    """Soft Dice over sigmoid probabilities per channel (multilabel)."""
+    """
+    Soft Dice over sigmoid probabilities per channel (multilabel).
+    Targets are expected as {0,1} per channel.
+    """
     def __init__(self, smooth: float = 1e-5, reduction: str = "mean"):
         super().__init__()
         self.smooth = smooth
         self.reduction = reduction
 
     def forward(self, logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
-        # allow list/tuple from DS pipelines (should be off, but robust anyway)
-        if isinstance(targets, (list, tuple)):
-            targets = targets[0]
-        if logits.shape[1] != 2:
-            raise ValueError(f"Expected 2 output channels, got {logits.shape[1]}")
-
         probs = torch.sigmoid(logits)
         probs_f = _flatten_per_channel(probs)
         targ_f  = _flatten_per_channel(targets.float())
 
         intersect = (probs_f * targ_f).sum(-1)
         denom = probs_f.sum(-1) + targ_f.sum(-1)
-        dice = (2. * intersect + self.smooth) / (denom + self.smooth)
-        loss = 1. - dice
+        dice = (2. * intersect + self.smooth) / (denom + self.smooth)  # per-channel Dice in [0,1]
+        loss = 1. - dice                                              # loss in [0,1]
         if self.reduction == "mean":
             return loss.mean()
         if self.reduction == "sum":
@@ -36,7 +33,9 @@ class SoftDiceLossMultiLabel(nn.Module):
         return loss
 
 class BCEDiceLossMultiLabel(nn.Module):
-    """BCEWithLogits + SoftDice for multilabel segmentation."""
+    """
+    BCEWithLogits + SoftDice for multilabel segmentation (two-channel sigmoid).
+    """
     def __init__(self, bce_weight: float = 0.5, dice_weight: float = 0.5,
                  pos_weight: torch.Tensor | None = None):
         super().__init__()
@@ -46,9 +45,5 @@ class BCEDiceLossMultiLabel(nn.Module):
         self.dice_w = dice_weight
 
     def forward(self, logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
-        if isinstance(targets, (list, tuple)):
-            targets = targets[0]
-        if logits.shape[1] != 2:
-            raise ValueError(f"Expected 2 output channels, got {logits.shape[1]}")
         return self.bce_w * self.bce(logits, targets.float()) + \
                self.dice_w * self.dice(logits, targets)
