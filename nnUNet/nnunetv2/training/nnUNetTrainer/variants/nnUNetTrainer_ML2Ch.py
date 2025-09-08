@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Dict, Any
-import os, json, torch
+import os, json
+import torch
 from torch import autocast
 
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
@@ -18,21 +19,55 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
       - Overlap allowed (both channels can be 1).
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        # IMPORTANT: disable deep supervision so targets are a tensor (not a list)
+    # IMPORTANT: match the BASE signature exactly (NO *args/**kwargs)!
+    def __init__(
+        self,
+        plans: dict,
+        configuration: str,
+        fold: int,
+        dataset_json: dict,
+        device: torch.device = torch.device('cuda'),
+    ):
+        super().__init__(plans, configuration, fold, dataset_json, device)
+        # Turn OFF deep supervision so targets are a tensor, not a list
         self.enable_deep_supervision = False
 
-        # shorter run to verify training/validation
+        # Train for 30 epochs (your request)
         self.num_epochs = 30
         self.validate_every = 1
         self.save_every = max(1, self.num_epochs // 5)  # ~5 checkpoints
 
-    # 2 output channels for our multilabel head
-    def determine_num_output_channels(self, plans_manager, dataset_json) -> int:
-        return 2
+    def initialize(self) -> None:
+        super().initialize()
+        # use our own validation; silence online eval spam
+        self.enable_online_evaluation = False
+        self.print_to_log_file("[ML2Ch] initialized (DS OFF, online eval disabled).")
 
-    # reduce noisy logs from base trainer
+    # Force 2 output channels and DS OFF at construction time
+    @staticmethod
+    def build_network_architecture(
+        architecture_class_name: str,
+        arch_init_kwargs: dict,
+        arch_init_kwargs_req_import: list,
+        num_input_channels: int,
+        num_output_channels: int,
+        enable_deep_supervision: bool = True,
+    ):
+        return get_network_from_plans(
+            architecture_class_name,
+            arch_init_kwargs,
+            arch_init_kwargs_req_import,
+            input_channels=num_input_channels,
+            output_channels=2,            # force 2
+            deep_supervision=False        # force DS off
+        )
+
+    # Our multilabel BCE+Dice
+    def _build_loss(self):
+        pos_weight = None  # e.g. torch.tensor([1.0, 1.3], device=self.device) if one side is rarer
+        return BCEDiceLossMultiLabel(bce_weight=0.5, dice_weight=0.5, pos_weight=pos_weight)
+
+    # Quiet a bit of base logging noise
     def print_to_log_file(self, *args, also_print_to_console: bool = True, add_timestamp: bool = True):
         msg = " ".join(str(a) for a in args if a is not None)
         if "Pseudo dice" in msg:
@@ -40,35 +75,6 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
         return super().print_to_log_file(*args,
                                          also_print_to_console=also_print_to_console,
                                          add_timestamp=add_timestamp)
-
-    def initialize(self, *args, **kwargs):
-        super().initialize(*args, **kwargs)
-        # turn off the built-in online eval (we do our own)
-        self.enable_online_evaluation = False
-        self.print_to_log_file("[ML2Ch] initialized (DS OFF, online eval disabled).")
-
-    # ---- network: enforce 2 output channels and DS OFF ----
-    @staticmethod
-    def build_network_architecture(architecture_class_name: str,
-                                   arch_init_kwargs: dict,
-                                   arch_init_kwargs_req_import: list,
-                                   num_input_channels: int,
-                                   num_output_channels: int,
-                                   enable_deep_supervision: bool = True):
-        # Force 2-class multilabel head and no deep supervision **using the correct kw names**
-        return get_network_from_plans(
-            architecture_class_name,
-            arch_init_kwargs,
-            arch_init_kwargs_req_import,
-            num_input_channels,   # == input_channels (positional)
-            2,                    # == output_channels (positional)
-            deep_supervision=False
-        )
-
-    # ---- loss ----
-    def _build_loss(self):
-        # If class imbalance is strong, pass pos_weight=torch.tensor([wL, wR], device=self.device)
-        return BCEDiceLossMultiLabel(bce_weight=0.5, dice_weight=0.5, pos_weight=None)
 
     # ---- helpers ----
     @staticmethod
@@ -78,7 +84,7 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
           - (N,2,...) binary → return as float
           - (N,1,...) or (N,...) int mask with {0,1,2,3} → split to 2 channels
         """
-        if isinstance(target, (list, tuple)):   # should not happen with DS OFF, but be robust
+        if isinstance(target, (list, tuple)):   # robust (should not happen with DS off)
             target = target[0]
 
         if target.ndim >= 2 and target.shape[1] == 2:
@@ -93,7 +99,7 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
         ch_right = (tgt == 2) | (tgt == 3)
         return torch.stack([ch_left, ch_right], dim=1).float()
 
-    # ---- training step (override base) ----
+    # ---- training ----
     def train_step(self, batch: Dict[str, torch.Tensor]) -> Dict[str, float]:
         self.network.train()
         self.optimizer.zero_grad(set_to_none=True)
@@ -104,17 +110,17 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
 
         # occasional probe for sanity
         if getattr(self, "iteration", 0) % 200 == 0:
-            ysum = y.sum(dim=tuple(range(2, y.ndim))).float().mean(0)
-            self.print_to_log_file(
-                f"[probe] avg GT voxels -> L={ysum[0].item():.1f}, R={ysum[1].item():.1f}"
-            )
+            with torch.no_grad():
+                ysum = y.sum(dim=tuple(range(2, y.ndim))).float().mean(0)
+                self.print_to_log_file(f"[probe] avg GT voxels -> L={ysum[0].item():.1f}, R={ysum[1].item():.1f}")
 
-        ctx = (lambda: autocast(self.device.type)) if (getattr(self, "grad_scaler", None) is not None) else dummy_context
-        with ctx():
-            logits = self.network(x)  # (N,2,...)
+        # Use the same AMP logic as the base: GradScaler present => AMP on
+        ctx = autocast(self.device.type) if self.grad_scaler is not None else dummy_context()
+        with ctx:
+            logits = self.network(x)     # (N, 2, ...)
             loss = self.loss(logits, y)
 
-        if getattr(self, "grad_scaler", None) is not None:
+        if self.grad_scaler is not None:
             self.grad_scaler.scale(loss).backward()
             if self.gradient_clipping is not None:
                 self.grad_scaler.unscale_(self.optimizer)
@@ -129,14 +135,14 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
 
         return {"loss": float(loss.detach().cpu().item())}
 
-    # ---- validation that writes .nii files ----
+    # ---- validation that also writes .nii ----
     @torch.no_grad()
     def validate(self, do_mirroring: bool = True, use_gaussian: bool = True, tiled: bool = True) -> Dict[str, Any]:
         self.network.eval()
         outdir = os.path.join(self.output_folder, 'validation_ml')
         os.makedirs(outdir, exist_ok=True)
 
-        pred_thresh = 0.45  # adjust if needed
+        pred_thresh = 0.45
         meter = {"n": 0, "dice_L": 0.0, "dice_R": 0.0}
         per_case = []
 
@@ -145,7 +151,8 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
             y = batch['target'].to(self.device, non_blocking=True)
             y_ml = self._to_multilabel(y)  # (N, 2, ...)
 
-            with (autocast(self.device.type) if (getattr(self, "grad_scaler", None) is not None) else dummy_context()):
+            ctx = autocast(self.device.type) if self.grad_scaler is not None else dummy_context()
+            with ctx:
                 logits = self.network(x)
                 probs = torch.sigmoid(logits)
 
@@ -158,7 +165,7 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
             denom = y_f.sum(-1) + p_f.sum(-1)
             dice = (2.0 * inter) / torch.clamp(denom, min=1.0)  # (N,2)
 
-            # export per case
+            # export per-case
             for i in range(pred.shape[0]):
                 props = batch.get('properties', [None] * pred.shape[0])[i]
                 paths = export_multilabel_pred(pred[i].cpu().numpy(), props, out_dir=outdir)
@@ -192,7 +199,7 @@ class nnUNetTrainer_ML2Ch(nnUNetTrainer):
 
         return meter
 
-    # Use our ML Dice to drive 'best' tracking
+    # Track 'best' by our multilabel Dice
     def _on_epoch_end_do_validation(self):
         meter = self.validate()
         current = float(meter["dice_mean"])
