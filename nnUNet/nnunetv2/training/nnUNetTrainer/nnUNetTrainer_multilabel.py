@@ -206,8 +206,8 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         # Override label manager
         self.label_manager._num_segmentation_heads = 2
         
-        # Set max epochs for test run
-        self.num_epochs = 50
+        # Set max epochs for quick test run
+        self.num_epochs = 30
         
         # Set loss weights
         self.spatial_weight = 0.1
@@ -222,7 +222,7 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         print(f"Spatial loss weight: {self.spatial_weight}")
         print(f"Complementary loss weight: {self.complementary_weight}")
         print(f"Max epochs set to: {self.num_epochs}")
-        print("Training for 50 epochs for quick test run with optimized validation")
+        print("Training for 30 epochs for quick test run with optimized validation")
         
     @property  
     def num_segmentation_heads(self):
@@ -372,40 +372,128 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         
         
     def perform_actual_validation(self, save_probabilities: bool = False):
-        """Use original nnUNet validation pipeline for consistency with training."""
-        print("Using original nnUNet validation pipeline for optimal performance...")
+        """Simplified validation that handles multi-label output correctly."""
+        print("Running simplified multi-label validation...")
         
         # Disable deep supervision and set network to eval mode
         self.set_deep_supervision_enabled(False)
         self.network.eval()
         
-        # Use original nnUNetPredictor with all optimizations
-        from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
+        import SimpleITK as sitk
         
-        predictor = nnUNetPredictor(
-            tile_step_size=0.5,                    # 50% overlap for sliding window
-            use_gaussian=True,                     # Gaussian blending of overlaps
-            use_mirroring=True,                    # Test-time augmentation
-            perform_everything_on_device=True,     # GPU acceleration
-            device=self.device,
-            verbose=False,
-            verbose_preprocessing=False,
-            allow_tqdm=False
-        )
+        validation_output_folder = join(self.output_folder, 'validation')
+        maybe_mkdir_p(validation_output_folder)
         
-        # Initialize predictor with our trained network
-        predictor.manual_initialization(
-            self.network, 
-            self.plans_manager, 
-            self.configuration_manager, 
-            None,
-            self.dataset_json, 
-            self.__class__.__name__,
-            self.inference_allowed_mirroring_axes
-        )
+        # Get validation keys
+        _, val_keys = self.do_split()
+        dataset_val = self.dataset_class(self.preprocessed_dataset_folder, val_keys,
+                                       folder_with_segs_from_previous_stage=self.folder_with_segs_from_previous_stage)
         
-        print("nnUNetPredictor initialized - using sliding window + TTA + Gaussian blending")
+        validation_results = []
         
-        # Use the original validation pipeline from parent class
-        # This ensures consistency with standard nnUNet validation
-        return super().perform_actual_validation(save_probabilities)
+        for i, k in enumerate(dataset_val.identifiers):
+            print(f"predicting {k}")
+            data, _, seg_prev, properties = dataset_val.load_case(k)
+            
+            # Convert data to tensor
+            data = torch.from_numpy(data[:])  # Remove blosc2 format
+            
+            # Run inference directly
+            with torch.no_grad():
+                # Move data to device and add batch dimension
+                data_tensor = data.to(self.device).unsqueeze(0)
+                
+                # Run inference
+                prediction = self.network(data_tensor)
+                
+                # Handle deep supervision
+                if isinstance(prediction, (list, tuple)):
+                    prediction = prediction[0]
+                
+                # Apply sigmoid and threshold
+                pred_probs = torch.sigmoid(prediction)
+                pred_binary = (pred_probs > 0.5).float()
+                
+                # Remove batch dimension and move to CPU
+                pred_binary = pred_binary.squeeze(0).cpu().numpy()  # Shape: (2, H, W)
+                
+            print(f'{k}, data shape {data.shape}, prediction shape {pred_binary.shape}')
+            
+            # Save prediction as NIfTI
+            output_file = join(validation_output_folder, f'{k}.nii')
+            
+            # Create reference image for properties
+            ref_data = data.numpy()  # Shape: (C, H, W) 
+            
+            # Transpose prediction to match expected format: (H, W, 2)
+            pred_transposed = pred_binary.transpose(1, 2, 0).astype(np.uint8)
+            
+            # Create and save image
+            pred_img = sitk.GetImageFromArray(pred_transposed)
+            sitk.WriteImage(pred_img, output_file)
+            
+            print(f"Saved prediction to {output_file}")
+            
+            # Compute Dice scores against ground truth
+            try:
+                from nnunetv2.paths import nnUNet_raw
+                dataset_name = f"Dataset001_PerfusionTerritories"  # Fixed name
+                gt_file = join(nnUNet_raw, dataset_name, 'labelsTr', f'{k}.nii')
+                
+                if os.path.exists(gt_file):
+                    gt_img = sitk.ReadImage(gt_file)
+                    gt_array = sitk.GetArrayFromImage(gt_img)
+                    
+                    # Ensure same format for comparison
+                    if gt_array.ndim == 4 and gt_array.shape[-1] == 2:
+                        gt_left = gt_array[..., 0]
+                        gt_right = gt_array[..., 1]
+                    elif gt_array.ndim == 3:
+                        # Convert from label map to binary channels
+                        gt_left = (gt_array == 1).astype(np.uint8)
+                        gt_right = (gt_array == 2).astype(np.uint8)
+                    else:
+                        print(f"Unexpected ground truth shape: {gt_array.shape}")
+                        continue
+                    
+                    pred_left = pred_transposed[..., 0]
+                    pred_right = pred_transposed[..., 1]
+                    
+                    # Compute Dice scores
+                    dice_scores = []
+                    for pred_c, gt_c in [(pred_left, gt_left), (pred_right, gt_right)]:
+                        intersection = np.sum(pred_c * gt_c)
+                        total = np.sum(pred_c) + np.sum(gt_c)
+                        dice = 2.0 * intersection / (total + 1e-8) if total > 0 else 1.0
+                        dice_scores.append(dice)
+                    
+                    validation_results.append({
+                        'case': k,
+                        'dice_left': dice_scores[0],
+                        'dice_right': dice_scores[1],
+                        'dice_mean': np.mean(dice_scores)
+                    })
+                    
+                    print(f"  Dice - Left: {dice_scores[0]:.4f}, Right: {dice_scores[1]:.4f}, Mean: {np.mean(dice_scores):.4f}")
+                    
+            except Exception as e:
+                print(f"Could not compute Dice for {k}: {e}")
+                continue
+        
+        # Print final results
+        if validation_results:
+            left_dices = [r['dice_left'] for r in validation_results]
+            right_dices = [r['dice_right'] for r in validation_results]
+            mean_dices = [r['dice_mean'] for r in validation_results]
+            
+            print("\n" + "="*60)
+            print("FINAL VALIDATION RESULTS")
+            print("="*60)
+            print(f"Number of cases: {len(validation_results)}")
+            print(f"Left Hemisphere Dice:  {np.mean(left_dices):.4f} ± {np.std(left_dices):.4f}")
+            print(f"Right Hemisphere Dice: {np.mean(right_dices):.4f} ± {np.std(right_dices):.4f}")
+            print(f"Overall Mean Dice:     {np.mean(mean_dices):.4f} ± {np.std(mean_dices):.4f}")
+            print("="*60)
+            
+        print(f"Multi-label validation completed! Results saved to {validation_output_folder}")
+        return
