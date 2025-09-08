@@ -9,8 +9,8 @@ def _flatten_per_channel(x: torch.Tensor) -> torch.Tensor:
 
 class SoftDiceLossMultiLabel(nn.Module):
     """
-    Soft Dice over sigmoid probabilities per channel (multilabel).
-    Targets are expected as {0,1} per channel.
+    Soft Dice (per channel) on sigmoid probabilities for MULTILABEL segmentation.
+    Returns the *loss* = mean(1 - dice) over channels.
     """
     def __init__(self, smooth: float = 1e-5, reduction: str = "mean"):
         super().__init__()
