@@ -207,7 +207,7 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         self.label_manager._num_segmentation_heads = 2
         
         # Set max epochs for quick test run
-        self.num_epochs = 30
+        self.num_epochs = 10
         
         # Set loss weights
         self.spatial_weight = 0.1
@@ -379,6 +379,16 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         self.set_deep_supervision_enabled(False)
         self.network.eval()
         
+        # Temporarily disable torch.compile to avoid tensor shape issues during validation
+        original_network = self.network
+        if hasattr(self.network, '_orig_mod'):  # torch.compile wrapping check
+            print("Temporarily disabling torch.compile for validation...")
+            # Get the original unwrapped network
+            unwrapped_network = self.network._orig_mod
+            unwrapped_network.eval()
+        else:
+            unwrapped_network = self.network
+        
         import SimpleITK as sitk
         
         validation_output_folder = join(self.output_folder, 'validation')
@@ -398,24 +408,44 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
             # Convert data to tensor
             data = torch.from_numpy(data[:])  # Remove blosc2 format
             
-            # Run inference directly
+            # Run inference slice by slice (since this is a 2D network)
             with torch.no_grad():
-                # Move data to device and add batch dimension
-                data_tensor = data.to(self.device).unsqueeze(0)
+                # Data shape is expected to be (C, D, H, W) where D is depth (slices)
+                print(f"Data shape before inference: {data.shape}")
                 
-                # Run inference
-                prediction = self.network(data_tensor)
-                
-                # Handle deep supervision
-                if isinstance(prediction, (list, tuple)):
-                    prediction = prediction[0]
-                
-                # Apply sigmoid and threshold
-                pred_probs = torch.sigmoid(prediction)
-                pred_binary = (pred_probs > 0.5).float()
-                
-                # Remove batch dimension and move to CPU
-                pred_binary = pred_binary.squeeze(0).cpu().numpy()  # Shape: (2, H, W)
+                if len(data.shape) == 4:
+                    C, D, H, W = data.shape
+                    # Initialize output array for all slices
+                    all_predictions = []
+                    
+                    # Process each slice individually using the unwrapped network
+                    for slice_idx in range(D):
+                        # Get 2D slice: (C, H, W)
+                        slice_data = data[:, slice_idx, :, :] 
+                        
+                        # Add batch dimension: (1, C, H, W)
+                        slice_tensor = slice_data.to(self.device).unsqueeze(0)
+                        
+                        # Run inference on this slice using unwrapped network
+                        slice_prediction = unwrapped_network(slice_tensor)
+                        
+                        # Handle deep supervision
+                        if isinstance(slice_prediction, (list, tuple)):
+                            slice_prediction = slice_prediction[0]
+                        
+                        # Apply sigmoid and threshold
+                        slice_pred_probs = torch.sigmoid(slice_prediction)
+                        slice_pred_binary = (slice_pred_probs > 0.5).float()
+                        
+                        # Remove batch dimension and move to CPU: (2, H, W)
+                        slice_pred_binary = slice_pred_binary.squeeze(0).cpu().numpy()
+                        all_predictions.append(slice_pred_binary)
+                    
+                    # Stack all slices: (D, 2, H, W) -> (2, D, H, W)
+                    pred_binary = np.stack(all_predictions, axis=1)
+                    
+                else:
+                    raise ValueError(f"Unexpected data shape: {data.shape}. Expected 4D tensor (C, D, H, W).")
                 
             print(f'{k}, data shape {data.shape}, prediction shape {pred_binary.shape}')
             
