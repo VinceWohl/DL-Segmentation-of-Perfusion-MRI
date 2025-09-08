@@ -193,7 +193,7 @@ class SpatialComplementarySharedDecoderLoss(nn.Module):
         return total_loss
 
 
-class nnUNetTrainer_SharedDecoder_SpatialLoss_ComplementaryLoss(nnUNetTrainer):
+class nnUNetTrainer_multilabel(nnUNetTrainer):
     """
     Trainer with shared decoder and both spatial and complementary loss enhancements.
     Uses shared spatial features with spatial smoothness and complementary constraints.
