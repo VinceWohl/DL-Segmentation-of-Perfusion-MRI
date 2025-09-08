@@ -24,8 +24,8 @@ class SoftDiceLossMultiLabel(nn.Module):
 
         intersect = (probs_f * targ_f).sum(-1)
         denom = probs_f.sum(-1) + targ_f.sum(-1)
-        dice = (2. * intersect + self.smooth) / (denom + self.smooth)  # per-channel Dice in [0,1]
-        loss = 1. - dice                                              # loss in [0,1]
+        dice = (2. * intersect + self.smooth) / (denom + self.smooth)
+        loss = 1. - dice
         if self.reduction == "mean":
             return loss.mean()
         if self.reduction == "sum":
@@ -34,7 +34,7 @@ class SoftDiceLossMultiLabel(nn.Module):
 
 class BCEDiceLossMultiLabel(nn.Module):
     """
-    BCEWithLogits + SoftDice for multilabel segmentation (two-channel sigmoid).
+    BCEWithLogits + SoftDice for multilabel segmentation.
     """
     def __init__(self, bce_weight: float = 0.5, dice_weight: float = 0.5,
                  pos_weight: torch.Tensor | None = None):
