@@ -422,11 +422,6 @@ def main():
     results_root = Path(sys.argv[1]) if len(sys.argv) > 1 else default_results_root
     output_dir  = Path(sys.argv[2]) if len(sys.argv) > 2 else default_output_dir
 
-    print("Multi-Class Cross-Validation nnUNet Evaluation Script (v2)")
-    print("=" * 70)
-    print(f"Results root: {results_root}")
-    print(f"Output dir  : {output_dir}\n")
-
     ev = MultiClassCrossValidationEvaluator(results_root, output_dir)
     ok = ev.run_evaluation()
     return 0 if ok else 1
