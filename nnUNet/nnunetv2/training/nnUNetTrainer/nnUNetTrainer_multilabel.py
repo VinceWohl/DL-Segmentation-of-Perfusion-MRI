@@ -4,6 +4,8 @@ import torch.nn.functional as F
 import numpy as np
 import os
 from typing import Dict, List, Union, Tuple
+import json
+import nibabel as nib
 
 from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
@@ -16,6 +18,10 @@ from copy import deepcopy
 from nnunetv2.utilities.label_handling.label_handling import LabelManager
 from nnunetv2.utilities.default_n_proc_DA import get_allowed_n_proc_DA as default_num_processes
 
+import warnings
+# Quiet PyTorch's NVML availability warning (benign; only about GPU stats)
+warnings.filterwarnings( "ignore", message="Can't initialize NVML", module=r"torch\.cuda(\..*)?$" )
+
 
 class MultiLabelPredictor(nnUNetPredictor):
     """Custom predictor that natively handles 2-channel binary multi-label output."""
@@ -25,47 +31,31 @@ class MultiLabelPredictor(nnUNetPredictor):
     
     def _internal_predict_sliding_window_return_logits(self, data, slicers, do_on_device: bool):
         """Override to handle 2-channel predictions by creating a mock label manager."""
-        # Create a temporary mock label manager that reports 2 segmentation heads
         class MockLabelManager:
             def __init__(self):
                 self.num_segmentation_heads = 2
         
-        # Temporarily replace the label manager
         original_label_manager = getattr(self, 'label_manager', None)
         self.label_manager = MockLabelManager()
         
         try:
-            # Call the parent implementation with our mock label manager
             result = super()._internal_predict_sliding_window_return_logits(data, slicers, do_on_device)
             return result
         finally:
-            # Restore original label manager
             self.label_manager = original_label_manager
 
     def convert_predicted_logits_to_segmentation_with_correct_shape(self, predicted_logits, plans_manager,
                                                                    configuration_manager, label_manager,
                                                                    properties_dict, save_probabilities=False):
         """Override to handle 2-channel binary format and ensure correct spatial dimensions."""
-        print(f"DEBUG: convert_predicted_logits called with shape: {predicted_logits.shape}")
-        
-        # Apply sigmoid to get probabilities
         predicted_probabilities = torch.sigmoid(predicted_logits.to('cpu'))
-        
-        # Convert to binary segmentation (threshold at 0.5)
         segmentation = (predicted_probabilities > 0.5).long()
         
-        print(f"DEBUG: segmentation shape after thresholding: {segmentation.shape}")
-        
-        # Ensure we return the correct format: (spatial_dims..., channels)
-        # predicted_logits shape: (2, D, H, W) -> segmentation should be (D, H, W, 2)
         if len(segmentation.shape) == 4:  # (2, D, H, W)
-            # Transpose to (D, H, W, 2) to match ground truth format
             segmentation = segmentation.permute(1, 2, 3, 0)
             if save_probabilities:
                 predicted_probabilities = predicted_probabilities.permute(1, 2, 3, 0)
-            print(f"DEBUG: segmentation shape after transpose: {segmentation.shape}")
         
-        print(f"DEBUG: returning segmentation with shape: {segmentation.numpy().shape}")
         return segmentation.numpy(), predicted_probabilities.numpy() if save_probabilities else None
     
 
@@ -75,19 +65,14 @@ class MultiLabelHead(nn.Module):
     def __init__(self, original_conv):
         super().__init__()
         
-        # Store original properties
         in_features = original_conv.in_channels
         kernel_size = original_conv.kernel_size
         padding = original_conv.padding
         has_bias = original_conv.bias is not None
         
-        # Create multi-label head - single conv layer outputting 3 channels
-        # Channel 0: background, Channel 1: left hemisphere, Channel 2: right hemisphere
-        # This makes it compatible with standard nnUNet validation pipeline
         self.multi_label_head = nn.Conv2d(in_features, 2, kernel_size=kernel_size, 
                                         padding=padding, bias=has_bias)
         
-        # Initialize with original weights if available
         if original_conv.out_channels == 2:
             with torch.no_grad():
                 self.multi_label_head.weight.copy_(original_conv.weight)
@@ -95,10 +80,6 @@ class MultiLabelHead(nn.Module):
                     self.multi_label_head.bias.copy_(original_conv.bias)
     
     def forward(self, x):
-        # Single forward pass through multi-label head
-        # Output: (batch, 2, H, W) where:
-        # Channel 0: left hemisphere logits  
-        # Channel 1: right hemisphere logits
         return self.multi_label_head(x)
 
 
@@ -109,30 +90,20 @@ class SharedDecoderNetwork(nn.Module):
     """
     def __init__(self, base_network):
         super().__init__()
-        
-        # Store the base network and expose its decoder attribute for nnUNet compatibility
         self.base_network = base_network
-        
-        # Expose decoder attribute for nnUNet's deep supervision management
         if hasattr(base_network, 'decoder'):
             self.decoder = base_network.decoder
-        
-        # Find and replace the final convolution layer with multi-label head
         self._replace_final_conv()
     
     def _find_and_replace_final_conv(self, module, parent=None, name=None):
         """Recursively find and replace the final conv layer."""
         for child_name, child in module.named_children():
             if hasattr(child, 'out_channels') and child.out_channels == 2:
-                # Found the final conv layer - replace it with multi-label head
                 new_module = MultiLabelHead(child)
                 setattr(module, child_name, new_module)
                 return True
-            
-            # Recurse into child modules
             if self._find_and_replace_final_conv(child, module, child_name):
                 return True
-        
         return False
     
     def _replace_final_conv(self):
@@ -141,7 +112,6 @@ class SharedDecoderNetwork(nn.Module):
             raise RuntimeError("Could not find final convolution layer with 2 output channels")
     
     def forward(self, x):
-        # Forward through the base network (now with multi-label head)
         return self.base_network(x)
 
 
@@ -158,39 +128,25 @@ class SpatialComplementarySharedDecoderLoss(nn.Module):
         self.spatial_weight = spatial_weight
         self.complementary_weight = complementary_weight
         
-        # BCE loss for each channel
         self.bce = nn.BCEWithLogitsLoss(**bce_kwargs)
-        
-        # Dice loss with sigmoid activation
         self.dice = dice_class(apply_nonlin=torch.sigmoid, **soft_dice_kwargs)
         
     def _spatial_consistency_loss(self, pred_probs: torch.Tensor, target: torch.Tensor):
-        """
-        Compute target-guided spatial consistency losses for perfusion territories (vectorized).
+        pred_left = pred_probs[:, 0]
+        pred_right = pred_probs[:, 1]
+        target_left = target[:, 0]
+        target_right = target[:, 1]
         
-        Args:
-            pred_probs: Sigmoid probabilities (B, 2, H, W)
-            target: Ground truth masks (B, 2, H, W)
-        """
-        pred_left = pred_probs[:, 0]   # (B, H, W)
-        pred_right = pred_probs[:, 1]  # (B, H, W)
-        target_left = target[:, 0]     # (B, H, W)
-        target_right = target[:, 1]    # (B, H, W)
-        
-        # 1. Overlap penalty: discourage simultaneous high confidence in non-overlap regions
         non_overlap_mask = (target_left + target_right) <= 1.0
         overlap_penalty = torch.mean(pred_left * pred_right * non_overlap_mask.float())
         
-        # 2. Coverage consistency: encourage proper brain coverage
         target_coverage = torch.clamp(target_left + target_right, 0, 1)
         pred_coverage = torch.clamp(pred_left + pred_right, 0, 1)
         coverage_loss = F.mse_loss(pred_coverage, target_coverage)
         
-        # 3. Mutual exclusivity in appropriate regions (vectorized)
         left_only_regions = (target_left > 0) & (target_right == 0)
         right_only_regions = (target_right > 0) & (target_left == 0)
         
-        # Use masked means for efficiency
         exclusivity_loss = 0
         if left_only_regions.sum() > 0:
             exclusivity_loss += torch.mean(pred_right[left_only_regions] ** 2)
@@ -200,21 +156,12 @@ class SpatialComplementarySharedDecoderLoss(nn.Module):
         return overlap_penalty + coverage_loss + exclusivity_loss
         
     def _complementary_loss(self, pred_probs: torch.Tensor, target: torch.Tensor):
-        """
-        Complementary information loss for perfusion territories.
-        Encourages mutual exclusivity and proper brain coverage.
-        """
-        pred_left = pred_probs[:, 0]   # (B, H, W)
-        pred_right = pred_probs[:, 1]  # (B, H, W)
-        target_left = target[:, 0]     # (B, H, W)
-        target_right = target[:, 1]    # (B, H, W)
+        pred_left = pred_probs[:, 0]
+        pred_right = pred_probs[:, 1]
+        target_left = target[:, 0]
+        target_right = target[:, 1]
         
-        # 1. Encourage mutual exclusivity where appropriate
-        # Penalize simultaneous predictions in non-overlap regions
         exclusivity_loss = torch.mean(pred_left * pred_right * (1 - target_left) * (1 - target_right))
-        
-        # 2. Encourage coverage of the brain region
-        # Ensure predicted coverage matches target coverage
         coverage_target = torch.clamp(target_left + target_right, 0, 1)
         coverage_pred = torch.clamp(pred_left + pred_right, 0, 1)
         coverage_loss = F.mse_loss(coverage_pred, coverage_target)
@@ -224,28 +171,18 @@ class SpatialComplementarySharedDecoderLoss(nn.Module):
     def forward(self, net_output: torch.Tensor, target: torch.Tensor):
         target = target.float()
         
-        # Base losses: BCE + Dice for 2-channel output
         dice_loss = self.dice(net_output, target) if self.weight_dice != 0 else 0
         
         if self.weight_ce != 0:
-            # Use sigmoid on output for BCE loss
-            bce_loss_ch0 = self.bce(net_output[:, 0], target[:, 0])  # Left hemisphere
-            bce_loss_ch1 = self.bce(net_output[:, 1], target[:, 1])  # Right hemisphere
+            bce_loss_ch0 = self.bce(net_output[:, 0], target[:, 0])
+            bce_loss_ch1 = self.bce(net_output[:, 1], target[:, 1])
             bce_loss = 0.5 * bce_loss_ch0 + 0.5 * bce_loss_ch1
         else:
             bce_loss = 0
         
-        # Enhanced consistency losses
-        # Convert logits to probabilities for consistency losses
         pred_probs = torch.sigmoid(net_output)
-        
-        # Spatial consistency loss
         spatial_loss = self._spatial_consistency_loss(pred_probs, target) if self.spatial_weight > 0 else 0
-        
-        # Complementary loss
-        complementary_loss = 0
-        if self.complementary_weight > 0:
-            complementary_loss = self._complementary_loss(pred_probs, target)
+        complementary_loss = self._complementary_loss(pred_probs, target) if self.complementary_weight > 0 else 0
         
         total_loss = (self.weight_ce * bce_loss + 
                      self.weight_dice * dice_loss + 
@@ -264,27 +201,12 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, 
                  device: torch.device = torch.device('cuda')):
         super().__init__(plans, configuration, fold, dataset_json, device)
-        
-        # Use standard label manager - no override needed for 3-channel output
-        # This will work with standard nnUNet validation pipeline
-        
-        # Set max epochs for quick test run
         self.num_epochs = 10
-        
-        # Set loss weights
         self.spatial_weight = 0.1
         self.complementary_weight = 0.1
         
-        # Get number of input channels
         num_input_channels = len(self.dataset_json.get('channel_names', {'0': 'CBF LICA', '1': 'CBF RICA'}))
         channel_names = list(self.dataset_json.get('channel_names', {'0': 'CBF LICA', '1': 'CBF RICA'}).values())
-        
-        print("Shared Decoder with Spatial + Complementary Loss Enhancement")
-        print(f"Input channels ({num_input_channels}): {', '.join(channel_names)}")
-        print(f"Spatial loss weight: {self.spatial_weight}")
-        print(f"Complementary loss weight: {self.complementary_weight}")
-        print(f"Max epochs set to: {self.num_epochs}")
-        print("Training for 30 epochs for quick test run with optimized validation")
         
     @property  
     def num_segmentation_heads(self):
@@ -297,14 +219,10 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
                                    num_input_channels: int,
                                    num_output_channels: int,
                                    enable_deep_supervision: bool = True) -> nn.Module:
-        
-        # Build the base network with 2 output channels
         base_network = nnUNetTrainer.build_network_architecture(
             architecture_class_name, arch_init_kwargs, arch_init_kwargs_req_import,
             num_input_channels, 2, enable_deep_supervision
         )
-        
-        # Wrap it with shared decoder + multi-label head architecture
         network = SharedDecoderNetwork(base_network)
         return network
         
@@ -328,7 +246,6 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         if self._do_i_compile():
             loss.dice = torch.compile(loss.dice)
         
-        # Handle deep supervision
         if self.enable_deep_supervision:
             deep_supervision_scales = self._get_deep_supervision_scales()
             weights = np.array([1 / (2 ** i) for i in range(len(deep_supervision_scales))])
@@ -336,7 +253,6 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
                 weights[-1] = 1e-6
             else:
                 weights[-1] = 0
-            
             weights = weights / weights.sum()
             loss = DeepSupervisionWrapper(loss, weights)
         
@@ -353,9 +269,6 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         else:
             target = target.to(self.device, non_blocking=True)
 
-        # Data loaded and ready for forward pass
-
-        # Forward pass
         with torch.autocast(self.device.type, enabled=True) if self.device.type == 'cuda' else torch.no_grad():
             output = self.network(data)
             del data
@@ -365,12 +278,10 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
             output = output[0]
             target = target[0]
 
-        # Apply sigmoid and compute predictions
         predicted_probabilities = torch.sigmoid(output)
         predicted_segmentation_onehot = (predicted_probabilities > 0.5).long()
         target = target.float()
         
-        # Compute per-channel metrics
         tp_hard = torch.zeros((target.shape[0], 2), dtype=torch.float32, device=target.device)
         fp_hard = torch.zeros((target.shape[0], 2), dtype=torch.float32, device=target.device)
         fn_hard = torch.zeros((target.shape[0], 2), dtype=torch.float32, device=target.device)
@@ -404,13 +315,10 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
             tp_i = float(tp_per_channel[i])
             fp_i = float(fp_per_channel[i])
             fn_i = float(fn_per_channel[i])
-                
             dice = (2 * tp_i) / (2 * tp_i + fp_i + fn_i + 1e-8)
             dice_scores.append(dice)
         
         mean_dice = np.mean(dice_scores)
-        
-        # Validation dice computed
         
         self.logger.log('dice_per_class_or_region', dice_scores, self.current_epoch)
         self.logger.log('mean_fg_dice', float(mean_dice), self.current_epoch)
@@ -437,45 +345,25 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         old_threads = torch.get_num_threads()
         torch.set_num_threads(default_num_processes)
         
-        print(f"DEBUG: export_multilabel_prediction called with logits shape: {predicted_logits.shape}")
-        
-        # Convert logits to probabilities and then to segmentation
         predicted_probabilities = torch.sigmoid(predicted_logits.to('cpu'))
-        
-        # For 2-channel multi-label: each channel is independent binary segmentation
         segmentation = (predicted_probabilities > 0.5).long()
         
-        print(f"DEBUG: segmentation shape before transpose: {segmentation.shape}")
-        
-        # Transpose from (2, D, H, W) to (D, H, W, 2) to match ground truth format
         if len(segmentation.shape) == 4 and segmentation.shape[0] == 2:
             segmentation = segmentation.permute(1, 2, 3, 0)
             if save_probabilities:
                 predicted_probabilities = predicted_probabilities.permute(1, 2, 3, 0)
         
-        print(f"DEBUG: segmentation shape after transpose: {segmentation.shape}")
-        
-        # Keep the 2-channel binary format - convert to numpy if needed
         segmentation_np = segmentation.numpy() if isinstance(segmentation, torch.Tensor) else segmentation
-        
-        print(f"DEBUG: keeping 2-channel binary format with shape: {segmentation_np.shape}")
-        print(f"DEBUG: channel 0 unique values: {np.unique(segmentation_np[:, :, :, 0])}")
-        print(f"DEBUG: channel 1 unique values: {np.unique(segmentation_np[:, :, :, 1])}")
-        
-        # Use the 4D binary segmentation for processing
         segmentation = segmentation_np
         
-        # Resample to original shape if needed (handle 4D with channels)
         spacing_transposed = [properties_dict['spacing'][i] for i in plans_manager.transpose_forward]
         current_spacing = configuration_manager.spacing if \
             len(configuration_manager.spacing) == \
             len(properties_dict['shape_after_cropping_and_before_resampling']) else \
             [spacing_transposed[0], *configuration_manager.spacing]
         
-        # For 4D resampling, we need to handle each channel separately
         target_shape_3d = properties_dict['shape_after_cropping_and_before_resampling']
         if tuple(segmentation.shape[:3]) != tuple(target_shape_3d):
-            print(f"DEBUG: resampling from {segmentation.shape[:3]} to {target_shape_3d}")
             resampled_channels = []
             for ch in range(segmentation.shape[3]):
                 resampled_ch = configuration_manager.resampling_fn_seg(
@@ -486,7 +374,6 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
                 )
                 resampled_channels.append(resampled_ch)
             segmentation = np.stack(resampled_channels, axis=-1)
-            print(f"DEBUG: after resampling: {segmentation.shape}")
         
         if save_probabilities and tuple(predicted_probabilities.shape[:3]) != tuple(target_shape_3d):
             prob_channels = []
@@ -500,80 +387,29 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
                 prob_channels.append(prob_ch)
             predicted_probabilities = np.stack(prob_channels, axis=-1)
         
-        # Revert cropping - handle 4D arrays by processing each channel separately
         target_shape_3d = properties_dict['shape_before_cropping']
         target_shape_4d = list(target_shape_3d) + [segmentation.shape[-1]]
-        
-        print(f"DEBUG: target_shape_4d: {target_shape_4d}")
-        print(f"DEBUG: segmentation shape before cropping revert: {segmentation.shape}")
-        print(f"DEBUG: segmentation unique values before cropping revert: {np.unique(segmentation)}")
-        if len(segmentation.shape) == 4:
-            print(f"DEBUG: segmentation ch0 sum before cropping: {np.sum(segmentation[:,:,:,0])}")
-            print(f"DEBUG: segmentation ch1 sum before cropping: {np.sum(segmentation[:,:,:,1])}")
-        
-        # Process each channel separately since insert_crop_into_image doesn't handle 4D
         segmentation_reverted_cropping = np.zeros(target_shape_4d, dtype=np.uint8)
         
         if len(segmentation.shape) == 4:
             for ch in range(segmentation.shape[-1]):
-                # Create 3D target for this channel
                 target_3d = np.zeros(target_shape_3d, dtype=np.uint8)
-                # Insert crop for this channel
                 target_3d = insert_crop_into_image(target_3d, segmentation[:,:,:,ch], 
                                                  properties_dict['bbox_used_for_cropping'])
-                # Assign to the 4D result
                 segmentation_reverted_cropping[:,:,:,ch] = target_3d
-                print(f"DEBUG: channel {ch} after crop revert - sum: {np.sum(target_3d)}")
         else:
-            # Fall back to original for 3D
             segmentation_reverted_cropping = insert_crop_into_image(segmentation_reverted_cropping, segmentation, 
                                                                   properties_dict['bbox_used_for_cropping'])
-                                                              
-        print(f"DEBUG: after cropping revert - shape: {segmentation_reverted_cropping.shape}")
-        print(f"DEBUG: after cropping revert - unique values: {np.unique(segmentation_reverted_cropping)}")
-        if len(segmentation_reverted_cropping.shape) == 4:
-            print(f"DEBUG: after cropping revert - ch0 sum: {np.sum(segmentation_reverted_cropping[:,:,:,0])}")
-            print(f"DEBUG: after cropping revert - ch1 sum: {np.sum(segmentation_reverted_cropping[:,:,:,1])}")
         
-        # Debug before transpose
-        print(f"DEBUG: before transpose - shape: {segmentation_reverted_cropping.shape}")
-        print(f"DEBUG: before transpose - unique values: {np.unique(segmentation_reverted_cropping)}")
         if len(segmentation_reverted_cropping.shape) == 4:
-            print(f"DEBUG: before transpose - channel 0 sum: {np.sum(segmentation_reverted_cropping[:,:,:,0])}")
-            print(f"DEBUG: before transpose - channel 1 sum: {np.sum(segmentation_reverted_cropping[:,:,:,1])}")
-        
-        # Transpose back to original orientation (maintaining channel dimension)
-        # GT format is (80, 80, 14, 2), validation currently produces (14, 80, 80, 2)
-        # We need to transpose from (D, H, W, C) -> (H, W, D, C) to match GT
-        if len(segmentation_reverted_cropping.shape) == 4:
-            # From (D=14, H=80, W=80, C=2) to (H=80, W=80, D=14, C=2)
             segmentation_reverted_cropping = segmentation_reverted_cropping.transpose(1, 2, 0, 3)
-            
-            # Apply flip correction - predictions are flipped on both spatial axes
-            # Need to flip axis 0 (up-down) and axis 1 (left-right) for each slice
-            print(f"DEBUG: applying flip correction (both axes) to match ground truth orientation")
             segmentation_reverted_cropping = np.flip(segmentation_reverted_cropping, axis=(0, 1))
-            # (H, W, D, C) -> rotate 90° CW, then flip vertically
             segmentation_reverted_cropping = np.flip(np.rot90(segmentation_reverted_cropping, k=3, axes=(0, 1)), axis=0)
-
-            
-            print(f"DEBUG: after transpose and flip correction: {segmentation_reverted_cropping.shape}")
-            print(f"DEBUG: after flip - unique values: {np.unique(segmentation_reverted_cropping)}")
-            print(f"DEBUG: after flip - channel 0 sum: {np.sum(segmentation_reverted_cropping[:,:,:,0])}")
-            print(f"DEBUG: after flip - channel 1 sum: {np.sum(segmentation_reverted_cropping[:,:,:,1])}")
         else:
-            # Fall back to original transpose for 3D
             transpose_indices = list(plans_manager.transpose_backward) + [len(segmentation_reverted_cropping.shape)-1]
             segmentation_reverted_cropping = segmentation_reverted_cropping.transpose(transpose_indices)
         
-        print(f"DEBUG: final segmentation shape before saving: {segmentation_reverted_cropping.shape}")
-        print(f"DEBUG: final segmentation channel 0 unique values: {np.unique(segmentation_reverted_cropping[:,:,:,0])}")
-        print(f"DEBUG: final segmentation channel 1 unique values: {np.unique(segmentation_reverted_cropping[:,:,:,1])}")
-        
-        # Save as 4D NIfTI file using nibabel directly (since SimpleITK doesn't handle 4D well)
         import nibabel as nib
-        
-        # Create NIfTI image with proper affine matrix from properties
         affine = np.eye(4)
         if 'sitk_stuff' in properties_dict and 'spacing' in properties_dict:
             spacing = properties_dict['spacing']
@@ -584,47 +420,34 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         nii_img = nib.Nifti1Image(segmentation_reverted_cropping.astype(np.uint8), affine)
         nib.save(nii_img, output_filename_truncated + '.nii')
         
-        print(f"DEBUG: saved 4D NIfTI with shape: {segmentation_reverted_cropping.shape}")
-        
-        # Save probabilities if requested
         if save_probabilities:
-            # Handle probabilities with same 4D processing
             prob_target_shape_3d = properties_dict['shape_before_cropping']
             prob_target_shape_4d = list(prob_target_shape_3d) + [predicted_probabilities.shape[-1]]
-            
             probabilities_reverted_cropping = np.zeros(prob_target_shape_4d, dtype=np.float32)
             
-            # Process each channel separately for probabilities too
             if len(predicted_probabilities.shape) == 4:
                 for ch in range(predicted_probabilities.shape[-1]):
-                    # Create 3D target for this channel
                     prob_target_3d = np.zeros(prob_target_shape_3d, dtype=np.float32)
-                    # Insert crop for this channel
                     prob_target_3d = insert_crop_into_image(prob_target_3d, predicted_probabilities[:,:,:,ch], 
                                                           properties_dict['bbox_used_for_cropping'])
-                    # Assign to the 4D result
                     probabilities_reverted_cropping[:,:,:,ch] = prob_target_3d
             else:
                 probabilities_reverted_cropping = insert_crop_into_image(probabilities_reverted_cropping, predicted_probabilities, 
                                                                        properties_dict['bbox_used_for_cropping'])
             
-            # Use same transpose and flip logic as segmentation
             if len(probabilities_reverted_cropping.shape) == 4:
                 probabilities_reverted_cropping = probabilities_reverted_cropping.transpose(1, 2, 0, 3)
-                # Apply same flip correction as segmentation
                 probabilities_reverted_cropping = np.flip(probabilities_reverted_cropping, axis=(0, 1))
             else:
                 prob_transpose_indices = list(plans_manager.transpose_backward) + [len(probabilities_reverted_cropping.shape)-1]
                 probabilities_reverted_cropping = probabilities_reverted_cropping.transpose(prob_transpose_indices)
             
-            print(f"DEBUG: saving probabilities with shape: {probabilities_reverted_cropping.shape}")
             np.savez_compressed(output_filename_truncated + '.npz', probabilities=probabilities_reverted_cropping)
         
         torch.set_num_threads(old_threads)
     
     def initialize_network(self):
         """Initialize network with standard 3-channel multi-label output."""
-        # Use standard initialization - no label manager override needed
         super().initialize_network()
         
         
@@ -640,158 +463,283 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         import torch
         import warnings
         from time import sleep
-        
-        # This is copied from the original nnUNet trainer with minimal multi-label modifications
-        
+
         self.set_deep_supervision_enabled(False)
         self.network.eval()
 
         if self.is_ddp and self.batch_size == 1 and self.enable_deep_supervision and self._do_i_compile():
-            self.print_to_log_file("WARNING! batch size is 1 during training and torch.compile is enabled. If you "
-                                   "encounter crashes in validation then this is because torch.compile forgets "
-                                   "to trigger a recompilation of the model with deep supervision disabled. "
-                                   "This causes torch.flip to complain about getting a tuple as input. Just rerun the "
-                                   "validation with --val (exactly the same as before) and then it will work. "
-                                   "Why? Because --val triggers nnU-Net to ONLY run validation meaning that the first "
-                                   "forward pass (where compile is triggered) already has deep supervision disabled. "
-                                   "This is exactly what we need in perform_actual_validation")
+            self.print_to_log_file(
+                "WARNING! batch size is 1 during training and torch.compile is enabled. If you "
+                "encounter crashes in validation then this is because torch.compile forgets "
+                "to trigger a recompilation of the model with deep supervision disabled. "
+                "This causes torch.flip to complain about getting a tuple as input. Just rerun the "
+                "validation with --val (exactly the same as before) and then it will work. "
+                "Why? Because --val triggers nnU-Net to ONLY run validation meaning that the first "
+                "forward pass (where compile is triggered) already has deep supervision disabled. "
+                "This is exactly what we need in perform_actual_validation"
+            )
 
-        # Use our custom predictor that natively handles 2-channel multi-label output
-        predictor = MultiLabelPredictor(tile_step_size=0.5, use_gaussian=True, use_mirroring=True,
-                                       perform_everything_on_device=True, device=self.device, verbose=False,
-                                       verbose_preprocessing=False, allow_tqdm=False)
-        
-        # Standard initialization - our custom predictor handles the 2->3 channel conversion internally
-        predictor.manual_initialization(self.network, self.plans_manager, self.configuration_manager, None,
-                                        self.dataset_json, self.__class__.__name__,
-                                        self.inference_allowed_mirroring_axes)
+        predictor = MultiLabelPredictor(
+            tile_step_size=0.5,
+            use_gaussian=True,
+            use_mirroring=True,
+            perform_everything_on_device=True,
+            device=self.device,
+            verbose=False,
+            verbose_preprocessing=False,
+            allow_tqdm=False,
+        )
+
+        predictor.manual_initialization(
+            self.network,
+            self.plans_manager,
+            self.configuration_manager,
+            None,
+            self.dataset_json,
+            self.__class__.__name__,
+            self.inference_allowed_mirroring_axes,
+        )
 
         with multiprocessing.get_context("spawn").Pool(default_num_processes) as segmentation_export_pool:
             worker_list = [i for i in segmentation_export_pool._pool]
-            validation_output_folder = join(self.output_folder, 'validation')
+            validation_output_folder = join(self.output_folder, "validation")
             maybe_mkdir_p(validation_output_folder)
 
-            # we cannot use self.get_tr_and_val_datasets() here because we might be DDP and then we have to distribute
-            # the validation keys across the workers.
             _, val_keys = self.do_split()
             if self.is_ddp:
                 import torch.distributed as dist
-                last_barrier_at_idx = len(val_keys) // dist.get_world_size() - 1
-                val_keys = val_keys[self.local_rank:: dist.get_world_size()]
+                last_barrier_at_idx = len(val_keys) // dist.get_world_size() - 1  # noqa: F841 (harmless)
+                val_keys = val_keys[self.local_rank :: dist.get_world_size()]
 
-            dataset_val = self.dataset_class(self.preprocessed_dataset_folder, val_keys,
-                                             folder_with_segs_from_previous_stage=self.folder_with_segs_from_previous_stage)
+            dataset_val = self.dataset_class(
+                self.preprocessed_dataset_folder,
+                val_keys,
+                folder_with_segs_from_previous_stage=self.folder_with_segs_from_previous_stage,
+            )
 
             next_stages = self.configuration_manager.next_stage_names
-
             if next_stages is not None:
-                _ = [maybe_mkdir_p(join(self.output_folder_base, 'predicted_next_stage', n)) for n in next_stages]
+                _ = [maybe_mkdir_p(join(self.output_folder_base, "predicted_next_stage", n)) for n in next_stages]
 
             results = []
-
             for i, k in enumerate(dataset_val.identifiers):
-                proceed = not check_workers_alive_and_busy(segmentation_export_pool, worker_list, results,
-                                                           allowed_num_queued=2)
+                proceed = not check_workers_alive_and_busy(
+                    segmentation_export_pool, worker_list, results, allowed_num_queued=2
+                )
                 while not proceed:
                     sleep(0.1)
-                    proceed = not check_workers_alive_and_busy(segmentation_export_pool, worker_list, results,
-                                                               allowed_num_queued=2)
+                    proceed = not check_workers_alive_and_busy(
+                        segmentation_export_pool, worker_list, results, allowed_num_queued=2
+                    )
 
                 self.print_to_log_file(f"predicting {k}")
                 data, _, seg_prev, properties = dataset_val.load_case(k)
-
-                # we do [:] to convert blosc2 to numpy
                 data = data[:]
 
                 if self.is_cascaded:
                     seg_prev = seg_prev[:]
                     from nnunetv2.utilities.label_handling.label_handling import convert_labelmap_to_one_hot
-                    data = np.vstack((data, convert_labelmap_to_one_hot(seg_prev, self.label_manager.foreground_labels,
-                                                                        output_dtype=data.dtype)))
+
+                    data = np.vstack(
+                        (data, convert_labelmap_to_one_hot(seg_prev, self.label_manager.foreground_labels, output_dtype=data.dtype))
+                    )
                 with warnings.catch_warnings():
-                    # ignore 'The given NumPy array is not writable' warning
                     warnings.simplefilter("ignore")
                     data = torch.from_numpy(data)
 
-                self.print_to_log_file(f'{k}, shape {data.shape}, rank {self.local_rank}')
+                self.print_to_log_file(f"{k}, shape {data.shape}, rank {self.local_rank}")
                 output_filename_truncated = join(validation_output_folder, k)
 
-                # Get prediction from our custom predictor (automatically converts 2->3 channels)
-                prediction = predictor.predict_sliding_window_return_logits(data)
-                prediction = prediction.cpu()
+                prediction = predictor.predict_sliding_window_return_logits(data).cpu()
 
-                # Use our custom export function for 2-channel multi-label predictions
                 results.append(
                     segmentation_export_pool.starmap_async(
-                        self.export_multilabel_prediction, (
-                            (prediction, properties, self.configuration_manager, self.plans_manager,
-                             self.dataset_json, output_filename_truncated, save_probabilities),
-                        )
+                        self.export_multilabel_prediction,
+                        (
+                            (
+                                prediction,
+                                properties,
+                                self.configuration_manager,
+                                self.plans_manager,
+                                self.dataset_json,
+                                output_filename_truncated,
+                                save_probabilities,
+                            ),
+                        ),
                     )
                 )
 
-                # if needed, export the softmax prediction for the next stage
                 if next_stages is not None:
                     for n in next_stages:
                         next_stage_config_manager = self.plans_manager.get_configuration(n)
-                        expected_preprocessed_folder = join(self.preprocessed_dataset_folder_base, self.plans_manager.dataset_name,
-                                                            next_stage_config_manager.data_identifier)
-                        # next stage may have a different dataset class, do not use self.dataset_class
+                        expected_preprocessed_folder = join(
+                            self.preprocessed_dataset_folder_base,
+                            self.plans_manager.dataset_name,
+                            next_stage_config_manager.data_identifier,
+                        )
                         from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
-                        dataset_name = maybe_convert_to_dataset_name(self.plans_manager.dataset_name)
+
+                        dataset_name = maybe_convert_to_dataset_name(self.plans_manager.dataset_name)  # noqa: F841
                         from nnunetv2.dataset_conversion.generate_dataset_json import infer_dataset_class
+
                         dataset_class = infer_dataset_class(expected_preprocessed_folder)
 
                         try:
-                            # we do this so that we can use load_case and do not have to hard code how loading training cases is implemented
                             tmp = dataset_class(expected_preprocessed_folder, [k])
                             d, _, _, _ = tmp.load_case(k)
                         except FileNotFoundError:
                             self.print_to_log_file(
                                 f"Predicting next stage {n} failed for case {k} because the preprocessed file is missing! "
-                                f"Run the preprocessing for this configuration first!")
+                                f"Run the preprocessing for this configuration first!"
+                            )
                             continue
 
                         target_shape = d.shape[1:]
-                        output_folder = join(self.output_folder_base, 'predicted_next_stage', n)
+                        output_folder = join(self.output_folder_base, "predicted_next_stage", n)
                         output_file_truncated = join(output_folder, k)
 
                         from nnunetv2.inference.export_prediction import resample_and_save
-                        results.append(segmentation_export_pool.starmap_async(
-                            resample_and_save, (
-                                (prediction, target_shape, output_file_truncated, self.plans_manager,
-                                 self.configuration_manager,
-                                 properties,
-                                 self.dataset_json,
-                                 default_num_processes,
-                                 dataset_class),
+
+                        results.append(
+                            segmentation_export_pool.starmap_async(
+                                resample_and_save,
+                                (
+                                    (
+                                        prediction,
+                                        target_shape,
+                                        output_file_truncated,
+                                        self.plans_manager,
+                                        self.configuration_manager,
+                                        properties,
+                                        self.dataset_json,
+                                        default_num_processes,
+                                        dataset_class,
+                                    ),
+                                ),
                             )
-                        ))
-                # if we don't barrier from time to time we will get nccl timeouts for large datasets. Yuck.
+                        )
                 if self.is_ddp and i < len(dataset_val.identifiers) - 1 and (i + 1) % 20 == 0:
                     import torch.distributed as dist
+
                     dist.barrier()
 
             _ = [r.get() for r in results]
 
         if self.is_ddp:
             import torch.distributed as dist
+
             dist.barrier()
 
         if self.local_rank == 0:
-            metrics = compute_metrics_on_folder(join(self.preprocessed_dataset_folder_base, 'gt_segmentations'),
-                                                validation_output_folder,
-                                                join(validation_output_folder, 'summary.json'),
-                                                self.plans_manager.image_reader_writer_class(),
-                                                self.dataset_json["file_ending"],
-                                                self.label_manager.foreground_regions if self.label_manager.has_regions else
-                                                self.label_manager.foreground_labels,
-                                                self.label_manager.ignore_label, chill=True,
-                                                num_processes=default_num_processes)
+            metrics = compute_metrics_on_folder(
+                join(self.preprocessed_dataset_folder_base, "gt_segmentations"),
+                validation_output_folder,
+                join(validation_output_folder, "summary.json"),
+                self.plans_manager.image_reader_writer_class(),
+                self.dataset_json["file_ending"],
+                self.label_manager.foreground_regions if self.label_manager.has_regions else self.label_manager.foreground_labels,
+                self.label_manager.ignore_label,
+                chill=True,
+                num_processes=default_num_processes,
+            )
             self.print_to_log_file("Validation complete", also_print_to_console=True)
-            self.print_to_log_file("Mean Validation Dice: ", (metrics['foreground_mean']["Dice"]),
-                                   also_print_to_console=True)
+            self.print_to_log_file(
+                "Mean Validation Dice: ",
+                (metrics["foreground_mean"]["Dice"]),
+                also_print_to_console=True,
+            )
+
+            # --- Multi-label (4D) per-hemisphere & overall metrics ---
+            import json
+            import nibabel as nib
+
+            def _counts(pred_bool, gt_bool):
+                tp = int(np.count_nonzero(pred_bool & gt_bool))
+                fp = int(np.count_nonzero(pred_bool & (~gt_bool)))
+                fn = int(np.count_nonzero((~pred_bool) & gt_bool))
+                return tp, fp, fn
+
+            def _dice(tp, fp, fn):
+                return (2.0 * tp) / (2.0 * tp + fp + fn + 1e-8)
+
+            val_dir = validation_output_folder
+            gt_dir = join(self.preprocessed_dataset_folder_base, "gt_segmentations")
+
+            # Collect case ids from the produced .nii files
+            case_ids = sorted(os.path.splitext(f)[0] for f in os.listdir(val_dir) if f.endswith(".nii"))
+
+            per_case = []
+            sumL = {"tp": 0, "fp": 0, "fn": 0}
+            sumR = {"tp": 0, "fp": 0, "fn": 0}
+            sumU = {"tp": 0, "fp": 0, "fn": 0}  # union across hemispheres
+
+            for k in case_ids:
+                pred_nii = nib.load(join(val_dir, f"{k}.nii"))
+                gt_nii = nib.load(join(gt_dir, f"{k}.nii"))
+                pred = pred_nii.get_fdata()
+                gt = gt_nii.get_fdata()
+
+                # Expect (..., 2). If 3D, treat as union (fallback).
+                if pred.ndim == 3:
+                    pred = np.stack([pred, pred], axis=-1)
+                if gt.ndim == 3:
+                    gt = np.stack([gt, gt], axis=-1)
+
+                pred = pred > 0.5
+                gt = gt > 0.5
+
+                tpL, fpL, fnL = _counts(pred[..., 0], gt[..., 0])
+                tpR, fpR, fnR = _counts(pred[..., 1], gt[..., 1])
+                tpU, fpU, fnU = _counts(pred[..., 0] | pred[..., 1], gt[..., 0] | gt[..., 1])
+
+                per_case.append(
+                    {
+                        "case": k,
+                        "left": {"Dice": _dice(tpL, fpL, fnL), "TP": tpL, "FP": fpL, "FN": fnL},
+                        "right": {"Dice": _dice(tpR, fpR, fnR), "TP": tpR, "FP": fpR, "FN": fnR},
+                        "overall_union": {"Dice": _dice(tpU, fpU, fnU), "TP": tpU, "FP": fpU, "FN": fnU},
+                    }
+                )
+
+                for d, t, f, n in ((sumL, tpL, fpL, fnL), (sumR, tpR, fpR, fnR), (sumU, tpU, fpU, fnU)):
+                    d["tp"] += t
+                    d["fp"] += f
+                    d["fn"] += n
+
+            dice_left = _dice(sumL["tp"], sumL["fp"], sumL["fn"])
+            dice_right = _dice(sumR["tp"], sumR["fp"], sumR["fn"])
+            dice_overall_union = _dice(sumU["tp"], sumU["fp"], sumU["fn"])
+            dice_mean_simple = 0.5 * (dice_left + dice_right)
+
+            # Pretty log output
+            self.print_to_log_file(
+                "\nValidation (multi-label, hemispheres):\n"
+                f"  Left   Dice (ch0): {dice_left:.4f}\n"
+                f"  Right  Dice (ch1): {dice_right:.4f}\n"
+                f"  Overall Dice (union of ch0|ch1): {dice_overall_union:.4f}\n"
+                f"  Mean of hemispheres: {dice_mean_simple:.4f}\n",
+                also_print_to_console=True,
+            )
+
+            # Log scalars for your plots
+            self.logger.log("val_dice_left", float(dice_left), self.current_epoch)
+            self.logger.log("val_dice_right", float(dice_right), self.current_epoch)
+            self.logger.log("val_dice_overall_union", float(dice_overall_union), self.current_epoch)
+
+            # Write an additional, multi-label aware summary
+            ml_summary = {
+                "per_hemisphere": {
+                    "left": {"Dice": dice_left, "TP": sumL["tp"], "FP": sumL["fp"], "FN": sumL["fn"]},
+                    "right": {"Dice": dice_right, "TP": sumR["tp"], "FP": sumR["fp"], "FN": sumR["fn"]},
+                    "overall_union": {"Dice": dice_overall_union, "TP": sumU["tp"], "FP": sumU["fp"], "FN": sumU["fn"]},
+                    "mean_of_hemispheres": dice_mean_simple,
+                },
+                "metric_per_case": per_case,
+            }
+            with open(join(val_dir, "summary_multilabel.json"), "w") as f:
+                json.dump(ml_summary, f, indent=2)
 
         self.set_deep_supervision_enabled(True)
         from nnunetv2.inference.sliding_window_prediction import compute_gaussian
+
         compute_gaussian.cache_clear()
