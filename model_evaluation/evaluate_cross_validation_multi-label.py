@@ -409,7 +409,7 @@ class MultiLabelCrossValidationEvaluator:
                 if dice_col in df.columns:
                     dice_vals = df[dice_col].replace([np.inf, -np.inf], np.nan).dropna()
                     if len(dice_vals) > 0:
-                        print(f"{hemi} Hemisphere - Dice: {dice_vals.mean():.4f} ± {dice_vals.std():.4f}")
+                        print(f"{hemi} Hemisphere - Dice: {dice_vals.mean():.4f} +/- {dice_vals.std():.4f}")
         print("="*70)
 
 
