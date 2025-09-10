@@ -553,6 +553,9 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
             # Need to flip axis 0 (up-down) and axis 1 (left-right) for each slice
             print(f"DEBUG: applying flip correction (both axes) to match ground truth orientation")
             segmentation_reverted_cropping = np.flip(segmentation_reverted_cropping, axis=(0, 1))
+            # (H, W, D, C) -> rotate 90° CW, then flip vertically
+            segmentation_reverted_cropping = np.flip(np.rot90(segmentation_reverted_cropping, k=3, axes=(0, 1)), axis=0)
+
             
             print(f"DEBUG: after transpose and flip correction: {segmentation_reverted_cropping.shape}")
             print(f"DEBUG: after flip - unique values: {np.unique(segmentation_reverted_cropping)}")
