@@ -23,93 +23,73 @@ class MultiLabelPredictor(nnUNetPredictor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
-    def predict_sliding_window_return_logits(self, input_image,
-                                           tile_step_size: float = 0.5,
-                                           mirror_axes: Tuple[int, ...] = None,
-                                           use_gaussian: bool = True,
-                                           precomputed_gaussian=None):
-        """Override the entire sliding window prediction to handle 2-channel output."""
+    def _internal_predict_sliding_window_return_logits(self, data, slicers, do_on_device: bool):
+        """Override internal method to handle 2-channel prediction arrays."""
         from nnunetv2.inference.sliding_window_prediction import compute_gaussian
+        from threading import Thread
+        from queue import Queue
+        from tqdm import tqdm
+        import torch
         
-        # Setup mirroring
-        if mirror_axes is None:
-            mirror_axes = self.allowed_mirroring_axes if self.use_mirroring else ()
-
-        # Compute Gaussian for weighting patches
-        if use_gaussian:
-            gaussian = compute_gaussian(tuple(self.configuration_manager.patch_size), sigma_scale=1. / 8,
-                                      value_scaling_factor=1000,
-                                      device=self.device) if precomputed_gaussian is None else precomputed_gaussian
-        else:
-            gaussian = 1
-
-        # Initialize prediction array for 2 channels instead of default 3
-        # This is the key fix - using 2 channels throughout
-        n_channels = 2  # Our model outputs 2 channels
+        results_device = self.device if do_on_device else 'cpu'
         
-        # Get image properties
-        spatial_shape = input_image.shape[1:]
-        prediction_shape = [n_channels] + list(spatial_shape)
+        def producer(data, slicers, queue):
+            for sl in slicers:
+                queue.put((torch.clone(data[sl], memory_format=torch.contiguous_format), sl))
+            queue.put('end')
         
-        # Create prediction arrays
-        predicted_logits = torch.zeros(prediction_shape, dtype=torch.float32, device='cpu' if not self.perform_everything_on_device else self.device)
-        n_predictions = torch.zeros(prediction_shape, dtype=torch.float32, device='cpu' if not self.perform_everything_on_device else self.device)
-        
-        # Compute step size
-        step_size = [max(1, int(np.round(i * tile_step_size))) for i in self.configuration_manager.patch_size]
-        
-        # Generate slicers for sliding window
-        slicers = []
-        for d in range(len(spatial_shape)):
-            positions = list(range(0, spatial_shape[d], step_size[d]))
-            if positions[-1] < spatial_shape[d] - self.configuration_manager.patch_size[d]:
-                positions.append(spatial_shape[d] - self.configuration_manager.patch_size[d])
+        try:
+            # Move data to device
+            if self.verbose:
+                print(f'move image to device {results_device}')
+            data = data.to(results_device)
+            queue = Queue(maxsize=2)
+            t = Thread(target=producer, args=(data, slicers, queue))
+            t.start()
             
-            slicers.append([slice(pos, pos + self.configuration_manager.patch_size[d]) for pos in positions])
-        
-        # Import necessary functions
-        from itertools import product
-        from nnunetv2.utilities.label_handling.label_handling import determine_num_input_channels
-        
-        # Process each patch
-        for slicers_batch in product(*slicers):
-            # Extract patch
-            patch_slice = [slice(None)] + list(slicers_batch)  # Add channel dimension
-            data_patch = input_image[tuple(patch_slice)]
+            # Preallocate arrays for 2 channels instead of using label_manager.num_segmentation_heads
+            if self.verbose:
+                print(f'preallocating results arrays on device {results_device}')
+            # Force 2 channels for our multi-label binary output
+            predicted_logits = torch.zeros((2, *data.shape[1:]), dtype=torch.half, device=results_device)
+            n_predictions = torch.zeros(data.shape[1:], dtype=torch.half, device=results_device)
             
-            if not isinstance(data_patch, torch.Tensor):
-                data_patch = torch.from_numpy(data_patch)
-            
-            data_patch = data_patch[None]  # Add batch dimension
-            
-            # Predict on patch
-            with torch.no_grad():
-                if self.perform_everything_on_device:
-                    data_patch = data_patch.to(self.device)
+            if self.use_gaussian:
+                gaussian = compute_gaussian(tuple(self.configuration_manager.patch_size), sigma_scale=1. / 8,
+                                          value_scaling_factor=10, device=results_device)
+            else:
+                gaussian = 1
+                
+            if not self.allow_tqdm and self.verbose:
+                print(f'running prediction: {len(slicers)} steps')
+                
+            with tqdm(desc=None, total=len(slicers), disable=not self.allow_tqdm) as pbar:
+                while True:
+                    item = queue.get()
+                    if item == 'end':
+                        queue.task_done()
+                        break
+                    workon, sl = item
+                    prediction = self._internal_maybe_mirror_and_predict(workon)[0].to(results_device)
                     
-                # Forward pass through network
-                prediction = self.network(data_patch)[0]  # Remove batch dimension
-                
-                # Handle mirroring if needed
-                if len(mirror_axes) > 0:
-                    # Add mirrored predictions (simplified version)
-                    for axis in mirror_axes:
-                        mirrored = torch.flip(data_patch, dims=(axis + 1,))  # +1 for batch dimension
-                        mirrored_pred = torch.flip(self.network(mirrored)[0], dims=(axis,))
-                        prediction = (prediction + mirrored_pred) / 2
-                
-                # Move to target device
-                if not self.perform_everything_on_device:
-                    prediction = prediction.cpu()
-                
-                # Add to accumulated prediction
-                target_slice = [slice(None)] + list(slicers_batch)
-                predicted_logits[tuple(target_slice)] += prediction * gaussian
-                n_predictions[tuple(target_slice)] += gaussian
-        
-        # Normalize by number of predictions
-        predicted_logits = predicted_logits / (n_predictions + 1e-8)
-        
+                    if self.use_gaussian:
+                        prediction *= gaussian
+                    predicted_logits[sl] += prediction
+                    n_predictions[sl[1:]] += gaussian
+                    queue.task_done()
+                    pbar.update()
+            queue.join()
+            
+            # Normalize predictions
+            predicted_logits /= n_predictions[None]
+            
+        except Exception as e:
+            if self.verbose:
+                print(f'Error in prediction: {e}')
+            raise e
+        finally:
+            t.join()
+            
         return predicted_logits
 
     def convert_predicted_logits_to_segmentation_with_correct_shape(self, predicted_logits, plans_manager,
