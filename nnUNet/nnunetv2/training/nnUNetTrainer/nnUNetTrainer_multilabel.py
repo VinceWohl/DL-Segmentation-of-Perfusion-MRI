@@ -197,7 +197,7 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         device: torch.device = torch.device('cuda')
     ):
         super().__init__(plans, configuration, fold, dataset_json, device)
-        self.num_epochs = 10
+        self.num_epochs = 1000
         self.spatial_weight = 0.1
         self.complementary_weight = 0.1
 
