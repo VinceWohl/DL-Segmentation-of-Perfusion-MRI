@@ -67,6 +67,7 @@ class MultiLabelPredictor(nnUNetPredictor):
         
         print(f"DEBUG: returning segmentation with shape: {segmentation.numpy().shape}")
         return segmentation.numpy(), predicted_probabilities.numpy() if save_probabilities else None
+    
 
 
 class MultiLabelHead(nn.Module):
@@ -423,6 +424,201 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
         
         return mean_dice
     
+    def export_multilabel_prediction(self, predicted_logits, properties_dict, configuration_manager, plans_manager, 
+                                   dataset_json, output_filename_truncated, save_probabilities=False):
+        """Custom export function for 2-channel multi-label predictions."""
+        import torch
+        import numpy as np
+        from nnunetv2.imageio.base_reader_writer import BaseReaderWriter
+        from nnunetv2.imageio.reader_writer_registry import recursive_find_reader_writer_by_name
+        from acvl_utils.cropping_and_padding.bounding_boxes import insert_crop_into_image
+        from nnunetv2.configuration import default_num_processes
+        
+        old_threads = torch.get_num_threads()
+        torch.set_num_threads(default_num_processes)
+        
+        print(f"DEBUG: export_multilabel_prediction called with logits shape: {predicted_logits.shape}")
+        
+        # Convert logits to probabilities and then to segmentation
+        predicted_probabilities = torch.sigmoid(predicted_logits.to('cpu'))
+        
+        # For 2-channel multi-label: each channel is independent binary segmentation
+        segmentation = (predicted_probabilities > 0.5).long()
+        
+        print(f"DEBUG: segmentation shape before transpose: {segmentation.shape}")
+        
+        # Transpose from (2, D, H, W) to (D, H, W, 2) to match ground truth format
+        if len(segmentation.shape) == 4 and segmentation.shape[0] == 2:
+            segmentation = segmentation.permute(1, 2, 3, 0)
+            if save_probabilities:
+                predicted_probabilities = predicted_probabilities.permute(1, 2, 3, 0)
+        
+        print(f"DEBUG: segmentation shape after transpose: {segmentation.shape}")
+        
+        # Keep the 2-channel binary format - convert to numpy if needed
+        segmentation_np = segmentation.numpy() if isinstance(segmentation, torch.Tensor) else segmentation
+        
+        print(f"DEBUG: keeping 2-channel binary format with shape: {segmentation_np.shape}")
+        print(f"DEBUG: channel 0 unique values: {np.unique(segmentation_np[:, :, :, 0])}")
+        print(f"DEBUG: channel 1 unique values: {np.unique(segmentation_np[:, :, :, 1])}")
+        
+        # Use the 4D binary segmentation for processing
+        segmentation = segmentation_np
+        
+        # Resample to original shape if needed (handle 4D with channels)
+        spacing_transposed = [properties_dict['spacing'][i] for i in plans_manager.transpose_forward]
+        current_spacing = configuration_manager.spacing if \
+            len(configuration_manager.spacing) == \
+            len(properties_dict['shape_after_cropping_and_before_resampling']) else \
+            [spacing_transposed[0], *configuration_manager.spacing]
+        
+        # For 4D resampling, we need to handle each channel separately
+        target_shape_3d = properties_dict['shape_after_cropping_and_before_resampling']
+        if tuple(segmentation.shape[:3]) != tuple(target_shape_3d):
+            print(f"DEBUG: resampling from {segmentation.shape[:3]} to {target_shape_3d}")
+            resampled_channels = []
+            for ch in range(segmentation.shape[3]):
+                resampled_ch = configuration_manager.resampling_fn_seg(
+                    segmentation[:, :, :, ch],
+                    target_shape_3d,
+                    current_spacing,
+                    [properties_dict['spacing'][i] for i in plans_manager.transpose_forward]
+                )
+                resampled_channels.append(resampled_ch)
+            segmentation = np.stack(resampled_channels, axis=-1)
+            print(f"DEBUG: after resampling: {segmentation.shape}")
+        
+        if save_probabilities and tuple(predicted_probabilities.shape[:3]) != tuple(target_shape_3d):
+            prob_channels = []
+            for ch in range(predicted_probabilities.shape[3]):
+                prob_ch = configuration_manager.resampling_fn_probabilities(
+                    predicted_probabilities[:, :, :, ch],
+                    target_shape_3d,
+                    current_spacing,
+                    [properties_dict['spacing'][i] for i in plans_manager.transpose_forward]
+                )
+                prob_channels.append(prob_ch)
+            predicted_probabilities = np.stack(prob_channels, axis=-1)
+        
+        # Revert cropping - handle 4D arrays by processing each channel separately
+        target_shape_3d = properties_dict['shape_before_cropping']
+        target_shape_4d = list(target_shape_3d) + [segmentation.shape[-1]]
+        
+        print(f"DEBUG: target_shape_4d: {target_shape_4d}")
+        print(f"DEBUG: segmentation shape before cropping revert: {segmentation.shape}")
+        print(f"DEBUG: segmentation unique values before cropping revert: {np.unique(segmentation)}")
+        if len(segmentation.shape) == 4:
+            print(f"DEBUG: segmentation ch0 sum before cropping: {np.sum(segmentation[:,:,:,0])}")
+            print(f"DEBUG: segmentation ch1 sum before cropping: {np.sum(segmentation[:,:,:,1])}")
+        
+        # Process each channel separately since insert_crop_into_image doesn't handle 4D
+        segmentation_reverted_cropping = np.zeros(target_shape_4d, dtype=np.uint8)
+        
+        if len(segmentation.shape) == 4:
+            for ch in range(segmentation.shape[-1]):
+                # Create 3D target for this channel
+                target_3d = np.zeros(target_shape_3d, dtype=np.uint8)
+                # Insert crop for this channel
+                target_3d = insert_crop_into_image(target_3d, segmentation[:,:,:,ch], 
+                                                 properties_dict['bbox_used_for_cropping'])
+                # Assign to the 4D result
+                segmentation_reverted_cropping[:,:,:,ch] = target_3d
+                print(f"DEBUG: channel {ch} after crop revert - sum: {np.sum(target_3d)}")
+        else:
+            # Fall back to original for 3D
+            segmentation_reverted_cropping = insert_crop_into_image(segmentation_reverted_cropping, segmentation, 
+                                                                  properties_dict['bbox_used_for_cropping'])
+                                                              
+        print(f"DEBUG: after cropping revert - shape: {segmentation_reverted_cropping.shape}")
+        print(f"DEBUG: after cropping revert - unique values: {np.unique(segmentation_reverted_cropping)}")
+        if len(segmentation_reverted_cropping.shape) == 4:
+            print(f"DEBUG: after cropping revert - ch0 sum: {np.sum(segmentation_reverted_cropping[:,:,:,0])}")
+            print(f"DEBUG: after cropping revert - ch1 sum: {np.sum(segmentation_reverted_cropping[:,:,:,1])}")
+        
+        # Debug before transpose
+        print(f"DEBUG: before transpose - shape: {segmentation_reverted_cropping.shape}")
+        print(f"DEBUG: before transpose - unique values: {np.unique(segmentation_reverted_cropping)}")
+        if len(segmentation_reverted_cropping.shape) == 4:
+            print(f"DEBUG: before transpose - channel 0 sum: {np.sum(segmentation_reverted_cropping[:,:,:,0])}")
+            print(f"DEBUG: before transpose - channel 1 sum: {np.sum(segmentation_reverted_cropping[:,:,:,1])}")
+        
+        # Transpose back to original orientation (maintaining channel dimension)
+        # GT format is (80, 80, 14, 2), validation currently produces (14, 80, 80, 2)
+        # We need to transpose from (D, H, W, C) -> (H, W, D, C) to match GT
+        if len(segmentation_reverted_cropping.shape) == 4:
+            # From (D=14, H=80, W=80, C=2) to (H=80, W=80, D=14, C=2)
+            segmentation_reverted_cropping = segmentation_reverted_cropping.transpose(1, 2, 0, 3)
+            
+            # Apply flip correction - predictions are flipped on both spatial axes
+            # Need to flip axis 0 (up-down) and axis 1 (left-right) for each slice
+            print(f"DEBUG: applying flip correction (both axes) to match ground truth orientation")
+            segmentation_reverted_cropping = np.flip(segmentation_reverted_cropping, axis=(0, 1))
+            
+            print(f"DEBUG: after transpose and flip correction: {segmentation_reverted_cropping.shape}")
+            print(f"DEBUG: after flip - unique values: {np.unique(segmentation_reverted_cropping)}")
+            print(f"DEBUG: after flip - channel 0 sum: {np.sum(segmentation_reverted_cropping[:,:,:,0])}")
+            print(f"DEBUG: after flip - channel 1 sum: {np.sum(segmentation_reverted_cropping[:,:,:,1])}")
+        else:
+            # Fall back to original transpose for 3D
+            transpose_indices = list(plans_manager.transpose_backward) + [len(segmentation_reverted_cropping.shape)-1]
+            segmentation_reverted_cropping = segmentation_reverted_cropping.transpose(transpose_indices)
+        
+        print(f"DEBUG: final segmentation shape before saving: {segmentation_reverted_cropping.shape}")
+        print(f"DEBUG: final segmentation channel 0 unique values: {np.unique(segmentation_reverted_cropping[:,:,:,0])}")
+        print(f"DEBUG: final segmentation channel 1 unique values: {np.unique(segmentation_reverted_cropping[:,:,:,1])}")
+        
+        # Save as 4D NIfTI file using nibabel directly (since SimpleITK doesn't handle 4D well)
+        import nibabel as nib
+        
+        # Create NIfTI image with proper affine matrix from properties
+        affine = np.eye(4)
+        if 'sitk_stuff' in properties_dict and 'spacing' in properties_dict:
+            spacing = properties_dict['spacing']
+            affine[0, 0] = spacing[0]
+            affine[1, 1] = spacing[1]  
+            affine[2, 2] = spacing[2]
+            
+        nii_img = nib.Nifti1Image(segmentation_reverted_cropping.astype(np.uint8), affine)
+        nib.save(nii_img, output_filename_truncated + '.nii')
+        
+        print(f"DEBUG: saved 4D NIfTI with shape: {segmentation_reverted_cropping.shape}")
+        
+        # Save probabilities if requested
+        if save_probabilities:
+            # Handle probabilities with same 4D processing
+            prob_target_shape_3d = properties_dict['shape_before_cropping']
+            prob_target_shape_4d = list(prob_target_shape_3d) + [predicted_probabilities.shape[-1]]
+            
+            probabilities_reverted_cropping = np.zeros(prob_target_shape_4d, dtype=np.float32)
+            
+            # Process each channel separately for probabilities too
+            if len(predicted_probabilities.shape) == 4:
+                for ch in range(predicted_probabilities.shape[-1]):
+                    # Create 3D target for this channel
+                    prob_target_3d = np.zeros(prob_target_shape_3d, dtype=np.float32)
+                    # Insert crop for this channel
+                    prob_target_3d = insert_crop_into_image(prob_target_3d, predicted_probabilities[:,:,:,ch], 
+                                                          properties_dict['bbox_used_for_cropping'])
+                    # Assign to the 4D result
+                    probabilities_reverted_cropping[:,:,:,ch] = prob_target_3d
+            else:
+                probabilities_reverted_cropping = insert_crop_into_image(probabilities_reverted_cropping, predicted_probabilities, 
+                                                                       properties_dict['bbox_used_for_cropping'])
+            
+            # Use same transpose and flip logic as segmentation
+            if len(probabilities_reverted_cropping.shape) == 4:
+                probabilities_reverted_cropping = probabilities_reverted_cropping.transpose(1, 2, 0, 3)
+                # Apply same flip correction as segmentation
+                probabilities_reverted_cropping = np.flip(probabilities_reverted_cropping, axis=(0, 1))
+            else:
+                prob_transpose_indices = list(plans_manager.transpose_backward) + [len(probabilities_reverted_cropping.shape)-1]
+                probabilities_reverted_cropping = probabilities_reverted_cropping.transpose(prob_transpose_indices)
+            
+            print(f"DEBUG: saving probabilities with shape: {probabilities_reverted_cropping.shape}")
+            np.savez_compressed(output_filename_truncated + '.npz', probabilities=probabilities_reverted_cropping)
+        
+        torch.set_num_threads(old_threads)
+    
     def initialize_network(self):
         """Initialize network with standard 3-channel multi-label output."""
         # Use standard initialization - no label manager override needed
@@ -521,10 +717,10 @@ class nnUNetTrainer_multilabel(nnUNetTrainer):
                 prediction = predictor.predict_sliding_window_return_logits(data)
                 prediction = prediction.cpu()
 
-                # this needs to go into background processes
+                # Use our custom export function for 2-channel multi-label predictions
                 results.append(
                     segmentation_export_pool.starmap_async(
-                        export_prediction_from_logits, (
+                        self.export_multilabel_prediction, (
                             (prediction, properties, self.configuration_manager, self.plans_manager,
                              self.dataset_json, output_filename_truncated, save_probabilities),
                         )
