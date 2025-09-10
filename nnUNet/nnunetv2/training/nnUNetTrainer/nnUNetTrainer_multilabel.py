@@ -24,86 +24,48 @@ class MultiLabelPredictor(nnUNetPredictor):
         super().__init__(*args, **kwargs)
     
     def _internal_predict_sliding_window_return_logits(self, data, slicers, do_on_device: bool):
-        """Override internal method to handle 2-channel prediction arrays."""
-        from nnunetv2.inference.sliding_window_prediction import compute_gaussian
-        from threading import Thread
-        from queue import Queue
-        from tqdm import tqdm
-        import torch
+        """Override to handle 2-channel predictions by creating a mock label manager."""
+        # Create a temporary mock label manager that reports 2 segmentation heads
+        class MockLabelManager:
+            def __init__(self):
+                self.num_segmentation_heads = 2
         
-        results_device = self.device if do_on_device else 'cpu'
-        
-        def producer(data, slicers, queue):
-            for sl in slicers:
-                queue.put((torch.clone(data[sl], memory_format=torch.contiguous_format), sl))
-            queue.put('end')
+        # Temporarily replace the label manager
+        original_label_manager = getattr(self, 'label_manager', None)
+        self.label_manager = MockLabelManager()
         
         try:
-            # Move data to device
-            if self.verbose:
-                print(f'move image to device {results_device}')
-            data = data.to(results_device)
-            queue = Queue(maxsize=2)
-            t = Thread(target=producer, args=(data, slicers, queue))
-            t.start()
-            
-            # Preallocate arrays for 2 channels instead of using label_manager.num_segmentation_heads
-            if self.verbose:
-                print(f'preallocating results arrays on device {results_device}')
-            # Force 2 channels for our multi-label binary output
-            predicted_logits = torch.zeros((2, *data.shape[1:]), dtype=torch.half, device=results_device)
-            n_predictions = torch.zeros(data.shape[1:], dtype=torch.half, device=results_device)
-            
-            if self.use_gaussian:
-                gaussian = compute_gaussian(tuple(self.configuration_manager.patch_size), sigma_scale=1. / 8,
-                                          value_scaling_factor=10, device=results_device)
-            else:
-                gaussian = 1
-                
-            if not self.allow_tqdm and self.verbose:
-                print(f'running prediction: {len(slicers)} steps')
-                
-            with tqdm(desc=None, total=len(slicers), disable=not self.allow_tqdm) as pbar:
-                while True:
-                    item = queue.get()
-                    if item == 'end':
-                        queue.task_done()
-                        break
-                    workon, sl = item
-                    prediction = self._internal_maybe_mirror_and_predict(workon)[0].to(results_device)
-                    
-                    if self.use_gaussian:
-                        prediction *= gaussian
-                    predicted_logits[sl] += prediction
-                    n_predictions[sl[1:]] += gaussian
-                    queue.task_done()
-                    pbar.update()
-            queue.join()
-            
-            # Normalize predictions
-            predicted_logits /= n_predictions[None]
-            
-        except Exception as e:
-            if self.verbose:
-                print(f'Error in prediction: {e}')
-            raise e
+            # Call the parent implementation with our mock label manager
+            result = super()._internal_predict_sliding_window_return_logits(data, slicers, do_on_device)
+            return result
         finally:
-            t.join()
-            
-        return predicted_logits
+            # Restore original label manager
+            self.label_manager = original_label_manager
 
     def convert_predicted_logits_to_segmentation_with_correct_shape(self, predicted_logits, plans_manager,
                                                                    configuration_manager, label_manager,
                                                                    properties_dict, save_probabilities=False):
-        """Override to handle 2-channel binary format without conversion to 3-channel."""
+        """Override to handle 2-channel binary format and ensure correct spatial dimensions."""
+        print(f"DEBUG: convert_predicted_logits called with shape: {predicted_logits.shape}")
+        
         # Apply sigmoid to get probabilities
         predicted_probabilities = torch.sigmoid(predicted_logits.to('cpu'))
         
         # Convert to binary segmentation (threshold at 0.5)
         segmentation = (predicted_probabilities > 0.5).long()
         
-        # Return both probability maps and segmentation in 2-channel format
-        # This matches the ground truth format: each channel is independent binary mask
+        print(f"DEBUG: segmentation shape after thresholding: {segmentation.shape}")
+        
+        # Ensure we return the correct format: (spatial_dims..., channels)
+        # predicted_logits shape: (2, D, H, W) -> segmentation should be (D, H, W, 2)
+        if len(segmentation.shape) == 4:  # (2, D, H, W)
+            # Transpose to (D, H, W, 2) to match ground truth format
+            segmentation = segmentation.permute(1, 2, 3, 0)
+            if save_probabilities:
+                predicted_probabilities = predicted_probabilities.permute(1, 2, 3, 0)
+            print(f"DEBUG: segmentation shape after transpose: {segmentation.shape}")
+        
+        print(f"DEBUG: returning segmentation with shape: {segmentation.numpy().shape}")
         return segmentation.numpy(), predicted_probabilities.numpy() if save_probabilities else None
 
 
