@@ -206,10 +206,10 @@ class InterInputPlotter:
             patch.set_linewidth(1)
         
         # Customize the plot
-        ax.set_title(f'{approach.replace("_", " ").title()} Segmentation: DSC Volume by Input Configuration and Hemisphere', 
+        ax.set_title(f'{approach.replace("_", " ").title()} Segmentation: DSC by Input Configuration and Hemisphere', 
                      fontsize=16, fontweight='bold', pad=20)
         ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
-        ax.set_ylabel('DSC Volume Score', fontsize=14, fontweight='bold')
+        ax.set_ylabel('DSC Score', fontsize=14, fontweight='bold')
         
         # Set custom x-axis labels for hemisphere groups
         ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
