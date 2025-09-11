@@ -187,7 +187,7 @@ class InterInputPlotter:
             
             # Add gap between hemispheres
             if hemi_idx < len(hemispheres) - 1:
-                position += 0.8  # Minimal gap between hemispheres
+                position += 0.3  # Minimal gap between hemispheres
         
         # Create box plots manually with proper positioning
         box_parts = ax.boxplot(
