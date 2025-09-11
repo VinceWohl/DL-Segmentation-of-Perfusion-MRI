@@ -330,6 +330,14 @@ class MultiClassCrossValidationEvaluator:
                     row[m] = r.get(pref+m, np.nan)
                 class_rows.append(row)
         per_class_details = pd.DataFrame(class_rows)
+        
+        # Reorder columns: Fold, Subject, Visit, Class, Base_Name, metrics...
+        if not per_class_details.empty:
+            class_cols = ["Fold", "Subject", "Visit", "Class", "Base_Name"] + metric_cols
+            per_class_details = per_class_details[[c for c in class_cols if c in per_class_details.columns]]
+            
+            # Sort by Fold, Subject, Visit, Class
+            per_class_details = per_class_details.sort_values(['Fold', 'Subject', 'Visit', 'Class'], na_position='last')
 
         # Build Per_Hemisphere_Details
         hemi_rows = []
@@ -344,6 +352,14 @@ class MultiClassCrossValidationEvaluator:
                     row[m] = r.get(pref+m, np.nan)
                 hemi_rows.append(row)
         per_hemi_details = pd.DataFrame(hemi_rows)
+        
+        # Reorder columns: Fold, Subject, Visit, Hemisphere, Base_Name, metrics...
+        if not per_hemi_details.empty:
+            hemi_cols = ["Fold", "Subject", "Visit", "Hemisphere", "Base_Name"] + metric_cols
+            per_hemi_details = per_hemi_details[[c for c in hemi_cols if c in per_hemi_details.columns]]
+            
+            # Sort by Fold, Subject, Visit, Hemisphere
+            per_hemi_details = per_hemi_details.sort_values(['Fold', 'Subject', 'Visit', 'Hemisphere'], na_position='last')
 
         # Safe stats (consistent across sheets): ddof=0, inf->NaN
         def safe_stats(series):
@@ -362,14 +378,16 @@ class MultiClassCrossValidationEvaluator:
                     pcs_rows.append({"Class": cname, "Metric": m, "Mean": mean_v, "Std": std_v})
         per_class_summary = pd.DataFrame(pcs_rows)
 
-        # Per_Hemisphere_Summary
+        # Per_Hemisphere_Summary (Left first, then Right)
         phs_rows = []
         if not per_hemi_details.empty:
-            for m in metric_cols:
-                if m not in per_hemi_details.columns: continue
-                for hemi, sub in per_hemi_details.groupby("Hemisphere"):
-                    mean_v, std_v = safe_stats(sub[m])
-                    phs_rows.append({"Hemisphere": hemi, "Metric": m, "Mean": mean_v, "Std": std_v})
+            for hemi in ["Left", "Right"]:  # Explicit order: Left first, then Right
+                hemi_data = per_hemi_details[per_hemi_details["Hemisphere"] == hemi]
+                if not hemi_data.empty:
+                    for m in metric_cols:
+                        if m not in hemi_data.columns: continue
+                        mean_v, std_v = safe_stats(hemi_data[m])
+                        phs_rows.append({"Hemisphere": hemi, "Metric": m, "Mean": mean_v, "Std": std_v})
         per_hemi_summary = pd.DataFrame(phs_rows)
 
         # Overall_Summary (COMBINED across both hemispheres ONLY)
@@ -382,10 +400,11 @@ class MultiClassCrossValidationEvaluator:
         overall_summary = pd.DataFrame(overall_rows)
 
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        xlsx = self.output_dir / f"multi_class_cross_validation_evaluation_results_{ts}.xlsx"
+        xlsx = self.output_dir / f"crossval_multiclass_results_{ts}.xlsx"
 
         with pd.ExcelWriter(xlsx, engine="openpyxl") as writer:
-            per_class_details.to_excel(writer, sheet_name="Per_Class_Details", index=False)
+            # Write sheets in order: Per_Case_Details first, then others
+            per_class_details.to_excel(writer, sheet_name="Per_Case_Details", index=False)
             per_hemi_details.to_excel(writer, sheet_name="Per_Hemisphere_Details", index=False)
             per_class_summary.to_excel(writer, sheet_name="Per_Class_Summary", index=False)
             per_hemi_summary.to_excel(writer, sheet_name="Per_Hemisphere_Summary", index=False)

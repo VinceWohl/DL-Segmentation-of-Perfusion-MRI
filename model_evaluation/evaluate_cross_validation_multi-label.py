@@ -342,6 +342,14 @@ class MultiLabelCrossValidationEvaluator:
                     row[m] = r.get(pref+m, np.nan)
                 case_rows.append(row)
         per_case_details = pd.DataFrame(case_rows)
+        
+        # Reorder columns: Fold, Subject, Visit, Hemisphere, Base_Name, metrics...
+        if not per_case_details.empty:
+            case_cols = ["Fold", "Subject", "Visit", "Hemisphere", "Base_Name"] + metric_cols
+            per_case_details = per_case_details[[c for c in case_cols if c in per_case_details.columns]]
+            
+            # Sort by Fold, Subject, Visit, Hemisphere
+            per_case_details = per_case_details.sort_values(['Fold', 'Subject', 'Visit', 'Hemisphere'], na_position='last')
 
         # Safe stats (consistent): ddof=0, inf->NaN
         def safe_stats(series):
@@ -350,14 +358,16 @@ class MultiLabelCrossValidationEvaluator:
                 return np.nan, np.nan
             return float(vals.mean()), float(vals.std(ddof=0))
 
-        # Per_Hemisphere_Summary
+        # Per_Hemisphere_Summary (Left first, then Right)
         phs_rows = []
         if not per_case_details.empty:
-            for m in metric_cols:
-                if m not in per_case_details.columns: continue
-                for hemi, sub in per_case_details.groupby("Hemisphere"):
-                    mean_v, std_v = safe_stats(sub[m])
-                    phs_rows.append({"Hemisphere": hemi, "Metric": m, "Mean": mean_v, "Std": std_v})
+            for hemi in ["Left", "Right"]:  # Explicit order: Left first, then Right
+                hemi_data = per_case_details[per_case_details["Hemisphere"] == hemi]
+                if not hemi_data.empty:
+                    for m in metric_cols:
+                        if m not in hemi_data.columns: continue
+                        mean_v, std_v = safe_stats(hemi_data[m])
+                        phs_rows.append({"Hemisphere": hemi, "Metric": m, "Mean": mean_v, "Std": std_v})
         per_hemi_summary = pd.DataFrame(phs_rows)
 
         # Overall_Summary (combined across both hemispheres)
@@ -371,7 +381,7 @@ class MultiLabelCrossValidationEvaluator:
 
         # Save to Excel
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        xlsx = self.output_dir / f"multi_label_cross_validation_evaluation_results_{ts}.xlsx"
+        xlsx = self.output_dir / f"crossval_multilabel_results_{ts}.xlsx"
 
         with pd.ExcelWriter(xlsx, engine="openpyxl") as writer:
             per_case_details.to_excel(writer, sheet_name="Per_Case_Details", index=False)

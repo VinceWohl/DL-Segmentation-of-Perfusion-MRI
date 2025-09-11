@@ -29,12 +29,6 @@ try:
 except ImportError:
     PANDAS_AVAILABLE = False
 
-try:
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    VISUALIZATION_AVAILABLE = True
-except ImportError:
-    VISUALIZATION_AVAILABLE = False
 
 
 class CrossValidationEvaluator:
@@ -52,6 +46,39 @@ class CrossValidationEvaluator:
         self.processed_count = 0
         self.successful_count = 0
         self.failed_files = []
+        
+        # Load fold splits for subject-to-fold mapping
+        self.subject_to_fold_map = self._load_fold_splits()
+
+    def _load_fold_splits(self):
+        """Load fold splits and create subject-to-fold mapping"""
+        splits_file = Path("/home/ubuntu/DLSegPerf/data/nnUNet_raw/Dataset001_PerfusionTerritories/splits_final.json")
+        subject_to_fold = {}
+        
+        try:
+            with open(splits_file, 'r') as f:
+                splits = json.load(f)
+            
+            # Create mapping from subject to fold based on validation cases
+            for fold_idx, fold_data in enumerate(splits):
+                for case in fold_data['val']:
+                    # Extract subject from case name (e.g., "PerfTerr001-v1" -> "001")
+                    subject_match = case.split('-')[0].replace('PerfTerr', '')
+                    if subject_match:
+                        subject_to_fold[subject_match] = fold_idx
+            
+            return subject_to_fold
+        except Exception as e:
+            print(f"Warning: Could not load fold splits: {e}")
+            return {}
+
+    def _get_fold_for_case(self, base_name):
+        """Get fold number for a given case name"""
+        # Extract subject from base name (e.g., "PerfTerr001-v1-L" -> "001")
+        subject_match = base_name.split('-')[0].replace('PerfTerr', '')
+        if subject_match in self.subject_to_fold_map:
+            return self.subject_to_fold_map[subject_match]
+        return None
 
     # ---------- Loading & basic metrics (unchanged where it matters) ----------
     def load_nifti_file(self, file_path):
@@ -311,8 +338,6 @@ class CrossValidationEvaluator:
         print("\nSaving results to Excel...")
         self.save_results_to_excel()
 
-        print("Creating metrics visualization...")
-        self.create_metrics_visualization()
 
         self.print_evaluation_summary()
         return True
@@ -331,12 +356,20 @@ class CrossValidationEvaluator:
 
             # Subject/Visit/Hemisphere parsing
             df[['Subject', 'Visit', 'Hemisphere']] = df['Base_Name'].str.extract(r'PerfTerr(\d+)-v(\d+)-([LR])')
+            # Convert L/R to Left/Right
+            df['Hemisphere'] = df['Hemisphere'].map({'L': 'Left', 'R': 'Right'})
             df['Subject'] = 'sub-p' + df['Subject'].str.zfill(3)
             df['Visit'] = 'v' + df['Visit']
+            
+            # Add Fold column using mapping
+            df['Fold'] = df['Base_Name'].apply(self._get_fold_for_case)
+            
+            # Sort by Fold, Subject, Visit, Hemisphere
+            df = df.sort_values(['Fold', 'Subject', 'Visit', 'Hemisphere'], na_position='last')
 
             # ----- Sheet 1: Per_Case_Results (same columns & names) -----
             per_case_cols = [
-                'Subject', 'Visit', 'Hemisphere', 'Base_Name',
+                'Fold', 'Subject', 'Visit', 'Hemisphere', 'Base_Name',
                 'DSC_Volume', 'DSC_Slicewise', 'IoU',
                 'Sensitivity', 'Precision', 'Specificity',
                 'RVE_Percent', 'HD95_mm', 'ASSD_mm'
@@ -349,7 +382,7 @@ class CrossValidationEvaluator:
                            'RVE_Percent', 'HD95_mm', 'ASSD_mm']
 
             hemi_rows = []
-            for hemi in ['L', 'R']:
+            for hemi in ['Left', 'Right']:
                 sub = per_case_df[per_case_df['Hemisphere'] == hemi]
                 if len(sub) == 0:
                     continue
@@ -378,9 +411,10 @@ class CrossValidationEvaluator:
                 })
             overall_df = pd.DataFrame(overall_rows)
 
-            # Write to Excel
+            # Write to Excel (Per_Case_Details first)
             with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
-                per_case_df.to_excel(writer, sheet_name='Per_Case_Results', index=False)
+                # Write sheets in order: Per_Case_Details, Per_Hemisphere_Summary, Overall_Summary
+                per_case_df.to_excel(writer, sheet_name='Per_Case_Details', index=False)
                 hemi_df.to_excel(writer, sheet_name='Per_Hemisphere_Summary', index=False)
                 overall_df.to_excel(writer, sheet_name='Overall_Summary', index=False)
 
@@ -401,123 +435,6 @@ class CrossValidationEvaluator:
         except Exception as e:
             print(f"Error saving Excel file: {e}")
 
-    # ---------- Visualization (left as before; uses original columns) ----------
-    def create_metrics_visualization(self):
-        if not self.results:
-            print("No results available for visualization")
-            return False
-        if not VISUALIZATION_AVAILABLE:
-            print("Warning: matplotlib/seaborn not available. Skipping visualization.")
-            return False
-
-        df = pd.DataFrame(self.results)
-        plt.style.use('default')
-        sns.set_palette("husl")
-
-        fig = plt.figure(figsize=(16, 12))
-        fig.suptitle('Cross-Validation nnUNet Evaluation Metrics', fontsize=16, fontweight='bold')
-
-        dice_vol_values = df['Dice_Score'].values
-        dice_slice_values = df['Dice_Score_Slicewise'].values
-        hd95_values = df['HD95_mm'].replace([np.inf, -np.inf], np.nan).dropna().values
-        sensitivity_values = df['Sensitivity'].values
-
-        metrics_data = [
-            ('Dice Score\n(Volume)', dice_vol_values),
-            ('Dice Score\n(Slice-wise)', dice_slice_values),
-            ('HD95\n(mm)', hd95_values),
-            ('Sensitivity', sensitivity_values)
-        ]
-
-        for i, (metric_name, values) in enumerate(metrics_data):
-            ax = plt.subplot(2, 2, i + 1)
-            if len(values) == 0:
-                ax.text(0.5, 0.5, 'No valid data', ha='center', va='center', transform=ax.transAxes)
-                ax.set_title(metric_name.replace('\n', ' '))
-                continue
-
-            violin_parts = ax.violinplot([values], positions=[1], widths=0.6, showmeans=False, showmedians=False)
-            for pc in violin_parts['bodies']:
-                pc.set_facecolor('lightsteelblue')
-                pc.set_alpha(0.8)
-                pc.set_edgecolor('navy')
-                pc.set_linewidth(1.5)
-
-            mean_val = np.mean(values)
-            std_val = np.std(values)
-            ax.axhline(y=mean_val, color='red', linestyle='-', linewidth=2, label=f'Mean: {mean_val:.4f}', zorder=4)
-            ax.axhline(y=mean_val + std_val, color='orange', linestyle='--', linewidth=1.5, alpha=0.8, label=f'±1 Std: {std_val:.4f}', zorder=3)
-            ax.axhline(y=mean_val - std_val, color='orange', linestyle='--', linewidth=1.5, alpha=0.8, zorder=3)
-
-            q1 = np.percentile(values, 25)
-            q3 = np.percentile(values, 75)
-            iqr = q3 - q1
-            lower = q1 - 1.5 * iqr
-            upper = q3 + 1.5 * iqr
-            outliers = values[(values < lower) | (values > upper)]
-            if len(outliers) > 0:
-                x_positions = np.random.normal(1, 0.02, len(outliers))
-                ax.scatter(x_positions, outliers, color='darkred', s=40, alpha=0.9,
-                           zorder=6, edgecolors='black', linewidth=0.5, label=f'Outliers: {len(outliers)}')
-
-            ax.set_title(f'{metric_name.replace(chr(10), " ")}', fontsize=12, fontweight='bold')
-            ax.set_ylabel('Value', fontsize=11)
-            ax.set_xticks([1])
-            ax.set_xticklabels([''])
-            ax.grid(True, alpha=0.3, linestyle=':')
-            ax.legend(loc='best', fontsize=9, framealpha=0.9)
-
-        output_file = self.output_dir / "cross_validation_metrics_visualization.png"
-        plt.tight_layout()
-        plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white')
-        plt.close()
-
-        self.create_fold_comparison_plot()
-        print(f"Metrics visualization saved: {output_file}")
-        return True
-
-    def create_fold_comparison_plot(self):
-        if not self.results:
-            return False
-        df = pd.DataFrame(self.results)
-        fig, axes = plt.subplots(2, 2, figsize=(15, 10))
-        fig.suptitle('Cross-Validation Performance by Fold', fontsize=16, fontweight='bold')
-
-        metrics = [
-            ('Dice_Score', 'Dice Score (Volume)', axes[0, 0]),
-            ('Dice_Score_Slicewise', 'Dice Score (Slice-wise)', axes[0, 1]),
-            ('HD95_mm', 'HD95 (mm)', axes[1, 0]),
-            ('Sensitivity', 'Sensitivity', axes[1, 1])
-        ]
-
-        for metric_col, metric_title, ax in metrics:
-            fold_data = []
-            fold_labels = []
-            for fold_num in range(5):
-                values = df[df['Fold'] == fold_num][metric_col]
-                if metric_col == 'HD95_mm':
-                    values = values.replace([np.inf, -np.inf], np.nan).dropna()
-                if len(values) > 0:
-                    fold_data.append(values.values)
-                    fold_labels.append(f'Fold {fold_num}')
-            if fold_data:
-                box_parts = ax.boxplot(fold_data, tick_labels=fold_labels, patch_artist=True)
-                colors = plt.cm.Set3(np.linspace(0, 1, len(fold_data)))
-                for patch, color in zip(box_parts['boxes'], colors):
-                    patch.set_facecolor(color); patch.set_alpha(0.7)
-                all_vals = np.concatenate(fold_data)
-                overall_mean = np.mean(all_vals)
-                ax.axhline(y=overall_mean, color='red', linestyle='--', linewidth=2, alpha=0.8,
-                           label=f'Overall Mean: {overall_mean:.4f}')
-                ax.set_title(metric_title, fontsize=12, fontweight='bold')
-                ax.set_ylabel('Value', fontsize=11)
-                ax.grid(True, alpha=0.3, linestyle=':')
-                ax.legend(loc='best', fontsize=9)
-        output_file = self.output_dir / "cross_validation_fold_comparison.png"
-        plt.tight_layout()
-        plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white')
-        plt.close()
-        print(f"Fold comparison plot saved: {output_file}")
 
     def print_evaluation_summary(self):
         print("\n" + "=" * 60)
