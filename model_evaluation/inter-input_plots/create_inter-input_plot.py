@@ -206,10 +206,11 @@ class InterInputPlotter:
             patch.set_linewidth(1)
         
         # Customize the plot
-        ax.set_title(f'{approach.replace("_", " ").title()} Segmentation: DSC by Input Configuration and Hemisphere', 
+        ax.set_title(f'{approach.replace("_", " ").title()} Segmentation: DSC by Input Configuration and Hemisphere\n'
+                     f'Cross-validation Results', 
                      fontsize=16, fontweight='bold', pad=20)
         ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
-        ax.set_ylabel('DSC Score', fontsize=14, fontweight='bold')
+        ax.set_ylabel('DSC (volume-based)', fontsize=14, fontweight='bold')
         
         # Set custom x-axis labels for hemisphere groups
         ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
@@ -235,7 +236,7 @@ class InterInputPlotter:
                                  loc='lower right', bbox_to_anchor=(1.0, 0.0))
         
         # Add median [IQR] explanation as text annotation
-        ax.text(0.02, 0.98, 'Numbers above boxes: Median [IQR]', 
+        ax.text(0.02, 0.98, 'Median [IQR]', 
                transform=ax.transAxes, fontsize=10, 
                verticalalignment='top', horizontalalignment='left',
                bbox=dict(boxstyle='round,pad=0.4', facecolor='lightgray', alpha=0.8),
@@ -410,7 +411,6 @@ def main():
     # Create plotter and generate plots
     plotter = InterInputPlotter(results_dir)
     plotter.generate_all_plots()
-    plotter.create_summary_comparison()
     
     print("\\nInter-input channel comparison plots completed!")
 
