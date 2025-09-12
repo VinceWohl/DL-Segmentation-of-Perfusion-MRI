@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
 """
-Slice-wise DSC Analysis for nnUNet Perfusion Territory Segmentation Results
+Slice-wise Hausdorff Distance (95th percentile) Analysis for nnUNet Perfusion Territory Segmentation Results
 
-This script creates box-whisker plots showing the Dice Similarity Coefficient (DSC)
+This script creates box-whisker plots showing the 95th percentile Hausdorff Distance (HD95)
 for each slice across the z-dimension (14 slices per volume) for both left (LICA)
 and right (RICA) hemisphere perfusion territories.
+
+Why not normal DSC (as a size-sensitive metric)?
+Boundary effects: In smaller regions, boundary errors have a proportionally larger impact
+Pixel-level errors: A few misclassified pixels affect small regions much more than large regions
+That's why HD95:
+Measures pure boundary accuracy independent of region size
+Focuses on contour quality rather than volumetric overlap
+Is truly size-independent without artificial normalization
+
+But still:
+Statistical variance: Smaller regions are more susceptible to random variations
+
+HD95 is a boundary-focused metric that is size-independent and measures contour accuracy.
+Filters out slices with no ground truth segmentation (infinite HD95).
 
 Author: Generated for DLSegPerf project
 """
@@ -14,47 +28,86 @@ import glob
 import numpy as np
 import nibabel as nib
 import matplotlib.pyplot as plt
-import seaborn as sns
 from pathlib import Path
 import pandas as pd
 from typing import Dict, List, Tuple
+from datetime import datetime
+from scipy.spatial.distance import cdist
+from scipy.ndimage import binary_erosion
 import warnings
 warnings.filterwarnings('ignore')
 
-def calculate_dice_coefficient(pred: np.ndarray, gt: np.ndarray, smooth: float = 1e-6) -> float:
+def get_contour_points(binary_mask: np.ndarray) -> np.ndarray:
     """
-    Calculate Dice Similarity Coefficient between prediction and ground truth.
+    Extract contour (boundary) points from binary mask.
     
     Args:
-        pred: Prediction binary mask
-        gt: Ground truth binary mask  
-        smooth: Smoothing factor to avoid division by zero
+        binary_mask: 2D binary mask
         
     Returns:
-        Dice coefficient as float
+        Array of contour points as (N, 2) coordinates
     """
-    pred_flat = pred.flatten()
-    gt_flat = gt.flatten()
+    if np.sum(binary_mask) == 0:
+        return np.array([])
     
-    intersection = np.sum(pred_flat * gt_flat)
-    union = np.sum(pred_flat) + np.sum(gt_flat)
+    # Find boundary by subtracting eroded mask from original
+    eroded = binary_erosion(binary_mask)
+    contour = binary_mask.astype(bool) & ~eroded
     
-    if union == 0:
-        return 1.0 if intersection == 0 else 0.0
-        
-    dice = (2. * intersection + smooth) / (union + smooth)
-    return dice
+    # Get coordinates of boundary points
+    contour_points = np.column_stack(np.where(contour))
+    
+    return contour_points
 
-def calculate_slice_wise_dsc(pred_path: str, gt_path: str) -> List[float]:
+def calculate_hausdorff_distance_95(pred: np.ndarray, gt: np.ndarray) -> float:
     """
-    Calculate slice-wise DSC for a single prediction-ground truth pair.
+    Calculate 95th percentile Hausdorff Distance between prediction and ground truth contours.
+    
+    Args:
+        pred: Prediction binary mask (2D)
+        gt: Ground truth binary mask (2D)
+        
+    Returns:
+        HD95 distance in pixels (float)
+    """
+    # Check if either mask is empty
+    if np.sum(pred) == 0 or np.sum(gt) == 0:
+        return np.inf  # Return infinity for empty masks
+    
+    # Get contour points (boundary pixels)
+    pred_contour = get_contour_points(pred)
+    gt_contour = get_contour_points(gt)
+    
+    if len(pred_contour) == 0 or len(gt_contour) == 0:
+        return np.inf
+    
+    # Calculate distances from pred to gt
+    distances_pred_to_gt = cdist(pred_contour, gt_contour, metric='euclidean')
+    min_distances_pred_to_gt = np.min(distances_pred_to_gt, axis=1)
+    
+    # Calculate distances from gt to pred
+    distances_gt_to_pred = cdist(gt_contour, pred_contour, metric='euclidean')
+    min_distances_gt_to_pred = np.min(distances_gt_to_pred, axis=1)
+    
+    # Combine all distances
+    all_distances = np.concatenate([min_distances_pred_to_gt, min_distances_gt_to_pred])
+    
+    # Calculate 95th percentile
+    hd95 = np.percentile(all_distances, 95)
+    
+    return hd95
+
+def calculate_slice_wise_hd95(pred_path: str, gt_path: str) -> Dict:
+    """
+    Calculate slice-wise HD95 for a single prediction-ground truth pair.
+    Filters out slices with no segmented region (empty ground truth).
     
     Args:
         pred_path: Path to prediction NIfTI file
         gt_path: Path to ground truth NIfTI file
         
     Returns:
-        List of DSC values for each slice
+        Dictionary with slice indices and HD95 values for valid slices only
     """
     try:
         # Load prediction and ground truth
@@ -68,22 +121,32 @@ def calculate_slice_wise_dsc(pred_path: str, gt_path: str) -> List[float]:
         pred_data = (pred_data > 0.5).astype(np.uint8)
         gt_data = (gt_data > 0.5).astype(np.uint8)
         
-        # Calculate DSC for each slice (assuming z is last dimension)
+        # Calculate HD95 for each slice
         num_slices = pred_data.shape[-1]
-        slice_dsc = []
+        slice_data = {'slice_ids': [], 'hd95_values': []}
         
         for slice_idx in range(num_slices):
             pred_slice = pred_data[:, :, slice_idx]
             gt_slice = gt_data[:, :, slice_idx]
             
-            dsc = calculate_dice_coefficient(pred_slice, gt_slice)
-            slice_dsc.append(dsc)
+            # Skip slices with no ground truth segmentation
+            if np.sum(gt_slice) == 0:
+                continue
+                
+            hd95_value = calculate_hausdorff_distance_95(pred_slice, gt_slice)
             
-        return slice_dsc
+            # Skip slices with infinite HD95 (no prediction)
+            if np.isinf(hd95_value):
+                continue
+                
+            slice_data['slice_ids'].append(slice_idx + 1)  # 1-indexed
+            slice_data['hd95_values'].append(hd95_value)
+            
+        return slice_data
         
     except Exception as e:
         print(f"Error processing {pred_path}: {e}")
-        return []
+        return {'slice_ids': [], 'hd95_values': []}
 
 def collect_all_predictions() -> Dict[str, List[Tuple[str, str]]]:
     """
@@ -142,7 +205,7 @@ def collect_all_predictions() -> Dict[str, List[Tuple[str, str]]]:
 
 def create_slice_wise_plots():
     """
-    Create and save slice-wise DSC box-whisker plots for both hemispheres.
+    Create and save slice-wise HD95 plots for both hemispheres.
     """
     print("Collecting prediction-ground truth pairs...")
     all_pairs = collect_all_predictions()
@@ -150,6 +213,8 @@ def create_slice_wise_plots():
     if not all_pairs['L'] and not all_pairs['R']:
         print("No prediction-ground truth pairs found!")
         return
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     
     # Process each hemisphere
     for hemisphere in ['L', 'R']:
@@ -161,43 +226,39 @@ def create_slice_wise_plots():
             print(f"No pairs found for {hemisphere_name} hemisphere")
             continue
         
-        # Collect slice-wise DSC data
-        all_slice_dsc = []
-        sample_names = []
+        # Collect slice-wise HD95 data
+        plot_data = []
+        sample_count = 0
         
         for pred_path, gt_path in pairs:
-            slice_dsc = calculate_slice_wise_dsc(pred_path, gt_path)
+            slice_data = calculate_slice_wise_hd95(pred_path, gt_path)
             
-            if slice_dsc:
-                all_slice_dsc.append(slice_dsc)
+            if slice_data['hd95_values']:
+                sample_count += 1
                 sample_name = os.path.basename(pred_path).replace('.nii', '')
-                sample_names.append(sample_name)
+                
+                for slice_id, hd95_val in zip(slice_data['slice_ids'], slice_data['hd95_values']):
+                    plot_data.append({
+                        'Slice': slice_id,
+                        'HD95': hd95_val,
+                        'Sample': sample_name
+                    })
         
-        if not all_slice_dsc:
-            print(f"No valid DSC data for {hemisphere_name} hemisphere")
+        if not plot_data:
+            print(f"No valid HD95 data for {hemisphere_name} hemisphere")
             continue
-        
-        # Convert to DataFrame for easier plotting
-        num_slices = len(all_slice_dsc[0]) if all_slice_dsc else 14
-        plot_data = []
-        
-        for sample_idx, slice_dsc in enumerate(all_slice_dsc):
-            for slice_idx, dsc in enumerate(slice_dsc):
-                plot_data.append({
-                    'Slice': slice_idx + 1,  # 1-indexed for plotting
-                    'DSC': dsc,
-                    'Sample': sample_names[sample_idx]
-                })
         
         df = pd.DataFrame(plot_data)
         
         # Create the plot
         plt.figure(figsize=(14, 8))
         
-        # Create box plot with notches
-        box_plot = plt.boxplot([df[df['Slice'] == slice]['DSC'].values 
-                               for slice in range(1, num_slices + 1)],
-                              positions=range(1, num_slices + 1),
+        # Get unique slices and create box plot
+        unique_slices = sorted(df['Slice'].unique())
+        box_data = [df[df['Slice'] == slice_id]['HD95'].values for slice_id in unique_slices]
+        
+        box_plot = plt.boxplot(box_data,
+                              positions=unique_slices,
                               notch=True,
                               patch_artist=True,
                               boxprops=dict(facecolor='lightblue', alpha=0.7),
@@ -207,39 +268,43 @@ def create_slice_wise_plots():
         
         # Customize plot
         plt.xlabel('Slice ID', fontsize=14, fontweight='bold')
-        plt.ylabel('DSC (Dice Similarity Coefficient)', fontsize=14, fontweight='bold')
-        plt.title(f'Slice-wise DSC Distribution - {hemisphere_name} Hemisphere\n'
-                 f'Cross-validation Results (n={len(all_slice_dsc)} samples)', 
+        plt.ylabel('HD95 (pixels)', fontsize=14, fontweight='bold')
+        plt.title(f'Slice-wise Hausdorff Distance (95th percentile) - {hemisphere_name} Hemisphere\n'
+                 f'Cross-validation Results', 
                  fontsize=16, fontweight='bold', pad=20)
         
-        # Set x-axis ticks
-        plt.xticks(range(1, num_slices + 1))
+        plt.xlim(0.5, 14.5)
+        plt.ylim(0, 20)
         
-        # Add grid
+        plt.xticks(range(1, 15))
         plt.grid(True, alpha=0.3, linestyle='--')
         
-        # Set y-axis limits
-        plt.ylim(0, 1.02)
+        # Calculate statistics
+        overall_mean = df['HD95'].mean()
+        overall_std = df['HD95'].std()
+        total_valid_slices = len(df)
         
-        # Add statistics text
-        overall_mean = df['DSC'].mean()
-        overall_std = df['DSC'].std()
+        # Create clean legend text
+        legend_text = f'Mean HD95: {overall_mean:.2f} ± {overall_std:.2f} pixels\n'
+        legend_text += f'Total valid slices: {total_valid_slices}\n'
+        legend_text += f'Samples processed: {sample_count}\n'
+        legend_text += f'Slices per volume: {len(unique_slices)}'
         
-        plt.text(0.02, 0.98, f'Overall Mean DSC: {overall_mean:.3f} +/- {overall_std:.3f}\n'
-                            f'Total samples: {len(all_slice_dsc)}\n'
-                            f'Slices per volume: {num_slices}',
+        # Position legend below plot
+        plt.text(0.5, -0.12, legend_text,
                  transform=plt.gca().transAxes,
+                 horizontalalignment='center',
                  verticalalignment='top',
                  bbox=dict(boxstyle='round', facecolor='white', alpha=0.8),
-                 fontsize=10)
+                 fontsize=11)
         
         plt.tight_layout()
         
-        # Save plot
+        # Save plot with simple naming
         output_dir = Path("model_evaluation/inter-slice_plots")
         output_dir.mkdir(parents=True, exist_ok=True)
         
-        output_file = output_dir / f"slice_wise_dsc_{hemisphere}_hemisphere.png"
+        output_file = output_dir / f"slice_wise_hausdorff_{hemisphere}_hemisphere_{timestamp}.png"
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
         
         print(f"Saved plot: {output_file}")
@@ -247,23 +312,16 @@ def create_slice_wise_plots():
         
         # Print summary statistics
         print(f"\n{hemisphere_name} Hemisphere Summary:")
-        print(f"- Samples processed: {len(all_slice_dsc)}")
-        print(f"- Slices per volume: {num_slices}")
-        print(f"- Overall mean DSC: {overall_mean:.4f} +/- {overall_std:.4f}")
-        print(f"- DSC range: {df['DSC'].min():.4f} - {df['DSC'].max():.4f}")
-        
-        # Slice-wise statistics
-        print("\nSlice-wise DSC statistics:")
-        for slice_idx in range(1, num_slices + 1):
-            slice_data = df[df['Slice'] == slice_idx]['DSC']
-            print(f"  Slice {slice_idx:2d}: {slice_data.mean():.4f} +/- {slice_data.std():.4f} "
-                  f"(min: {slice_data.min():.4f}, max: {slice_data.max():.4f})")
+        print(f"- Samples processed: {sample_count}")
+        print(f"- Valid slices: {total_valid_slices}")
+        print(f"- Overall mean HD95: {overall_mean:.2f} ± {overall_std:.2f} pixels")
+        print(f"- HD95 range: {df['HD95'].min():.2f} - {df['HD95'].max():.2f} pixels")
 
 def main():
-    """Main function to execute the slice-wise DSC analysis."""
-    print("=" * 70)
-    print("Slice-wise DSC Analysis for nnUNet Perfusion Territory Segmentation")
-    print("=" * 70)
+    """Main function to execute the slice-wise HD95 analysis."""
+    print("=" * 80)
+    print("Slice-wise Hausdorff Distance (95th percentile) Analysis for nnUNet Perfusion Territory Segmentation")
+    print("=" * 80)
     
     # Check if required directories exist
     base_dir = "data/TrainingsResults-PerfTerr"
@@ -279,9 +337,9 @@ def main():
     # Create plots
     create_slice_wise_plots()
     
-    print("\n" + "=" * 70)
+    print("\n" + "=" * 80)
     print("Analysis completed! Check model_evaluation/inter-slice_plots/ for results.")
-    print("=" * 70)
+    print("=" * 80)
 
 if __name__ == "__main__":
     main()
