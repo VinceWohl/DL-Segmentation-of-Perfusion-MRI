@@ -1,0 +1,981 @@
+       476 +                          n1, n2 = len(data1), len(data2)
+       477 +                          effect_size = 1 - (2 * statistic) / 
+           + (n1 * n2)
+       478 +  
+       479 +                          # Calculate medians
+       480 +                          median1 = np.median(data1)
+       481 +                          median2 = np.median(data2)
+       482 +                          median_diff = median1 - median2
+       483 +  
+       484 +                          # Determine significance
+       485 +                          significance = ""
+       486 +                          if p_value < 0.001:
+       487 +                              significance = "***"
+       488 +                          elif p_value < 0.01:
+       489 +                              significance = "**"
+       490 +                          elif p_value < 0.05:
+       491 +                              significance = "*"
+       492 +                          else:
+       493 +                              significance = "ns"
+       494 +  
+       495 +                          comparison_results.append({
+       496 +                              'Config': config_name,
+       497 +                              'Hemisphere': hemisphere,
+       498 +                              'Approach1': approach1,
+       499 +                              'Approach2': approach2,
+       500 +                              'Median1': median1,
+       501 +                              'Median2': median2,
+       502 +                              'Median_Diff': median_diff,
+       503 +                              'Statistic': statistic,
+       504 +                              'P_Value': p_value,
+       505 +                              'Effect_Size': effect_size,
+       506 +                              'Significance': significance,
+       507 +                              'N1': n1,
+       508 +                              'N2': n2
+       509 +                          })
+       510 +  
+       511 +                          print(f"    {approach1} vs 
+           + {approach2}:")
+       512 +                          print(f"      Medians: {median1:.4f}
+           +  vs {median2:.4f} (diff: {median_diff:+.4f})")
+       513 +                          print(f"      Mann-Whitney U: 
+           + {statistic:.2f}, p-value: {p_value:.6f} {significance}")
+       514 +                          print(f"      Effect size (r): 
+           + {effect_size:.3f}")
+       515 +  
+       516 +                      except Exception as e:
+       517 +                          print(f"    {approach1} vs 
+           + {approach2}: Error - {e}")
+       518 +  
+       519 +                  all_stats_results.extend(comparison_results)
+       520 +  
+       521 +          # Save statistical results to Excel
+       522 +          if all_stats_results:
+       523 +              stats_df = pd.DataFrame(all_stats_results)
+       524 +  
+       525 +              # Sort by configuration, hemisphere, and p-value
+       526 +              stats_df = stats_df.sort_values(['Config', 
+           + 'Hemisphere', 'P_Value'])
+       527 +  
+       528 +              # Add interpretation column
+       529 +              def interpret_effect_size(r):
+       530 +                  r = abs(r)
+       531 +                  if r < 0.1:
+       532 +                      return "Negligible"
+       533 +                  elif r < 0.3:
+       534 +                      return "Small"
+       535 +                  elif r < 0.5:
+       536 +                      return "Medium"
+       537 +                  else:
+       538 +                      return "Large"
+       539 +  
+       540 +              stats_df['Effect_Size_Interpretation'] = 
+           + stats_df['Effect_Size'].apply(interpret_effect_size)
+       541 +  
+       542 +              # Apply Bonferroni correction within each 
+           + config-hemisphere combination
+       543 +              corrected_results = []
+       544 +              for (config, hemisphere), group in 
+           + stats_df.groupby(['Config', 'Hemisphere']):
+       545 +                  n_comparisons = len(group)
+       546 +                  group = group.copy()
+       547 +                  group['P_Value_Bonferroni'] = 
+           + group['P_Value'] * n_comparisons
+       548 +                  group['P_Value_Bonferroni'] = 
+           + np.minimum(group['P_Value_Bonferroni'], 1.0)  # Cap at 1.0
+       549 +  
+       550 +                  # Update significance with Bonferroni 
+           + correction
+       551 +                  def get_bonferroni_significance(p_bonf):
+       552 +                      if p_bonf < 0.001:
+       553 +                          return "***"
+       554 +                      elif p_bonf < 0.01:
+       555 +                          return "**"
+       556 +                      elif p_bonf < 0.05:
+       557 +                          return "*"
+       558 +                      else:
+       559 +                          return "ns"
+       560 +  
+       561 +                  group['Significance_Bonferroni'] = group['P_
+           + Value_Bonferroni'].apply(get_bonferroni_significance)
+       562 +                  corrected_results.append(group)
+       563 +  
+       564 +              stats_df = pd.concat(corrected_results, 
+           + ignore_index=True)
+       565 +  
+       566 +              # Save to Excel with timestamp
+       567 +              timestamp = 
+           + datetime.now().strftime("%Y%m%d_%H%M%S")
+       568 +              stats_path = self.plots_dir / 
+           + f"statistical_comparison_approaches_{timestamp}.xlsx"
+       569 +  
+       570 +              # Create a nice Excel file with multiple sheets
+       571 +              with pd.ExcelWriter(stats_path, 
+           + engine='openpyxl') as writer:
+       572 +                  # Summary sheet
+       573 +                  stats_df.to_excel(writer, 
+           + sheet_name='All_Comparisons', index=False)
+       574 +  
+       575 +                  # Significant results only
+       576 +                  significant_df = 
+           + stats_df[stats_df['P_Value'] < 0.05]
+       577 +                  if not significant_df.empty:
+       578 +                      significant_df.to_excel(writer, 
+           + sheet_name='Significant_Results', index=False)
+       579 +  
+       580 +                  # Summary by configuration
+       581 +                  summary_by_config = 
+           + stats_df.groupby(['Config', 'Hemisphere']).agg({
+       582 +                      'P_Value': ['count', lambda x: sum(x < 
+           + 0.05), lambda x: sum(x < 0.01)],
+       583 +                      'Effect_Size': ['mean', 'std']
+       584 +                  }).round(4)
+       585 +                  summary_by_config.columns = 
+           + ['Total_Comparisons', 'Significant_p05', 'Significant_p01', 
+           + 'Mean_Effect_Size', 'Std_Effect_Size']
+       586 +                  summary_by_config.to_excel(writer, 
+           + sheet_name='Summary_by_Config')
+       587 +  
+       588 +              print(f"\n{'='*60}")
+       589 +              print(f"STATISTICAL RESULTS SUMMARY")
+       590 +              print(f"{'='*60}")
+       591 +              print(f"Total comparisons performed: 
+           + {len(stats_df)}")
+       592 +              print(f"Significant at p < 0.05: 
+           + {sum(stats_df['P_Value'] < 0.05)} 
+           + ({100*sum(stats_df['P_Value'] < 0.05)/len(stats_df):.1f}%)")
+       593 +              print(f"Significant at p < 0.01: 
+           + {sum(stats_df['P_Value'] < 0.01)} 
+           + ({100*sum(stats_df['P_Value'] < 0.01)/len(stats_df):.1f}%)")
+       594 +              print(f"Significant with Bonferroni correction: 
+           + {sum(stats_df['P_Value_Bonferroni'] < 0.05)} 
+           + ({100*sum(stats_df['P_Value_Bonferroni'] < 
+           + 0.05)/len(stats_df):.1f}%)")
+       595 +              print(f"\nResults saved to: {stats_path}")
+       596 +  
+       597 +              return stats_df
+       598 +          else:
+       599 +              print("No statistical comparisons could be 
+           + performed.")
+       600 +              return None
+       601 +  
+       602        def create_summary_comparison(self):
+       603            """Create a summary comparison across all input 
+             configs and approaches"""
+       604    
+
+● Now I need to update the main function to include the statistical testing:
+
+● Update(~/DLSegPerf/model_evaluation/inter-approach_plots/create_inter-approac
+        h_plot.py)
+  ⎿  Updated ../inter-approach_plots/create_inter-approach_plot.py with 4 
+     additions and 1 removal
+       644        plotter = InterApproachPlotter(results_dir)
+       645        plotter.generate_all_plots()
+       646    
+       647 -      print("\nInter-approach segmentation comparison plots 
+           - completed!")
+       647 +      # Perform statistical testing
+       648 +      plotter.perform_statistical_testing()
+       649    
+       650 +      print("\nInter-approach segmentation comparison plots 
+           + and statistical analysis completed!")
+       651    
+       652 +  
+       653    if __name__ == "__main__":
+       654        main()
+       655   \ No newline at end of file
+
+● Let me correct the comment in the statistical testing method - we're
+  actually using Mann-Whitney U test, not Wilcoxon signed-rank test, since
+  we're comparing independent samples:
+
+● Update(~/DLSegPerf/model_evaluation/inter-approach_plots/create_inter-approac
+        h_plot.py)
+  ⎿  Updated ../inter-approach_plots/create_inter-approach_plot.py with 2 
+     additions and 2 removals
+       394            print(f"\nAll plots saved to: {self.plots_dir}")
+       395    
+       396        def perform_statistical_testing(self):
+       397 -          """Perform Wilcoxon signed-rank 
+           -  tests comparing segmentation approaches"""
+       397 +          """Perform Mann-Whitney U 
+           +  tests comparing segmentation approaches"""
+       398    
+       399            print("\nPerforming Statistical Testing")
+       400            print("=" * 50)
+       401 -          print("Using Wilcoxon signed-rank 
+           -  test for pairwise comparisons")
+       401 +          print("Using Mann-Whitney U 
+           +  test for pairwise comparisons")
+       402            print("Hemispheres analyzed separately")
+       403            print("=" * 50)
+       404    
+
+● Now let's test the enhanced script with statistical testing:
+
+● Bash(cd /home/ubuntu/DLSegPerf/model_evaluation/inter-approach_plots &&
+      python create_inter-approach_plot.py)
+  ⎿  Inter-Approach Segmentation Comparison Box Plot Generator     
+     ============================================================
+     Found CBF Threshold: thresholdseg_results_20250905_154303.xlsx
+     … +373 lines (ctrl+o to expand)
+
+● Excellent! The statistical testing worked perfectly. Let's check what files
+   were created:
+
+● Bash(ls -la
+      /home/ubuntu/DLSegPerf/model_evaluation/inter-approach_plots/*.xlsx)
+  ⎿ -rw-rw-r-- 1 ubuntu ubuntu 12602 Sep 13 11:55 /home/ubuntu/DLSegPerf/mod
+    el_evaluation/inter-approach_plots/statistical_comparison_approaches_202
+    50913_115545.xlsx
+
+
+
+● Perfect! The statistical testing functionality has been successfully added
+  to the inter-approach plotting script. Here's a summary of what was
+  implemented:
+
+  ✅ Statistical Testing Implementation Summary
+
+  Enhanced Script Features:
+
+  1. Mann-Whitney U Test: Used for comparing independent samples (different
+  segmentation approaches)
+  2. Separate Hemisphere Analysis: Left and Right hemispheres analyzed
+  independently
+  3. Comprehensive Pairwise Comparisons: All possible pairs of segmentation
+  approaches tested
+  4. Multiple Corrections: Bonferroni correction applied within each
+  config-hemisphere combination
+
+  Statistical Results Generated:
+
+  Key Findings from CBF Configuration:
+  - 8 out of 50 total comparisons were significant (16.0%)
+  - Threshold vs. All deep learning approaches: Highly significant
+  differences (p < 0.001)
+    - Left hemisphere: Threshold consistently lower (medians ~0.90 vs ~0.93)
+    - Right hemisphere: Even larger differences (medians ~0.89 vs ~0.95)
+  - Deep learning approaches vs. each other: No significant differences
+  - Large effect sizes for Threshold comparisons (r > 0.7)
+
+  Excel Output Contains:
+
+  1. All_Comparisons sheet: Complete statistical results
+  2. Significant_Results sheet: Only significant comparisons
+  3. Summary_by_Config sheet: Summary statistics per configuration
+  4. Columns include: Medians, p-values, effect sizes, Bonferroni
+  corrections, significance levels
+
+  Statistical Interpretation:
+
+  - Threshold segmentation performs significantly worse than all deep
+  learning approaches
+  - No significant differences between deep learning approaches
+  (Single-Class, Multi-Class, Multi-Label)
+  - Right hemisphere shows larger performance gaps between Threshold and deep
+   learning methods
+  - Effect sizes are large for Threshold comparisons, indicating meaningful
+  practical differences
+
+  The implementation provides a robust statistical foundation for comparing
+  segmentation approaches with proper multiple comparison corrections and
+  effect size calculations.
+
+> why didnt use the wilcoxon signed-ranked test to compare the DSCs?
+
+● You're absolutely right to question this! I made an error in my choice of
+  statistical test. Let me explain why the Wilcoxon signed-rank test would be
+   more appropriate here:
+
+  Why Wilcoxon Signed-Rank Test is Better:
+
+  1. Same subjects/cases: The different segmentation approaches are applied
+  to the same cases, making this paired data
+  2. DSC characteristics: DSC values are bounded [0,1], often skewed, and not
+   guaranteed to be normally distributed
+  3. Paired comparison power: Wilcoxon signed-rank test is more powerful for
+  paired data than Mann-Whitney U
+
+  What I Used vs. What I Should Have Used:
+
+  - Used: Mann-Whitney U test (for independent samples)
+  - Should use: Wilcoxon signed-rank test (for paired samples)
+
+  The Issue with My Current Implementation:
+
+  I treated the approaches as independent samples, but they're actually
+  paired - each approach segments the same set of medical cases. This ignores
+   the correlation between measurements on the same subjects.
+
+  Would you like me to fix the statistical testing to use the Wilcoxon
+  signed-rank test instead? This would:
+
+  1. Account for pairing: Compare differences within each case
+  2. Increase statistical power: Better detection of true differences
+  3. Be more appropriate: For the bounded, potentially skewed DSC data
+  4. Handle the correlation: Between measurements on the same subjects
+
+  The fix would involve:
+  - Using scipy.stats.wilcoxon() instead of mannwhitneyu()
+  - Ensuring proper pairing of data points from the same cases
+  - Calculating effect sizes appropriately for paired data
+
+  Should I implement this correction?
+
+> yes please implement the wilcoxon signed-rank test instead. and please leave 
+  the script 
+  'model_evaluation/inter-approach_plots/create_inter-approach_plot.py' as 
+  before without the significant testing (revert the changes, delete all .png 
+  files and let the script ruin again). for the significant testing to compare 
+  segmentation approaches and input configurations comprehensively as in 
+  'model_evaluation/significance 
+  testing/statistical_comparison_approaches_20250913_115545.xlsx' i created a 
+  new folder 'model_evaluation/significance testing' in which you can create a 
+  serparate script that only creates such an excel for signidacnt testing
+
+● You're absolutely right! Let me revert the main plotting script and create
+  a separate dedicated statistical testing script in the new folder.
+
+  First, let me revert the plotting script to its original state:
+
+● Update(create_inter-approach_plot.py)
+  ⎿  Updated create_inter-approach_plot.py with 2 removals
+       22    from pathlib import Path
+       23    from datetime import datetime
+       24    import warnings
+       25 -  from scipy import stats
+       26 -  from itertools import combinations
+       25    warnings.filterwarnings('ignore')
+       26    
+       27    class InterApproachPlotter:
+
+● Update(create_inter-approach_plot.py)
+  ⎿  Updated create_inter-approach_plot.py with 206 removals              
+       391    
+       392            print(f"\nAll plots saved to: {self.plots_dir}")
+       393    
+       394 -      def perform_statistical_testing(self):
+       395 -          """Perform Mann-Whitney U tests comparing 
+           - segmentation approaches"""
+       396 -  
+       397 -          print("\nPerforming Statistical Testing")
+       398 -          print("=" * 50)
+       399 -          print("Using Mann-Whitney U test for pairwise 
+           - comparisons")
+       400 -          print("Hemispheres analyzed separately")
+       401 -          print("=" * 50)
+       402 -  
+       403 -          # Find all Excel files
+       404 -          files_dict = self.find_excel_files()
+       405 -  
+       406 -          if not any(files_dict.values()):
+       407 -              print("No Excel files found for statistical 
+           - testing!")
+       408 -              return
+       409 -  
+       410 -          # Collect all statistical results
+       411 -          all_stats_results = []
+       412 -  
+       413 -          # Process each input configuration
+       414 -          for config_name, approach_files in 
+           - files_dict.items():
+       415 -              if not any(approach_files.values()):
+       416 -                  print(f"No files found for {config_name}")
+       417 -                  continue
+       418 -  
+       419 -              print(f"\n{'='*60}")
+       420 -              print(f"STATISTICAL ANALYSIS: {config_name}")
+       421 -              print(f"{'='*60}")
+       422 -  
+       423 -              # Load data for all approaches in this 
+           - configuration
+       424 -              approach_data = {}
+       425 -              approach_order = ['Threshold', 'Single-Class', 
+           - 'Single-Class HalfDPS', 'Multi-Class', 'Multi-Label']
+       426 -  
+       427 -              for approach_name in approach_order:
+       428 -                  if approach_name in approach_files and 
+           - approach_files[approach_name]:
+       429 -                      file_path = 
+           - approach_files[approach_name]
+       430 -                      hemi_data = 
+           - self.load_hemisphere_data(file_path, approach_name)
+       431 -                      approach_data[approach_name] = hemi_data
+       432 -  
+       433 -              # Perform pairwise comparisons for each 
+           - hemisphere
+       434 -              for hemisphere in ['Left', 'Right']:
+       435 -                  print(f"\n{hemisphere} Hemisphere 
+           - Analysis:")
+       436 -                  print("-" * 30)
+       437 -  
+       438 -                  # Get available approaches with data for 
+           - this hemisphere
+       439 -                  available_approaches = []
+       440 -                  hemisphere_datasets = {}
+       441 -  
+       442 -                  for approach_name in approach_order:
+       443 -                      if (approach_name in approach_data and
+       444 -                          hemisphere in 
+           - approach_data[approach_name] and
+       445 -                          
+           - len(approach_data[approach_name][hemisphere]) > 0):
+       446 -  
+       447 -                          # Special handling for Threshold 
+           - (CBF only)
+       448 -                          if approach_name == 'Threshold' and 
+           - config_name != 'CBF':
+       449 -                              continue
+       450 -  
+       451 -                          
+           - available_approaches.append(approach_name)
+       452 -                          hemisphere_datasets[approach_name] =
+           -  approach_data[approach_name][hemisphere]
+       453 -  
+       454 -                  if len(available_approaches) < 2:
+       455 -                      print(f"  Insufficient data for 
+           - comparisons (need ≥2 approaches)")
+       456 -                      continue
+       457 -  
+       458 -                  print(f"  Available approaches: {', 
+           - '.join(available_approaches)}")
+       459 -                  print(f"  Sample sizes: {', 
+           - '.join([f'{app}(n={len(hemisphere_datasets[app])})' for app 
+           - in available_approaches])}")
+       460 -  
+       461 -                  # Perform all pairwise comparisons
+       462 -                  comparison_results = []
+       463 -  
+       464 -                  for approach1, approach2 in 
+           - combinations(available_approaches, 2):
+       465 -                      data1 = 
+           - np.array(hemisphere_datasets[approach1])
+       466 -                      data2 = 
+           - np.array(hemisphere_datasets[approach2])
+       467 -  
+       468 -                      # Wilcoxon signed-rank test (for paired 
+           - data) or Mann-Whitney U (for unpaired)
+       469 -                      # Since these are different approaches 
+           - on same cases, we use Mann-Whitney U
+       470 -                      try:
+       471 -                          statistic, p_value = 
+           - stats.mannwhitneyu(data1, data2, alternative='two-sided')
+       472 -  
+       473 -                          # Calculate effect size 
+           - (rank-biserial correlation)
+       474 -                          n1, n2 = len(data1), len(data2)
+       475 -                          effect_size = 1 - (2 * statistic) / 
+           - (n1 * n2)
+       476 -  
+       477 -                          # Calculate medians
+       478 -                          median1 = np.median(data1)
+       479 -                          median2 = np.median(data2)
+       480 -                          median_diff = median1 - median2
+       481 -  
+       482 -                          # Determine significance
+       483 -                          significance = ""
+       484 -                          if p_value < 0.001:
+       485 -                              significance = "***"
+       486 -                          elif p_value < 0.01:
+       487 -                              significance = "**"
+       488 -                          elif p_value < 0.05:
+       489 -                              significance = "*"
+       490 -                          else:
+       491 -                              significance = "ns"
+       492 -  
+       493 -                          comparison_results.append({
+       494 -                              'Config': config_name,
+       495 -                              'Hemisphere': hemisphere,
+       496 -                              'Approach1': approach1,
+       497 -                              'Approach2': approach2,
+       498 -                              'Median1': median1,
+       499 -                              'Median2': median2,
+       500 -                              'Median_Diff': median_diff,
+       501 -                              'Statistic': statistic,
+       502 -                              'P_Value': p_value,
+       503 -                              'Effect_Size': effect_size,
+       504 -                              'Significance': significance,
+       505 -                              'N1': n1,
+       506 -                              'N2': n2
+       507 -                          })
+       508 -  
+       509 -                          print(f"    {approach1} vs 
+           - {approach2}:")
+       510 -                          print(f"      Medians: {median1:.4f}
+           -  vs {median2:.4f} (diff: {median_diff:+.4f})")
+       511 -                          print(f"      Mann-Whitney U: 
+           - {statistic:.2f}, p-value: {p_value:.6f} {significance}")
+       512 -                          print(f"      Effect size (r): 
+           - {effect_size:.3f}")
+       513 -  
+       514 -                      except Exception as e:
+       515 -                          print(f"    {approach1} vs 
+           - {approach2}: Error - {e}")
+       516 -  
+       517 -                  all_stats_results.extend(comparison_results)
+       518 -  
+       519 -          # Save statistical results to Excel
+       520 -          if all_stats_results:
+       521 -              stats_df = pd.DataFrame(all_stats_results)
+       522 -  
+       523 -              # Sort by configuration, hemisphere, and p-value
+       524 -              stats_df = stats_df.sort_values(['Config', 
+           - 'Hemisphere', 'P_Value'])
+       525 -  
+       526 -              # Add interpretation column
+       527 -              def interpret_effect_size(r):
+       528 -                  r = abs(r)
+       529 -                  if r < 0.1:
+       530 -                      return "Negligible"
+       531 -                  elif r < 0.3:
+       532 -                      return "Small"
+       533 -                  elif r < 0.5:
+       534 -                      return "Medium"
+       535 -                  else:
+       536 -                      return "Large"
+       537 -  
+       538 -              stats_df['Effect_Size_Interpretation'] = 
+           - stats_df['Effect_Size'].apply(interpret_effect_size)
+       539 -  
+       540 -              # Apply Bonferroni correction within each 
+           - config-hemisphere combination
+       541 -              corrected_results = []
+       542 -              for (config, hemisphere), group in 
+           - stats_df.groupby(['Config', 'Hemisphere']):
+       543 -                  n_comparisons = len(group)
+       544 -                  group = group.copy()
+       545 -                  group['P_Value_Bonferroni'] = 
+           - group['P_Value'] * n_comparisons
+       546 -                  group['P_Value_Bonferroni'] = 
+           - np.minimum(group['P_Value_Bonferroni'], 1.0)  # Cap at 1.0
+       547 -  
+       548 -                  # Update significance with Bonferroni 
+           - correction
+       549 -                  def get_bonferroni_significance(p_bonf):
+       550 -                      if p_bonf < 0.001:
+       551 -                          return "***"
+       552 -                      elif p_bonf < 0.01:
+       553 -                          return "**"
+       554 -                      elif p_bonf < 0.05:
+       555 -                          return "*"
+       556 -                      else:
+       557 -                          return "ns"
+       558 -  
+       559 -                  group['Significance_Bonferroni'] = group['P_
+           - Value_Bonferroni'].apply(get_bonferroni_significance)
+       560 -                  corrected_results.append(group)
+       561 -  
+       562 -              stats_df = pd.concat(corrected_results, 
+           - ignore_index=True)
+       563 -  
+       564 -              # Save to Excel with timestamp
+       565 -              timestamp = 
+           - datetime.now().strftime("%Y%m%d_%H%M%S")
+       566 -              stats_path = self.plots_dir / 
+           - f"statistical_comparison_approaches_{timestamp}.xlsx"
+       567 -  
+       568 -              # Create a nice Excel file with multiple sheets
+       569 -              with pd.ExcelWriter(stats_path, 
+           - engine='openpyxl') as writer:
+       570 -                  # Summary sheet
+       571 -                  stats_df.to_excel(writer, 
+           - sheet_name='All_Comparisons', index=False)
+       572 -  
+       573 -                  # Significant results only
+       574 -                  significant_df = 
+           - stats_df[stats_df['P_Value'] < 0.05]
+       575 -                  if not significant_df.empty:
+       576 -                      significant_df.to_excel(writer, 
+           - sheet_name='Significant_Results', index=False)
+       577 -  
+       578 -                  # Summary by configuration
+       579 -                  summary_by_config = 
+           - stats_df.groupby(['Config', 'Hemisphere']).agg({
+       580 -                      'P_Value': ['count', lambda x: sum(x < 
+           - 0.05), lambda x: sum(x < 0.01)],
+       581 -                      'Effect_Size': ['mean', 'std']
+       582 -                  }).round(4)
+       583 -                  summary_by_config.columns = 
+           - ['Total_Comparisons', 'Significant_p05', 'Significant_p01', 
+           - 'Mean_Effect_Size', 'Std_Effect_Size']
+       584 -                  summary_by_config.to_excel(writer, 
+           - sheet_name='Summary_by_Config')
+       585 -  
+       586 -              print(f"\n{'='*60}")
+       587 -              print(f"STATISTICAL RESULTS SUMMARY")
+       588 -              print(f"{'='*60}")
+       589 -              print(f"Total comparisons performed: 
+           - {len(stats_df)}")
+       590 -              print(f"Significant at p < 0.05: 
+           - {sum(stats_df['P_Value'] < 0.05)} 
+           - ({100*sum(stats_df['P_Value'] < 0.05)/len(stats_df):.1f}%)")
+       591 -              print(f"Significant at p < 0.01: 
+           - {sum(stats_df['P_Value'] < 0.01)} 
+           - ({100*sum(stats_df['P_Value'] < 0.01)/len(stats_df):.1f}%)")
+       592 -              print(f"Significant with Bonferroni correction: 
+           - {sum(stats_df['P_Value_Bonferroni'] < 0.05)} 
+           - ({100*sum(stats_df['P_Value_Bonferroni'] < 
+           - 0.05)/len(stats_df):.1f}%)")
+       593 -              print(f"\nResults saved to: {stats_path}")
+       594 -  
+       595 -              return stats_df
+       596 -          else:
+       597 -              print("No statistical comparisons could be 
+           - performed.")
+       598 -              return None
+       599 -  
+       394        def create_summary_comparison(self):
+       395            """Create a summary comparison across all input 
+             configs and approaches"""
+       396    
+
+● Update(create_inter-approach_plot.py)
+  ⎿  Updated create_inter-approach_plot.py with 1 addition and 4 removals
+       436        plotter = InterApproachPlotter(results_dir)
+       437        plotter.generate_all_plots()
+       438    
+       439 -      # Perform statistical testing
+       440 -      plotter.perform_statistical_testing()
+       439 +      print("\nInter-approach segmentation comparison plots 
+           + completed!")
+       440    
+       441 -      print("\nInter-approach segmentation comparison plots 
+           - and statistical analysis completed!")
+       441    
+       442 -  
+       442    if __name__ == "__main__":
+       443        main()
+       444   \ No newline at end of file
+
+● Now let me move the existing statistical file and delete the PNG files:
+
+● Bash(mkdir -p "/home/ubuntu/DLSegPerf/model_evaluation/significance testing")
+  ⎿  (No content)
+
+● Bash(mv /home/ubuntu/DLSegPerf/model_evaluation/inter-approach_plots/statisti
+      cal_comparison_approaches_20250913_115545.xlsx
+      "/home/ubuntu/DLSegPerf/model_evaluation/…)
+  ⎿  Error: mv: cannot stat '/home/ubuntu/DLSegPerf/model_evaluation/inter-appro
+     ach_plots/statistical_comparison_approaches_20250913_115545.xlsx': No such 
+     file or directory
+
+● Bash(rm -f
+      /home/ubuntu/DLSegPerf/model_evaluation/inter-approach_plots/*.png)
+  ⎿  (No content)
+
+● Now let me run the reverted script to regenerate the PNG files:
+
+● Bash(python create_inter-approach_plot.py)
+  ⎿  Inter-Approach Segmentation Comparison Box Plot Generator     
+     ============================================================
+     Found CBF Threshold: thresholdseg_results_20250905_154303.xlsx
+     … +33 lines (ctrl+o to expand)
+
+● Perfect! Now let me create the dedicated statistical testing script with proper Wilcoxon signed-rank test:
+
+● Write(~/DLSegPerf/model_evaluation/significance
+       testing/statistical_comparison_approaches.py)
+  ⎿  Wrote 420 lines to ../significance                                     
+     testing/statistical_comparison_approaches.py
+     #!/usr/bin/env python3
+     """
+     Statistical Comparison of Segmentation Approaches using Wilcoxon 
+     Signed-Rank Test
+     Performs comprehensive statistical testing comparing different 
+     segmentation approaches:
+     - threshold segmentation
+     - single-class
+     - single-class halfdps
+     - multi-class
+     - multi-label
+     … +410 lines (ctrl+o to expand)
+
+● Now let's make it executable and run it:
+
+● Bash(chmod +x "/home/ubuntu/DLSegPerf/model_evaluation/significance testing/statistical_comparison_approaches.py")
+  ⎿  (No content)
+
+● Bash(cd "/home/ubuntu/DLSegPerf/model_evaluation/significance testing" && python statistical_comparison_approaches.py)
+  ⎿  Comprehensive Statistical Comparison of Segmentation Approaches       
+     ======================================================================
+     Using Wilcoxon signed-rank test for paired comparisons
+     … +438 lines (ctrl+o to expand)
+
+● Excellent! The Wilcoxon signed-rank test implementation is working perfectly. Let's check what was generated:
+
+● Bash(ls -la "/home/ubuntu/DLSegPerf/model_evaluation/significance testing/")
+  ⎿  total 64                                        
+     drwxrwxr-x 2 ubuntu ubuntu  4096 Sep 13 12:11 .
+     drwxrwxr-x 7 ubuntu ubuntu  4096 Sep 13 12:03 ..
+     … +3 lines (ctrl+o to expand)
+
+● Perfect! Now let me also verify that the plotting script is back to normal:
+
+● Bash(ls -la /home/ubuntu/DLSegPerf/model_evaluation/inter-approach_plots/*.png)
+  ⎿ -rw-rw-r-- 1 ubuntu ubuntu 390624 Sep 13 12:10 /home/ubuntu/DLSegPerf/model_evaluation/inter-approach_plots/inter_approach_comparison_CBF_20250913_120959.png  
+    -rw-rw-r-- 1 ubuntu ubuntu 368310 Sep 13 12:10 /home/ubuntu/DLSegPerf/model_evaluation/inter-approach_plots/inter_approach_comparison_CBF_FLAIR_20250913_121002
+    .png
+    … +12 lines (ctrl+o to expand)
+
+
+● Perfect! Everything is working as requested. Here's a summary of what was accomplished:
+
+  ✅ Complete Implementation Summary
+
+  1. Reverted Main Plotting Script
+
+  - create_inter-approach_plot.py: Restored to original plotting-only functionality
+  - 4 PNG files generated: Clean box plots without statistical testing mixed in
+  - Clean separation: Plotting and statistics now in separate scripts
+
+  2. Created Dedicated Statistical Testing Script
+
+  - New directory: /home/ubuntu/DLSegPerf/model_evaluation/significance testing/
+  - New script: statistical_comparison_approaches.py
+  - Proper Wilcoxon signed-rank test: For paired comparisons (same cases, different approaches)
+
+  3. Key Improvements with Wilcoxon Test
+
+  Why Wilcoxon is Better:
+  - Paired data: Accounts for case-to-case correlation between approaches
+  - Higher statistical power: More sensitive to true differences
+  - Appropriate for DSC data: Handles bounded [0,1], skewed distributions
+  - Case alignment: Properly matches cases across approaches using Subject+Visit IDs
+
+  Statistical Results Comparison:
+  | Test Type                  | Significant (p<0.05) | Effect              |
+  |----------------------------|----------------------|---------------------|
+  | Previous (Mann-Whitney U)  | 8/50 (16.0%)         | Independent samples |
+  | New (Wilcoxon signed-rank) | 21/50 (42.0%)        | Paired samples      |
+
+  4. Enhanced Statistical Output
+
+  Excel File Contains:
+  - All_Comparisons: Complete results with paired case counts
+  - Significant_Uncorrected: p < 0.05 without correction
+  - Significant_Bonferroni: p < 0.05 with multiple comparison correction
+  - Summary_by_Config: Aggregated statistics per input configuration
+  - Effect_Size_Summary: Distribution of effect sizes
+
+  Key Statistical Findings (Wilcoxon Results):
+  - More sensitive detection: 21 significant comparisons vs 8 with Mann-Whitney U
+  - Large effect sizes: 19/50 comparisons show large practical effects
+  - Threshold consistently worse: All threshold vs deep learning comparisons significant
+  - Deep learning differences: More subtle but statistically detectable differences between approaches
+  - Proper pairing: Average 22.8 paired cases per comparison
+
+  The implementation now correctly uses paired statistical testing while maintaining clean separation between visualization and statistical analysis components.
+
+> could you rename the script to 'model_evaluation/significance testing/statistical_comparison.py' and the excel that will be generated to 
+  'model_evaluation/significance testing/statistical_comparison_{timestamp}.xlsx'
+
+● I'll rename the script and update the output filename as requested:
+
+● Bash(mv "/home/ubuntu/DLSegPerf/model_evaluation/significance testing/statistical_comparison_approaches.py" "/home/ubuntu/DLSegPerf/model_evaluation/significance
+      tes…)
+  ⎿  (No content)
+
+● Now let me update the Excel filename in the script:
+
+● Update(statistical_comparison.py)
+  ⎿  Updated statistical_comparison.py with 1 addition and 1 removal      
+       346    
+       347            # Save to Excel with timestamp
+       348            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+       349 -          stats_path = self.output_dir / f"
+           -  statistical_comparison_approaches_wilcoxon_{timestamp}.xlsx"
+       349 +          stats_path = self.output_dir / f"
+           +  statistical_comparison_{timestamp}.xlsx"
+       350    
+       351            # Create comprehensive Excel file with multiple 
+             sheets
+       352            with pd.ExcelWriter(stats_path, engine='openpyxl') 
+             as writer:
+
+● Let me test the renamed script to ensure it works and generates the correctly named Excel file:
+
+● Bash(cd "/home/ubuntu/DLSegPerf/model_evaluation/significance testing" && python statistical_comparison.py)
+  ⎿  Comprehensive Statistical Comparison of Segmentation Approaches       
+     ======================================================================
+     Using Wilcoxon signed-rank test for paired comparisons
+     … +438 lines (ctrl+o to expand)
+
+● Perfect! Now let me verify the final directory structure:
+
+● Bash(ls -la "/home/ubuntu/DLSegPerf/model_evaluation/significance testing/")
+  ⎿  total 84                                        
+     drwxrwxr-x 2 ubuntu ubuntu  4096 Sep 13 12:16 .
+     drwxrwxr-x 7 ubuntu ubuntu  4096 Sep 13 12:03 ..
+     … +4 lines (ctrl+o to expand)
+
+● Excellent! ✅ Renaming completed successfully:
+
+  Final Setup:
+
+  Script renamed:
+
+  - From: statistical_comparison_approaches.py
+  - To: statistical_comparison.py
+
+  Excel output format:
+
+  - New format: statistical_comparison_{timestamp}.xlsx
+  - Latest file: statistical_comparison_20250913_121623.xlsx
+
+  Directory structure:
+
+  model_evaluation/
+  ├── significance testing/
+  │   ├── statistical_comparison.py                           # ← Main script
+  │   ├── statistical_comparison_20250913_121623.xlsx        # ← Latest results
+  │   └── [older files with previous naming conventions]
+  └── inter-approach_plots/
+      ├── create_inter-approach_plot.py                      # ← Plotting only
+      └── [PNG files]
+
+  The script now generates Excel files with the cleaner naming convention statistical_comparison_{timestamp}.xlsx instead of the longer previous name. All
+  functionality remains the same - comprehensive Wilcoxon signed-rank testing across all segmentation approaches and input configurations.
+
+> what describes the p-value bonferonie?
+
+● The p-value Bonferroni is the multiple comparison corrected p-value that accounts for the fact that when you perform many statistical tests simultaneously, the
+  chance of getting false positive results increases.
+
+  What is the Bonferroni Correction?
+
+  The Problem:
+  - When you do 1 test with α = 0.05, you have a 5% chance of a false positive
+  - When you do 10 tests with α = 0.05 each, you have ~40% chance of at least one false positive
+  - When you do 50 tests (like in your analysis), you have ~92% chance of at least one false positive!
+
+  The Solution:
+  The Bonferroni correction adjusts each p-value by multiplying it by the number of tests:
+
+  P_Value_Bonferroni = P_Value_Original × Number_of_Tests
+
+  In Your Statistical Analysis:
+
+  How it's Applied:
+
+  - Within each Config-Hemisphere combination (not across all 50 tests globally)
+  - Example for CBF Left hemisphere: 10 comparisons → each p-value × 10
+  - Example for CBF+T1w Right hemisphere: 6 comparisons → each p-value × 6
+
+  Example from your results:
+
+  Original p-value: 0.001
+  Number of tests in group: 10
+  Bonferroni p-value: 0.001 × 10 = 0.010
+
+  Interpretation:
+
+  - P_Value < 0.05: Significant without correction (21/50 comparisons in your data)
+  - P_Value_Bonferroni < 0.05: Significant even after controlling for multiple comparisons (15/50 comparisons)
+  - The 6 comparisons that lost significance were likely borderline findings that could be due to chance
+
+  Why Use Bonferroni?
+
+  Conservative Approach:
+  - Reduces false positives (Type I errors)
+  - Increases confidence that significant findings are real
+  - Standard in medical research where false discoveries can be costly
+
+  Trade-off:
+  - May increase false negatives (Type II errors) - missing real effects
+  - More stringent than necessary for exploratory analysis
+  - Alternative methods (FDR, Holm-Bonferroni) are less conservative
+
+  Your Results Summary:
+
+  - Total tests: 50 pairwise comparisons
+  - Significant (uncorrected): 21 (42.0%)
+  - Significant (Bonferroni): 15 (30.0%)
+  - Conclusion: 15 comparisons remain significant even with the strict multiple comparison correction
+
+  The Bonferroni correction essentially asks: "Is this result still significant if I'm being extra careful about multiple testing?"
+
+> great! what does the statistic column mean?
+
+● The Statistic column contains the Wilcoxon W statistic - this is the core test statistic from the Wilcoxon signed-rank test.
+
+  What is the Wilcoxon W Statistic?
+
+  How it's Calculated:
+
+  1. Calculate differences for each paired case: difference = approach1 - approach2
+  2. Rank the absolute differences (ignore ties with difference = 0)
+  3. Sum the ranks of positive differences = W⁺
+  4. Sum the ranks of negative differences = W⁻
+  5. W statistic = minimum of (W⁺, W⁻)
+
+  Example from your results:
+
+  Threshold vs Single-Class (CBF Left):
+  Statistic: 0.00
+  P-value: 0.000000 ***
+
+  Interpretation:
+
+  W = 0.00 (Very Strong Effect):
+
+  - All or nearly all pairs went in the same direction
+  - Example: All 30 cases had Single-Class > Threshold
+  - Very strong evidence of a systematic difference
+
+  W = Large Number (Weak/No Effect):
+
+  Multi-Class vs Multi-Label (CBF Left):
+  Statistic: 196.00
+  P-value: 0.464545 ns
+  - About half of the differences were positive, half negative
+  - Little systematic difference between approaches
+  - No significant effect
+
+  What W Values Mean:
+
+  | W Value   | Interpretation                       | Your Examples                      |
+  |-----------|--------------------------------------|------------------------------------|
+  | 0-10      | Overwhelming effect in one direction | Threshold vs Deep Learning (W=0-4) |
+  | 20-50     | Strong effect                        | Single-Class vs Others (W=21-58)   |
+  | 100-200   | Moderate/weak effect                 | Most non-significant comparisons   |
+  | ~n(n+1)/4 | No systematic difference             | Random variation only              |
+
+  Key Points:
+
+  Direction Doesn't Matter for W:
+
+  - W is always the smaller sum of ranks
+  - Sign of effect comes from median difference, not W
+  - Magnitude of W tells you about consistency of differences
+
+  Sample Size Dependency:
+
+  - Larger samples → larger possible W values
+  - 15 pairs → W ranges 0-120
+  - 30 pairs → W ranges 0-465
+
+  Relationship to P-value:
+
+  - Smaller W → smaller p-value → more significant
+  - W near the middle → larger p-value → not significant
+
+  Your Results Pattern:
+
+  - W = 0 for Threshold vs Deep Learning → Threshold consistently worse
+  - W = 20-60 for Deep Learning comparisons → Subtle but consistent differences
+  - W = 150-200 for non-significant tests → Mixed results, no clear pattern
+
+  The W statistic essentially answers: "How consistently did one approach outperform the other across all paired cases?"
+
+> okay great could you rename the script back to 'model_evaluation/significance testing/statistical_comparison_apporaches.py' and also the the name of the excel 
+  generation?
+
+● I'll rename the script and Excel output back to include "approaches" in the name:
+
+● Bash(mv "/home/ubuntu/DLSegPerf/model_evaluation/significance testing/statistical_comparison.py" "/home/ubuntu/DLSegPerf/model_evaluation/significance
+      testing/statis…)
+  ⎿  (No content)
+  ⎿  5-hour limit reached ∙ resets 2pm
+     /upgrade to increase your usage limit.
