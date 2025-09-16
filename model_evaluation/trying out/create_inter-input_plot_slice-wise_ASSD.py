@@ -519,27 +519,22 @@ class SlicewiseASSDInputPlotter:
                 data1_df = hemi_data[hemi_data['Input_Configuration'] == config1]
                 data2_df = hemi_data[hemi_data['Input_Configuration'] == config2]
 
-                # Find paired cases (same case ID between configurations)
-                common_cases = set(data1_df['Case']) & set(data2_df['Case'])
+                # Find paired slices (same case ID and slice number between configurations)
+                # Merge dataframes on Case and Slice to get slice-wise pairs
+                merged_df = data1_df.merge(data2_df, on=['Case', 'Slice'], suffixes=('_1', '_2'))
 
-                if len(common_cases) < 5:  # Minimum sample size for Wilcoxon test
-                    print(f"    {config1} vs {config2}: Insufficient paired cases (n={len(common_cases)})")
+                if len(merged_df) < 10:  # Minimum sample size for Wilcoxon test
+                    print(f"    {config1} vs {config2}: Insufficient paired slices (n={len(merged_df)})")
                     continue
 
-                # Get paired data by averaging slices within each case
-                paired_data1 = []
-                paired_data2 = []
-
-                for case_id in common_cases:
-                    case1_assd = data1_df[data1_df['Case'] == case_id]['ASSD'].mean()
-                    case2_assd = data2_df[data2_df['Case'] == case_id]['ASSD'].mean()
-                    paired_data1.append(case1_assd)
-                    paired_data2.append(case2_assd)
+                # Get paired slice-wise data directly
+                paired_data1 = merged_df['ASSD_1'].values
+                paired_data2 = merged_df['ASSD_2'].values
 
                 try:
-                    print(f"    Paired cases: {len(paired_data1)} (from {len(data1_df)} and {len(data2_df)} total slices)")
+                    print(f"    Paired slices: {len(paired_data1)} (from {len(data1_df)} and {len(data2_df)} total slices)")
 
-                    # Wilcoxon signed-rank test for paired data
+                    # Wilcoxon signed-rank test for paired slice data
                     statistic, p_value = stats.wilcoxon(paired_data1, paired_data2, alternative='two-sided')
 
                     # Calculate effect size (r = Z / sqrt(N))
@@ -547,7 +542,7 @@ class SlicewiseASSDInputPlotter:
                     z_score = stats.norm.ppf(1 - p_value/2) if p_value > 0 else 5.0  # Cap extreme values
                     effect_size = z_score / np.sqrt(n)
 
-                    # Calculate medians and difference
+                    # Calculate medians and difference (should now match plot values)
                     median1 = np.median(paired_data1)
                     median2 = np.median(paired_data2)
                     median_diff = median1 - median2
@@ -574,13 +569,13 @@ class SlicewiseASSDInputPlotter:
                         'P_Value': p_value,
                         'Effect_Size': effect_size,
                         'Significance': significance,
-                        'N_Paired': n,
+                        'N_Paired_Slices': n,
                         'N1_Total_Slices': len(data1_df),
                         'N2_Total_Slices': len(data2_df)
                     })
 
                     print(f"    {config1} vs {config2}:")
-                    print(f"      Paired cases: {n}")
+                    print(f"      Paired slices: {n}")
                     print(f"      Medians: {median1:.3f} vs {median2:.3f} (diff: {median_diff:+.3f})")
                     print(f"      Wilcoxon W: {statistic:.2f}, p-value: {p_value:.6f} {significance}")
                     print(f"      Effect size (r): {effect_size:.3f}")
@@ -658,12 +653,12 @@ class SlicewiseASSDInputPlotter:
                     'P_Value': ['count', lambda x: sum(x < 0.05), lambda x: sum(x < 0.01)],
                     'P_Value_Bonferroni': [lambda x: sum(x < 0.05)],
                     'Effect_Size': ['mean', 'std'],
-                    'N_Paired': 'mean'
+                    'N_Paired_Slices': 'mean'
                 }).round(4)
 
                 summary_by_hemisphere.columns = ['Total_Comparisons', 'Significant_p05', 'Significant_p01',
                                                'Bonferroni_Significant', 'Mean_Effect_Size', 'Std_Effect_Size',
-                                               'Avg_Paired_Cases']
+                                               'Avg_Paired_Slices']
                 summary_by_hemisphere.to_excel(writer, sheet_name='Summary_by_Hemisphere')
 
             print(f"\n{'='*60}")
@@ -673,7 +668,7 @@ class SlicewiseASSDInputPlotter:
             print(f"Significant at p < 0.05: {sum(stats_df['P_Value'] < 0.05)} ({100*sum(stats_df['P_Value'] < 0.05)/len(stats_df):.1f}%)")
             print(f"Significant at p < 0.01: {sum(stats_df['P_Value'] < 0.01)} ({100*sum(stats_df['P_Value'] < 0.01)/len(stats_df):.1f}%)")
             print(f"Significant with Bonferroni correction (p < 0.05): {sum(stats_df['P_Value_Bonferroni'] < 0.05)} ({100*sum(stats_df['P_Value_Bonferroni'] < 0.05)/len(stats_df):.1f}%)")
-            print(f"Average paired cases per comparison: {stats_df['N_Paired'].mean():.1f}")
+            print(f"Average paired slices per comparison: {stats_df['N_Paired_Slices'].mean():.1f}")
 
             print(f"\nStatistical results saved to: {stats_path}")
 
