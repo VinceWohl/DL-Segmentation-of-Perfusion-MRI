@@ -371,7 +371,7 @@ class InputConfigStatisticalComparator:
 
             # Save to Excel with timestamp
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            stats_path = self.output_dir / f"statistical_comparison_config_{timestamp}.xlsx"
+            stats_path = self.output_dir / f"statistical_comparison_input_{timestamp}.xlsx"
 
             # Create comprehensive Excel file with multiple sheets
             with pd.ExcelWriter(stats_path, engine='openpyxl') as writer:
