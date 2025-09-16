@@ -387,7 +387,7 @@ class SlicewiseASSDInputPlotter:
 
         # Save the plot
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        plot_path = self.output_dir / f"slice_wise_assd_input_comparison_singleclass_{timestamp}.png"
+        plot_path = self.output_dir / f"slice_wise_assd_singleclass_input_comparison_{timestamp}.png"
 
         plt.savefig(plot_path, dpi=300, bbox_inches='tight', facecolor='white')
         plt.show()
@@ -631,7 +631,7 @@ class SlicewiseASSDInputPlotter:
             stats_df = pd.concat(corrected_results, ignore_index=True)
 
             # Save to Excel with timestamp
-            stats_path = self.output_dir / f"slice_wise_assd_statistical_comparison_{timestamp}.xlsx"
+            stats_path = self.output_dir / f"slice_wise_assd_singleclass_input_statistical_comparison_{timestamp}.xlsx"
 
             # Create comprehensive Excel file with multiple sheets
             with pd.ExcelWriter(stats_path, engine='openpyxl') as writer:
