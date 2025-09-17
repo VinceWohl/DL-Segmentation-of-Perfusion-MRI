@@ -15,8 +15,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 import nibabel as nib
-from scipy.spatial.distance import directed_hausdorff
-from scipy.ndimage import binary_erosion
+from scipy.spatial.distance import directed_hausdorff, cdist
+from scipy.ndimage import binary_erosion, generate_binary_structure
+from skimage.segmentation import find_boundaries
 from scipy import stats
 from datetime import datetime
 from itertools import combinations
@@ -50,11 +51,17 @@ class SliceWiseASSDApproachComparison:
             'Multi-label': '#9467bd'        # Purple
         }
 
-        # Ground truth path
-        self.gt_path = self.base_path / "nnUNet_raw_250827-PerfTerr-25" / "Dataset001_PerfusionTerritories" / "labelsTr"
+        # Ground truth paths for each approach (using actual training labels)
+        self.gt_paths = {
+            'Multi-class': self.base_path / "nnUNet_results_Multi-class_CBF" / "labelsTr",
+            'Multi-label': self.base_path / "nnUNet_results_Multi-label_CBF" / "labelsTr",
+            'Single-class': self.base_path / "nnUNet_results_Single-class_CBF" / "labelsTr",
+            'Single-class_halfdps': self.base_path / "nnUNet_results_Single-class_halfdps_CBF" / "labelsTr",
+            'Thresholding': self.base_path / "nnUNet_raw_250827-PerfTerr-25" / "Dataset001_PerfusionTerritories" / "labelsTr"  # Keep original for thresholding
+        }
 
     def compute_assd_2d(self, pred_slice, gt_slice, spacing):
-        """Compute Average Symmetric Surface Distance for a 2D slice"""
+        """Compute 2D slice-wise ASSD using the same methodology as volume-based evaluation"""
         try:
             # Convert to binary if not already
             pred_binary = (pred_slice > 0.5).astype(np.uint8)
@@ -66,9 +73,16 @@ class SliceWiseASSDApproachComparison:
             elif np.sum(pred_binary) == 0 or np.sum(gt_binary) == 0:
                 return 50.0  # Large distance for empty vs non-empty
 
-            # Get surface points (boundary pixels)
-            pred_surface = pred_binary - binary_erosion(pred_binary)
-            gt_surface = gt_binary - binary_erosion(gt_binary)
+            # Use the SAME boundary detection method as volume-based evaluation
+            # Generate 2D structure with 4-connectivity (equivalent to 3D 6-connectivity)
+            structure = generate_binary_structure(2, 1)  # 2D, 4-connectivity
+
+            # Apply erosion-based boundary detection (same as volume-based)
+            pred_eroded = binary_erosion(pred_binary, structure)
+            gt_eroded = binary_erosion(gt_binary, structure)
+
+            pred_surface = pred_binary & ~pred_eroded  # boundary = original - eroded
+            gt_surface = gt_binary & ~gt_eroded
 
             # Get coordinates of surface points
             pred_coords = np.column_stack(np.where(pred_surface))
@@ -78,20 +92,25 @@ class SliceWiseASSDApproachComparison:
                 return 50.0
 
             # Apply spacing to get real-world coordinates
-            pred_coords_real = pred_coords * spacing
-            gt_coords_real = gt_coords * spacing
+            # spacing is [y_spacing, x_spacing], coords are [row, col] = [y, x]
+            pred_coords_real = pred_coords * np.array(spacing)
+            gt_coords_real = gt_coords * np.array(spacing)
 
-            # Compute directed Hausdorff distances
-            dist_pred_to_gt = directed_hausdorff(pred_coords_real, gt_coords_real)[0]
-            dist_gt_to_pred = directed_hausdorff(gt_coords_real, pred_coords_real)[0]
+            # Use the SAME distance calculation as volume-based evaluation
+            # Calculate distances using cdist and mean (NOT directed_hausdorff)
+            if len(gt_coords_real) == 0 or len(pred_coords_real) == 0:
+                return 50.0
 
-            # Average Symmetric Surface Distance
-            assd = (dist_pred_to_gt + dist_gt_to_pred) / 2.0
+            d1 = cdist(gt_coords_real, pred_coords_real).min(axis=1).mean()  # GT to Pred
+            d2 = cdist(pred_coords_real, gt_coords_real).min(axis=1).mean()  # Pred to GT
 
-            return assd
+            # Average Symmetric Surface Distance (same formula as volume-based)
+            assd = (d1 + d2) / 2.0
+
+            return float(assd)
 
         except Exception as e:
-            print(f"Error computing ASSD: {e}")
+            print(f"Error computing 2D ASSD: {e}")
             return np.nan
 
     def find_validation_files(self):
@@ -111,9 +130,10 @@ class SliceWiseASSDApproachComparison:
                     pred_files = list(approach_dir.glob("*.nii"))
                     validation_data[approach_name]['files'].extend(pred_files)
 
-                    # Ground truth files are in the shared GT directory
-                    if self.gt_path.exists():
-                        gt_files = list(self.gt_path.glob("*.nii"))
+                    # Ground truth files are approach-specific
+                    gt_path = self.gt_paths[approach_name]
+                    if gt_path.exists():
+                        gt_files = list(gt_path.glob("*.nii"))
                         validation_data[approach_name]['gt_files'].extend(gt_files)
             else:
                 # nnUNet approaches - process all folds (0-4)
@@ -130,10 +150,12 @@ class SliceWiseASSDApproachComparison:
                         pred_files = list(config_dir.glob("*.nii"))
                         validation_data[approach_name]['files'].extend(pred_files)
 
-                        # Ground truth files are in the shared GT directory (same for all folds)
-                        if fold == 0 and self.gt_path.exists():  # Only add GT files once
-                            gt_files = list(self.gt_path.glob("*.nii"))
-                            validation_data[approach_name]['gt_files'].extend(gt_files)
+                        # Ground truth files are approach-specific (same for all folds)
+                        if fold == 0:  # Only add GT files once
+                            gt_path = self.gt_paths[approach_name]
+                            if gt_path.exists():
+                                gt_files = list(gt_path.glob("*.nii"))
+                                validation_data[approach_name]['gt_files'].extend(gt_files)
 
                     else:
                         print(f"Validation directory not found: {config_dir}")
@@ -175,23 +197,23 @@ class SliceWiseASSDApproachComparison:
                 # For other approaches, case_id is like "PerfTerr001-v1-L", need to match with GT file "PerfTerr001-v1-L"
 
                 if approach_name in ['Multi-label', 'Multi-class']:
-                    # Multi-label and Multi-class have single files, need to match with both L and R GT files
+                    # Multi-label and Multi-class use single prediction files and single training GT files
+                    # Both contain full information (multi-class: classes 0,1,2,3; multi-label: 2 channels)
+                    # We extract hemispheres during processing
                     base_case = case_id  # PerfTerr001-v1
-                    gt_left = base_case + '-L'
-                    gt_right = base_case + '-R'
 
-                    if gt_left in gt_files and gt_right in gt_files:
+                    if base_case in gt_files:
                         for pred_file in pred_file_list:
-                            # Add both hemispheres for this prediction file
+                            # Add both hemispheres for this prediction file, using the same GT file
                             matched_data[approach_name].append({
                                 'case_id': case_id + '-L',  # Mark as left hemisphere
                                 'pred_file': pred_file,
-                                'gt_file': gt_files[gt_left]
+                                'gt_file': gt_files[base_case]
                             })
                             matched_data[approach_name].append({
                                 'case_id': case_id + '-R',  # Mark as right hemisphere
                                 'pred_file': pred_file,
-                                'gt_file': gt_files[gt_right]
+                                'gt_file': gt_files[base_case]
                             })
                     else:
                         print(f"No matching GT found for {approach_name} prediction: {case_id}")
@@ -249,54 +271,61 @@ class SliceWiseASSDApproachComparison:
                     pred_data = pred_nii.get_fdata()
                     gt_data = gt_nii.get_fdata()
 
-                    # Get spacing information
-                    spacing = pred_nii.header.get_zooms()[:2]  # Only in-plane spacing for 2D
+                    # CRITICAL FIX: Force consistent in-plane spacing for all approaches
+                    # All predictions should use the same 2.625mm in-plane resolution
+                    # Different file formats have inconsistent spacing orders, so we standardize
+                    spacing = [2.625, 2.625]  # Standard nnUNet in-plane spacing (y, x) in mm
 
-                    # Handle different output formats
+                    # Debug: Check original spacing
+                    spacing_full = pred_nii.header.get_zooms()
+                    # print(f"DEBUG {approach_name}: Full spacing {[round(float(x), 3) for x in spacing_full]} -> Using {spacing}")
+
+                    # Handle different output formats using training labels
                     if approach_name == 'Multi-label':
-                        # Multi-label: single file with 4D output (H, W, D, channels)
-                        # The case_id now includes hemisphere info (e.g., "PerfTerr001-v1-L")
+                        # Multi-label: prediction has 4D output (H, W, D, 2_channels), GT also has 4D format (H, W, D, 2_channels)
+                        # Training labels have SAME orientation as predictions, so no flipping needed
                         if '-L' in pair['case_id']:
                             hemisphere = 'Left'
-                            hemisphere_idx = 0  # Left hemisphere is channel 0
+                            hemisphere_idx = 0  # Left hemisphere is channel 0 (as expected)
                         elif '-R' in pair['case_id']:
                             hemisphere = 'Right'
-                            hemisphere_idx = 1  # Right hemisphere is channel 1
+                            hemisphere_idx = 1  # Right hemisphere is channel 1 (as expected)
                         else:
                             continue
 
-                        # For multi-label predictions, extract the appropriate channel
-                        if pred_data.ndim == 4:  # 4D predictions (H, W, D, channels)
-                            if pred_data.shape[3] > hemisphere_idx:
-                                pred_hemisphere = pred_data[:, :, :, hemisphere_idx]
-                            else:
-                                continue
-                        else:  # 3D predictions - use entire volume (binary prediction)
-                            pred_hemisphere = pred_data
+                        # Extract hemisphere from prediction
+                        if pred_data.ndim == 4 and pred_data.shape[3] == 2:  # 4D predictions (H, W, D, 2)
+                            pred_hemisphere = pred_data[:, :, :, hemisphere_idx]
+                        else:
+                            print(f"Warning: Unexpected multi-label prediction shape {pred_data.shape} for {pair['case_id']}")
+                            continue
 
-                        # GT data is already hemisphere-specific (single hemisphere file)
-                        gt_hemisphere = gt_data.astype(np.uint8)
+                        # Extract corresponding hemisphere from training GT (also 4D)
+                        if gt_data.ndim == 4 and gt_data.shape[3] == 2:  # 4D GT (H, W, D, 2)
+                            gt_hemisphere = gt_data[:, :, :, hemisphere_idx].astype(np.uint8)
+                        else:
+                            print(f"Warning: Unexpected multi-label GT shape {gt_data.shape} for {pair['case_id']}")
+                            continue
 
                         self.process_slices(pred_hemisphere, gt_hemisphere, spacing,
                                           pair['case_id'], hemisphere, approach_name, all_assd_data)
 
                     elif approach_name == 'Multi-class':
-                        # Multi-class: single file with 3D multi-class output (values 0,1,2,3)
-                        # Class 0: background, Class 1: perfusion_left, Class 2: perfusion_right, Class 3: perfusion_overlap
-                        # Left hemisphere = Class 1 + Class 3, Right hemisphere = Class 2 + Class 3
+                        # Multi-class: prediction has 3D multi-class output, GT also has 3D multi-class format
+                        # Training labels have SAME orientation as predictions, so no flipping needed
+                        # Classes: 0=background, 1=left, 2=right, 3=overlap
                         if '-L' in pair['case_id']:
                             hemisphere = 'Left'
-                            # Left hemisphere includes both perfusion_left (1) and perfusion_overlap (3)
+                            # Extract left hemisphere from both prediction and GT
                             pred_hemisphere = ((pred_data == 1) | (pred_data == 3)).astype(np.float64)
+                            gt_hemisphere = ((gt_data == 1) | (gt_data == 3)).astype(np.uint8)
                         elif '-R' in pair['case_id']:
                             hemisphere = 'Right'
-                            # Right hemisphere includes both perfusion_right (2) and perfusion_overlap (3)
+                            # Extract right hemisphere from both prediction and GT
                             pred_hemisphere = ((pred_data == 2) | (pred_data == 3)).astype(np.float64)
+                            gt_hemisphere = ((gt_data == 2) | (gt_data == 3)).astype(np.uint8)
                         else:
                             continue
-
-                        # GT data is already hemisphere-specific (single hemisphere file)
-                        gt_hemisphere = gt_data.astype(np.uint8)
 
                         self.process_slices(pred_hemisphere, gt_hemisphere, spacing,
                                           pair['case_id'], hemisphere, approach_name, all_assd_data)
@@ -436,7 +465,7 @@ class SliceWiseASSDApproachComparison:
             legend_handles.append(handle)
 
         ax.legend(legend_handles, all_approaches, title='Segmentation Approach',
-                 loc='upper left', fontsize=10, title_fontsize=11)
+                 loc='upper right', fontsize=10, title_fontsize=11)
 
         # Add grid
         ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
@@ -448,14 +477,8 @@ class SliceWiseASSDApproachComparison:
         # Add sample size annotations
         self.add_sample_size_labels(ax, assd_df, hemisphere_positions)
 
-        # Adjust y-axis limits to accommodate labels below (with much more space)
-        current_ylim = ax.get_ylim()
-        y_range = current_ylim[1] - current_ylim[0]
-
-        # Extend downward significantly for both median and sample size labels
-        new_y_min = current_ylim[0] - y_range * 0.25
-
-        ax.set_ylim(new_y_min, current_ylim[1])
+        # Set custom y-axis limits: -2 to 12 mm
+        ax.set_ylim(-2, 12)
 
         # Adjust layout
         plt.tight_layout()
@@ -496,10 +519,8 @@ class SliceWiseASSDApproachComparison:
                             q1 = values.quantile(0.25)
                             q3 = values.quantile(0.75)
 
-                            # Position well below the plot area to avoid lower whiskers
-                            y_min = ax.get_ylim()[0]
-                            y_offset = (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.02
-                            y_pos = y_min - y_offset
+                            # Position just below ASSD=0 line
+                            y_pos = -0.3
 
                             # Format label: median [Q1-Q3] as in the reference plot
                             label = f'{median:.1f} [{q1:.1f}-{q3:.1f}]'
@@ -533,10 +554,8 @@ class SliceWiseASSDApproachComparison:
                     if not approach_data.empty:
                         n = len(approach_data)
 
-                        # Position below the median labels, further down
-                        y_min = ax.get_ylim()[0]
-                        y_offset = (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.06
-                        y_pos = y_min - y_offset
+                        # Position below the median labels, a bit lower
+                        y_pos = -0.9
 
                         # Format label: n=XXX
                         label = f'n={n}'
