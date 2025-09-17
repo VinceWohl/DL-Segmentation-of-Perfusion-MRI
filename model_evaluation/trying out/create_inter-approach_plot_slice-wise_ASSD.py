@@ -43,11 +43,11 @@ class SliceWiseASSDApproachComparison:
 
         # Colors for each approach
         self.approach_colors = {
-            'Thresholding': '#8c564b',      # Brown
-            'Single-class': '#1f77b4',     # Blue
-            'Single-class_halfdps': '#ff7f0e', # Orange
-            'Multi-class': '#2ca02c',       # Green
-            'Multi-label': '#d62728'        # Red
+            'Thresholding': '#1f77b4',      # Blue
+            'Single-class': '#ff7f0e',     # Orange
+            'Single-class_halfdps': '#2ca02c', # Green
+            'Multi-class': '#d62728',       # Red
+            'Multi-label': '#9467bd'        # Purple
         }
 
         # Ground truth path
@@ -113,7 +113,7 @@ class SliceWiseASSDApproachComparison:
 
                     # Ground truth files are in the shared GT directory
                     if self.gt_path.exists():
-                        gt_files = list(self.gt_path.glob("*.nii.gz"))
+                        gt_files = list(self.gt_path.glob("*.nii"))
                         validation_data[approach_name]['gt_files'].extend(gt_files)
             else:
                 # nnUNet approaches - process all folds (0-4)
@@ -132,7 +132,7 @@ class SliceWiseASSDApproachComparison:
 
                         # Ground truth files are in the shared GT directory (same for all folds)
                         if fold == 0 and self.gt_path.exists():  # Only add GT files once
-                            gt_files = list(self.gt_path.glob("*.nii.gz"))
+                            gt_files = list(self.gt_path.glob("*.nii"))
                             validation_data[approach_name]['gt_files'].extend(gt_files)
 
                     else:
@@ -171,17 +171,42 @@ class SliceWiseASSDApproachComparison:
 
             # Match predictions with ground truth
             for case_id, pred_file_list in pred_files.items():
-                base_case = case_id.split('-')[0] + '-' + case_id.split('-')[1]  # PerfTerr001-v1
-                if base_case in gt_files:
-                    gt_file = gt_files[base_case]
-                    for pred_file in pred_file_list:
-                        matched_data[approach_name].append({
-                            'case_id': case_id,
-                            'pred_file': pred_file,
-                            'gt_file': gt_file
-                        })
+                # For multi-label, case_id is like "PerfTerr001-v1", need to match with GT files "PerfTerr001-v1-L" and "PerfTerr001-v1-R"
+                # For other approaches, case_id is like "PerfTerr001-v1-L", need to match with GT file "PerfTerr001-v1-L"
+
+                if approach_name in ['Multi-label', 'Multi-class']:
+                    # Multi-label and Multi-class have single files, need to match with both L and R GT files
+                    base_case = case_id  # PerfTerr001-v1
+                    gt_left = base_case + '-L'
+                    gt_right = base_case + '-R'
+
+                    if gt_left in gt_files and gt_right in gt_files:
+                        for pred_file in pred_file_list:
+                            # Add both hemispheres for this prediction file
+                            matched_data[approach_name].append({
+                                'case_id': case_id + '-L',  # Mark as left hemisphere
+                                'pred_file': pred_file,
+                                'gt_file': gt_files[gt_left]
+                            })
+                            matched_data[approach_name].append({
+                                'case_id': case_id + '-R',  # Mark as right hemisphere
+                                'pred_file': pred_file,
+                                'gt_file': gt_files[gt_right]
+                            })
+                    else:
+                        print(f"No matching GT found for {approach_name} prediction: {case_id}")
                 else:
-                    print(f"No matching GT found for prediction: {case_id}")
+                    # Other approaches have separate files per hemisphere
+                    if case_id in gt_files:
+                        gt_file = gt_files[case_id]
+                        for pred_file in pred_file_list:
+                            matched_data[approach_name].append({
+                                'case_id': case_id,
+                                'pred_file': pred_file,
+                                'gt_file': gt_file
+                            })
+                    else:
+                        print(f"No matching GT found for prediction: {case_id}")
 
             print(f"Matched {len(matched_data[approach_name])} file pairs for {approach_name}")
 
@@ -229,32 +254,63 @@ class SliceWiseASSDApproachComparison:
 
                     # Handle different output formats
                     if approach_name == 'Multi-label':
-                        # Multi-label: single file with 3D multi-class output
-                        # Need to process both left and right hemispheres
-                        for hemisphere_label, hemisphere_name in [(1, 'Left'), (2, 'Right')]:
-                            gt_hemisphere = (gt_data == hemisphere_label).astype(np.uint8)
+                        # Multi-label: single file with 4D output (H, W, D, channels)
+                        # The case_id now includes hemisphere info (e.g., "PerfTerr001-v1-L")
+                        if '-L' in pair['case_id']:
+                            hemisphere = 'Left'
+                            hemisphere_idx = 0  # Left hemisphere is channel 0
+                        elif '-R' in pair['case_id']:
+                            hemisphere = 'Right'
+                            hemisphere_idx = 1  # Right hemisphere is channel 1
+                        else:
+                            continue
 
-                            # For multi-label predictions, extract the appropriate channel or use thresholding
-                            if pred_data.ndim == 4:  # 4D predictions (H, W, D, channels)
-                                if pred_data.shape[3] >= hemisphere_label:
-                                    pred_hemisphere = pred_data[:, :, :, hemisphere_label-1]
-                                else:
-                                    continue
-                            else:  # 3D predictions - use thresholding by label
-                                pred_hemisphere = (pred_data == hemisphere_label).astype(np.uint8)
+                        # For multi-label predictions, extract the appropriate channel
+                        if pred_data.ndim == 4:  # 4D predictions (H, W, D, channels)
+                            if pred_data.shape[3] > hemisphere_idx:
+                                pred_hemisphere = pred_data[:, :, :, hemisphere_idx]
+                            else:
+                                continue
+                        else:  # 3D predictions - use entire volume (binary prediction)
+                            pred_hemisphere = pred_data
 
-                            self.process_slices(pred_hemisphere, gt_hemisphere, spacing,
-                                              pair['case_id'], hemisphere_name, approach_name, all_assd_data)
+                        # GT data is already hemisphere-specific (single hemisphere file)
+                        gt_hemisphere = gt_data.astype(np.uint8)
+
+                        self.process_slices(pred_hemisphere, gt_hemisphere, spacing,
+                                          pair['case_id'], hemisphere, approach_name, all_assd_data)
+
+                    elif approach_name == 'Multi-class':
+                        # Multi-class: single file with 3D multi-class output (values 0,1,2,3)
+                        # Class 0: background, Class 1: perfusion_left, Class 2: perfusion_right, Class 3: perfusion_overlap
+                        # Left hemisphere = Class 1 + Class 3, Right hemisphere = Class 2 + Class 3
+                        if '-L' in pair['case_id']:
+                            hemisphere = 'Left'
+                            # Left hemisphere includes both perfusion_left (1) and perfusion_overlap (3)
+                            pred_hemisphere = ((pred_data == 1) | (pred_data == 3)).astype(np.float64)
+                        elif '-R' in pair['case_id']:
+                            hemisphere = 'Right'
+                            # Right hemisphere includes both perfusion_right (2) and perfusion_overlap (3)
+                            pred_hemisphere = ((pred_data == 2) | (pred_data == 3)).astype(np.float64)
+                        else:
+                            continue
+
+                        # GT data is already hemisphere-specific (single hemisphere file)
+                        gt_hemisphere = gt_data.astype(np.uint8)
+
+                        self.process_slices(pred_hemisphere, gt_hemisphere, spacing,
+                                          pair['case_id'], hemisphere, approach_name, all_assd_data)
                     else:
                         # Single-class, Multi-class, Thresholding: process by hemisphere from filename
                         if '-L' in pair['case_id']:
                             hemisphere = 'Left'
-                            gt_hemisphere = (gt_data == 1).astype(np.uint8)  # Left = label 1
                         elif '-R' in pair['case_id']:
                             hemisphere = 'Right'
-                            gt_hemisphere = (gt_data == 2).astype(np.uint8)  # Right = label 2
                         else:
                             continue
+
+                        # GT data is already hemisphere-specific (single hemisphere file)
+                        gt_hemisphere = gt_data.astype(np.uint8)
 
                         self.process_slices(pred_data, gt_hemisphere, spacing,
                                           pair['case_id'], hemisphere, approach_name, all_assd_data)
