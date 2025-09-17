@@ -436,7 +436,7 @@ class SliceWiseASSDApproachComparison:
             legend_handles.append(handle)
 
         ax.legend(legend_handles, all_approaches, title='Segmentation Approach',
-                 loc='upper right', fontsize=10, title_fontsize=11)
+                 loc='upper left', fontsize=10, title_fontsize=11)
 
         # Add grid
         ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
@@ -771,12 +771,6 @@ class SliceWiseASSDApproachComparison:
             print(f"Plot saved to: {plot_path}")
             if stats_path:
                 print(f"Statistical analysis saved to: {stats_path}")
-
-            # Save raw data
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            data_path = self.output_dir / f"slice_wise_assd_approach_comparison_data_{timestamp}.xlsx"
-            assd_df.to_excel(data_path, index=False)
-            print(f"Raw data saved to: {data_path}")
 
             return assd_df, plot_path, stats_path
         else:
