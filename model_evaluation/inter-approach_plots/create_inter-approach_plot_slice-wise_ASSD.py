@@ -782,7 +782,7 @@ def main():
 
     # Set paths
     base_path = Path("/home/ubuntu/DLSegPerf/data/TrainingsResults-PerfTerr")
-    output_dir = Path("/home/ubuntu/DLSegPerf/model_evaluation/trying out")
+    output_dir = Path("/home/ubuntu/DLSegPerf/model_evaluation/inter-approach_plots")
 
     # Initialize analyzer
     analyzer = SliceWiseASSDApproachComparison(base_path, output_dir)

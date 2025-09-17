@@ -36,7 +36,7 @@ class SlicewiseASSDInputPlotter:
     def __init__(self, results_dir):
         """Initialize with TrainingsResults-PerfTerr directory path"""
         self.results_dir = Path(results_dir)
-        self.output_dir = Path("/home/ubuntu/DLSegPerf/model_evaluation/trying out")
+        self.output_dir = Path("/home/ubuntu/DLSegPerf/model_evaluation/inter-input_plots")
         self.output_dir.mkdir(exist_ok=True)
 
         # Define input configuration patterns for single-class only
