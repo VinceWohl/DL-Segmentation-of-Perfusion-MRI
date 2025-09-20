@@ -1,12 +1,9 @@
 import multiprocessing
 import os
-import random
 import socket
 from typing import Union, Optional
 
 import nnunetv2
-import numpy as np
-import torch
 import torch.cuda
 import torch.distributed as dist
 import torch.multiprocessing as mp
@@ -17,15 +14,6 @@ from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 from nnunetv2.utilities.find_class_by_name import recursive_find_python_class
 from torch.backends import cudnn
-
-
-def set_seed(seed):
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    np.random.seed(seed)
-    random.seed(seed)
 
 
 def find_free_network_port() -> int:
@@ -133,12 +121,9 @@ def run_ddp(rank, dataset_name_or_id, configuration, fold, tr, p, disable_checkp
 
     maybe_load_checkpoint(nnunet_trainer, c, val, pretrained_weights)
 
-    # Set deterministic seed for reproducible training
-    set_seed(1234)
-
     if torch.cuda.is_available():
-        # Note: cudnn settings are now handled in set_seed function
-        pass
+        cudnn.deterministic = False
+        cudnn.benchmark = True
 
     if not val:
         nnunet_trainer.run_training()
@@ -214,12 +199,9 @@ def run_training(dataset_name_or_id: Union[str, int],
 
         maybe_load_checkpoint(nnunet_trainer, continue_training, only_run_validation, pretrained_weights)
 
-        # Set deterministic seed for reproducible training
-        set_seed(1234)
-
         if torch.cuda.is_available():
-            # Note: cudnn settings are now handled in set_seed function
-            pass
+            cudnn.deterministic = False
+            cudnn.benchmark = True
 
         if not only_run_validation:
             nnunet_trainer.run_training()
