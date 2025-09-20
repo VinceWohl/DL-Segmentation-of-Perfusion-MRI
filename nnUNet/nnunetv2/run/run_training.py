@@ -122,8 +122,8 @@ def run_ddp(rank, dataset_name_or_id, configuration, fold, tr, p, disable_checkp
     maybe_load_checkpoint(nnunet_trainer, c, val, pretrained_weights)
 
     if torch.cuda.is_available():
-        cudnn.deterministic = False
-        cudnn.benchmark = True
+        cudnn.deterministic = True
+        cudnn.benchmark = False
 
     if not val:
         nnunet_trainer.run_training()
@@ -200,8 +200,8 @@ def run_training(dataset_name_or_id: Union[str, int],
         maybe_load_checkpoint(nnunet_trainer, continue_training, only_run_validation, pretrained_weights)
 
         if torch.cuda.is_available():
-            cudnn.deterministic = False
-            cudnn.benchmark = True
+            cudnn.deterministic = True
+            cudnn.benchmark = False
 
         if not only_run_validation:
             nnunet_trainer.run_training()
