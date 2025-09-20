@@ -1,12 +1,9 @@
 import multiprocessing
 import os
-import random
 import socket
 from typing import Union, Optional
 
-import numpy as np
 import nnunetv2
-import torch
 import torch.cuda
 import torch.distributed as dist
 import torch.multiprocessing as mp
@@ -30,16 +27,6 @@ def find_free_network_port() -> int:
     port = s.getsockname()[1]
     s.close()
     return port
-
-
-def set_deterministic_seeds(seed=1234):
-    """Set seeds for reproducible training"""
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    np.random.seed(seed)
-    random.seed(seed)
-    os.environ['PYTHONHASHSEED'] = str(seed)
 
 
 def get_trainer_from_args(dataset_name_or_id: Union[int, str],
@@ -132,14 +119,11 @@ def run_ddp(rank, dataset_name_or_id, configuration, fold, tr, p, disable_checkp
 
     assert not (c and val), f'Cannot set --c and --val flag at the same time. Dummy.'
 
-    # Set deterministic seeds for reproducible training
-    set_deterministic_seeds(seed=1234 + rank)
-
     maybe_load_checkpoint(nnunet_trainer, c, val, pretrained_weights)
 
     if torch.cuda.is_available():
-        cudnn.deterministic = True
-        cudnn.benchmark = False
+        cudnn.deterministic = False
+        cudnn.benchmark = True
 
     if not val:
         nnunet_trainer.run_training()
@@ -213,14 +197,11 @@ def run_training(dataset_name_or_id: Union[str, int],
 
         assert not (continue_training and only_run_validation), f'Cannot set --c and --val flag at the same time. Dummy.'
 
-        # Set deterministic seeds for reproducible training
-        set_deterministic_seeds(seed=1234 + fold if isinstance(fold, int) else 1234)
-
         maybe_load_checkpoint(nnunet_trainer, continue_training, only_run_validation, pretrained_weights)
 
         if torch.cuda.is_available():
-            cudnn.deterministic = True
-            cudnn.benchmark = False
+            cudnn.deterministic = False
+            cudnn.benchmark = True
 
         if not only_run_validation:
             nnunet_trainer.run_training()
