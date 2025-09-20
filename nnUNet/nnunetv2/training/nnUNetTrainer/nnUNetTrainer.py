@@ -677,15 +677,14 @@ class nnUNetTrainer(object):
             mt_gen_train = SingleThreadedAugmenter(dl_tr, None)
             mt_gen_val = SingleThreadedAugmenter(dl_val, None)
         else:
-            mt_gen_train = NonDetMultiThreadedAugmenter(data_loader=dl_tr, transform=None,
+            mt_gen_train = MultiThreadedAugmenter(data_loader=dl_tr, transform=None,
                                                         num_processes=allowed_num_processes,
-                                                        num_cached=max(6, allowed_num_processes // 2), seeds=None,
-                                                        pin_memory=self.device.type == 'cuda', wait_time=0.002)
-            mt_gen_val = NonDetMultiThreadedAugmenter(data_loader=dl_val,
+                                                        seeds=[1234 + i for i in range(allowed_num_processes)],
+                                                        pin_memory=self.device.type == 'cuda')
+            mt_gen_val = MultiThreadedAugmenter(data_loader=dl_val,
                                                       transform=None, num_processes=max(1, allowed_num_processes // 2),
-                                                      num_cached=max(3, allowed_num_processes // 4), seeds=None,
-                                                      pin_memory=self.device.type == 'cuda',
-                                                      wait_time=0.002)
+                                                      seeds=[1234 + i for i in range(max(1, allowed_num_processes // 2))],
+                                                      pin_memory=self.device.type == 'cuda')
         # # let's get this party started
         _ = next(mt_gen_train)
         _ = next(mt_gen_val)
