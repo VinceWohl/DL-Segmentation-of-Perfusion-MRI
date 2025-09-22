@@ -1,0 +1,1013 @@
+SPM DEFACING LOG — 19-Sep-2025 15:49:34
+
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/FLAIR/sub-p001_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/T1w/sub-p001_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/FLAIR/sub-p001_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/T1w/sub-p001_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/FLAIR/sub-p001_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/T1w/sub-p001_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/FLAIR/sub-p002_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/T1w/sub-p002_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p002/FLAIR/sub-p002_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/T1w/sub-p002_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p002/FLAIR/sub-p002_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/T1w/sub-p002_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/FLAIR/sub-p003_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/T1w/sub-p003_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p003/FLAIR/sub-p003_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/T1w/sub-p003_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p003/FLAIR/sub-p003_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/T1w/sub-p003_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/FLAIR/sub-p004_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/T1w/sub-p004_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p004/FLAIR/sub-p004_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/T1w/sub-p004_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p004/FLAIR/sub-p004_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/T1w/sub-p004_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/FLAIR/sub-p005_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/T1w/sub-p005_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p005/FLAIR/sub-p005_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/T1w/sub-p005_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p005/FLAIR/sub-p005_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/T1w/sub-p005_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/FLAIR/sub-p006_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/T1w/sub-p006_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p006/FLAIR/sub-p006_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/T1w/sub-p006_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p006/FLAIR/sub-p006_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/T1w/sub-p006_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/FLAIR/sub-p007_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/T1w/sub-p007_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p007/FLAIR/sub-p007_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/T1w/sub-p007_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p007/FLAIR/sub-p007_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/T1w/sub-p007_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/FLAIR/sub-p008_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/T1w/sub-p008_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p008/FLAIR/sub-p008_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/T1w/sub-p008_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p008/FLAIR/sub-p008_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/T1w/sub-p008_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/FLAIR/sub-p009_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/T1w/sub-p009_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p009/FLAIR/sub-p009_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/T1w/sub-p009_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p009/FLAIR/sub-p009_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/T1w/sub-p009_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/FLAIR/sub-p010_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/T1w/sub-p010_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p010/FLAIR/sub-p010_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/T1w/sub-p010_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p010/FLAIR/sub-p010_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/T1w/sub-p010_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/FLAIR/sub-p011_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/T1w/sub-p011_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p011/FLAIR/sub-p011_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/T1w/sub-p011_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p011/FLAIR/sub-p011_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/T1w/sub-p011_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/FLAIR/sub-p012_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/T1w/sub-p012_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p012/FLAIR/sub-p012_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/T1w/sub-p012_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p012/FLAIR/sub-p012_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/T1w/sub-p012_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/FLAIR/sub-p013_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/T1w/sub-p013_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p013/FLAIR/sub-p013_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/T1w/sub-p013_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p013/FLAIR/sub-p013_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/T1w/sub-p013_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/FLAIR/sub-p014_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/T1w/sub-p014_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p014/FLAIR/sub-p014_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/T1w/sub-p014_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p014/FLAIR/sub-p014_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/T1w/sub-p014_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/FLAIR/sub-p015_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/T1w/sub-p015_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Second_visit/output/sub-p015/FLAIR/sub-p015_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/T1w/sub-p015_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_HC/Third_visit/output/sub-p015/FLAIR/sub-p015_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/T1w/sub-p015_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/FLAIR/sub-p016_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/T1w/sub-p016_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p016_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p016_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p016_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p016_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p016/FLAIR/sub-p016_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/T1w/sub-p016_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p016_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p016_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p016_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p016_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p016/FLAIR/sub-p016_FLAIR.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p016/T1w/sub-p016_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p016/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p016_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p016/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p016_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p016/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p016_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p016/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p016_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p016/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p016/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p016/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p016/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p017/FLAIR/sub-p017_FLAIR.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p017/T1w/sub-p017_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p017/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p017_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p017/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p017_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p017/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p017_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p017/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p017_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p017/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p017/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p017/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p017/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p017/FLAIR/sub-p017_FLAIR.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p017/T1w/sub-p017_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p017/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p017_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p017/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p017_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p017/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p017_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p017/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p017_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p017/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p017/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p017/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p017/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p017/FLAIR/sub-p017_FLAIR.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p017/T1w/sub-p017_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p017/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p017_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p017/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p017_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p017/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p017_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p017/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p017_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p017/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p017/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p017/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p017/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/FLAIR/sub-p018_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/T1w/sub-p018_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p018_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p018_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p018_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p018_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p018/FLAIR/sub-p018_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/T1w/sub-p018_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p018_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p018_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p018_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p018_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p018/FLAIR/sub-p018_FLAIR.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p018/T1w/sub-p018_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p018/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p018_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p018/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p018_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p018/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p018_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p018/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p018_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p018/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p018/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p018/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p018/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/FLAIR/sub-p019_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/T1w/sub-p019_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p019_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p019_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p019_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p019_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p019/FLAIR/sub-p019_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/T1w/sub-p019_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p019_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p019_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p019_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p019_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p019/FLAIR/sub-p019_FLAIR.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p019/T1w/sub-p019_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p019/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p019_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p019/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p019_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p019/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p019_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p019/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p019_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p019/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p019/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p019/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p019/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/FLAIR/sub-p020_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/T1w/sub-p020_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p020_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p020_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p020_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p020_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p020/FLAIR/sub-p020_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/T1w/sub-p020_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p020_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p020_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p020_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p020_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p020/FLAIR/sub-p020_FLAIR.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p020/T1w/sub-p020_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p020/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p020_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p020/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p020_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p020/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p020_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p020/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p020_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p020/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p020/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p020/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p020/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/FLAIR/sub-p021_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/T1w/sub-p021_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p021_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p021_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p021_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p021_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p021/FLAIR/sub-p021_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/T1w/sub-p021_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p021_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p021_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p021_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p021_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p021/FLAIR/sub-p021_FLAIR.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p021/T1w/sub-p021_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p021/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p021_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p021/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p021_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p021/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p021_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p021/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p021_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p021/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p021/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p021/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p021/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/FLAIR/sub-p022_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/T1w/sub-p022_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p022_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p022_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p022_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p022_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p022/FLAIR/sub-p022_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/T1w/sub-p022_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p022_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p022_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p022_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p022_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p022/FLAIR/sub-p022_FLAIR.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p022/T1w/sub-p022_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p022/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p022_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p022/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p022_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p022/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p022_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p022/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p022_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p022/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p022/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p022/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p022/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/FLAIR/sub-p023_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/T1w/sub-p023_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p023_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p023_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p023_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p023_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Second_visit/output/sub-p023/FLAIR/sub-p023_FLAIR.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/T1w/sub-p023_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p023_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p023_T1w.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p023_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Copied for defacing: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p023_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+✓ Copied: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p023/FLAIR/sub-p023_FLAIR.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p023/T1w/sub-p023_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p023/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p023_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p023/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p023_T1w.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p023/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p023_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p023/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p023_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p023/task-AIR/ASL/ssLICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p023/task-AIR/ASL/ssRICA/CBF_nativeSpace/CBF_3_BRmsk_CSF.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p023/task-AIR/ASL/ssLICA/PerfTerrMask/mask_LICA_manual_Corrected.nii
+⨉ Missing: /data_feivel/Repro_Study/DATA_patients/Third_visit/output/sub-p023/task-AIR/ASL/ssRICA/PerfTerrMask/mask_RICA_manual_Corrected.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/FLAIR/anon_sub-p001_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/FLAIR/sub-p001_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/T1w/anon_sub-p001_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/T1w/sub-p001_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p001_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p001_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p001_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p001_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p001/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/FLAIR/anon_sub-p001_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/FLAIR/sub-p001_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/T1w/anon_sub-p001_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/T1w/sub-p001_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p001_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p001_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p001_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p001_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p001/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/FLAIR/anon_sub-p001_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/FLAIR/sub-p001_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/T1w/anon_sub-p001_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/T1w/sub-p001_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p001_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p001_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p001_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p001_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p001_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p001/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p001_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/FLAIR/anon_sub-p002_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/FLAIR/sub-p002_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/T1w/anon_sub-p002_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/T1w/sub-p002_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p002_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p002_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p002_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p002_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p002/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/T1w/anon_sub-p002_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/T1w/sub-p002_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p002_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p002_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p002_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p002_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p002/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/T1w/anon_sub-p002_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/T1w/sub-p002_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p002_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p002_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p002_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p002_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p002_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p002/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p002_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/FLAIR/anon_sub-p003_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/FLAIR/sub-p003_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/T1w/anon_sub-p003_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/T1w/sub-p003_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p003_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p003_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p003_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p003_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p003/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/T1w/anon_sub-p003_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/T1w/sub-p003_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p003_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p003_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p003_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p003_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p003/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/T1w/anon_sub-p003_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/T1w/sub-p003_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p003_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p003_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p003_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p003_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p003_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p003/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p003_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/FLAIR/anon_sub-p004_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/FLAIR/sub-p004_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/T1w/anon_sub-p004_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/T1w/sub-p004_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p004_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p004_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p004_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p004_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p004/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/T1w/anon_sub-p004_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/T1w/sub-p004_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p004_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p004_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p004_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p004_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p004/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/T1w/anon_sub-p004_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/T1w/sub-p004_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p004_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p004_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p004_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p004_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p004_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p004/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p004_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/FLAIR/anon_sub-p005_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/FLAIR/sub-p005_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/T1w/anon_sub-p005_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/T1w/sub-p005_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p005_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p005_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p005_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p005_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p005/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/T1w/anon_sub-p005_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/T1w/sub-p005_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p005_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p005_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p005_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p005_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p005/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/T1w/anon_sub-p005_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/T1w/sub-p005_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p005_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p005_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p005_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p005_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p005_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p005/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p005_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/FLAIR/anon_sub-p006_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/FLAIR/sub-p006_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/T1w/anon_sub-p006_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/T1w/sub-p006_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p006_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p006_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p006_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p006_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p006/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/T1w/anon_sub-p006_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/T1w/sub-p006_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p006_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p006_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p006_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p006_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p006/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/T1w/anon_sub-p006_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/T1w/sub-p006_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p006_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p006_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p006_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p006_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p006_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p006/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p006_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/FLAIR/anon_sub-p007_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/FLAIR/sub-p007_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/T1w/anon_sub-p007_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/T1w/sub-p007_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p007_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p007_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p007_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p007_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p007/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/T1w/anon_sub-p007_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/T1w/sub-p007_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p007_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p007_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p007_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p007_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p007/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/T1w/anon_sub-p007_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/T1w/sub-p007_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p007_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p007_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p007_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p007_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p007_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p007/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p007_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/FLAIR/anon_sub-p008_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/FLAIR/sub-p008_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/T1w/anon_sub-p008_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/T1w/sub-p008_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p008_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p008_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p008_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p008_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p008/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/T1w/anon_sub-p008_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/T1w/sub-p008_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p008_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p008_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p008_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p008_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p008/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/T1w/anon_sub-p008_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/T1w/sub-p008_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p008_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p008_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p008_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p008_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p008_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p008/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p008_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/FLAIR/anon_sub-p009_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/FLAIR/sub-p009_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/T1w/anon_sub-p009_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/T1w/sub-p009_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p009_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p009_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p009_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p009_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p009/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/T1w/anon_sub-p009_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/T1w/sub-p009_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p009_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p009_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p009_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p009_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p009/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/T1w/anon_sub-p009_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/T1w/sub-p009_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p009_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p009_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p009_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p009_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p009_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p009/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p009_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/FLAIR/anon_sub-p010_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/FLAIR/sub-p010_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/T1w/anon_sub-p010_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/T1w/sub-p010_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p010_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p010_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p010_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p010_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p010/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/T1w/anon_sub-p010_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/T1w/sub-p010_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p010_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p010_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p010_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p010_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p010/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/T1w/anon_sub-p010_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/T1w/sub-p010_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p010_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p010_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p010_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p010_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p010_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p010/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p010_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/FLAIR/anon_sub-p011_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/FLAIR/sub-p011_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/T1w/anon_sub-p011_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/T1w/sub-p011_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p011_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p011_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p011_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p011_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p011/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/T1w/anon_sub-p011_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/T1w/sub-p011_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p011_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p011_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p011_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p011_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p011/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/T1w/anon_sub-p011_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/T1w/sub-p011_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p011_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p011_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p011_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p011_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p011_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p011/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p011_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/FLAIR/anon_sub-p012_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/FLAIR/sub-p012_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/T1w/anon_sub-p012_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/T1w/sub-p012_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p012_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p012_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p012_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p012_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p012/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/T1w/anon_sub-p012_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/T1w/sub-p012_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p012_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p012_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p012_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p012_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p012/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/T1w/anon_sub-p012_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/T1w/sub-p012_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p012_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p012_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p012_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p012_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p012_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p012/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p012_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/FLAIR/anon_sub-p013_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/FLAIR/sub-p013_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/T1w/anon_sub-p013_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/T1w/sub-p013_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p013_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p013_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p013_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p013_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p013/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/T1w/anon_sub-p013_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/T1w/sub-p013_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p013_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p013_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p013_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p013_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p013/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/T1w/anon_sub-p013_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/T1w/sub-p013_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p013_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p013_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p013_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p013_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p013_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p013/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p013_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/FLAIR/anon_sub-p014_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/FLAIR/sub-p014_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/T1w/anon_sub-p014_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/T1w/sub-p014_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p014_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p014_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p014_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p014_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p014/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/T1w/anon_sub-p014_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/T1w/sub-p014_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p014_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p014_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p014_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p014_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p014/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/T1w/anon_sub-p014_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/T1w/sub-p014_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p014_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p014_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p014_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p014_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p014_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p014/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p014_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/FLAIR/anon_sub-p015_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/FLAIR/sub-p015_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/T1w/anon_sub-p015_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/T1w/sub-p015_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p015_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p015_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p015_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p015_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/First_visit/output/sub-p015/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/T1w/anon_sub-p015_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/T1w/sub-p015_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p015_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p015_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p015_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p015_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Second_visit/output/sub-p015/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/T1w/anon_sub-p015_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/T1w/sub-p015_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p015_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p015_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p015_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p015_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p015_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_HC/Third_visit/output/sub-p015/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p015_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/FLAIR/anon_sub-p016_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/FLAIR/sub-p016_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/T1w/anon_sub-p016_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/T1w/sub-p016_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p016_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p016_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p016_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p016_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p016_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p016_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p016_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p016/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p016_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/T1w/anon_sub-p016_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/T1w/sub-p016_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p016_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p016_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p016_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p016_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p016_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p016_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p016_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p016/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p016_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/FLAIR/anon_sub-p018_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/FLAIR/sub-p018_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/T1w/anon_sub-p018_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/T1w/sub-p018_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p018_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p018_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p018_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p018_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p018_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p018_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p018_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p018/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p018_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/T1w/anon_sub-p018_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/T1w/sub-p018_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p018_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p018_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p018_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p018_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p018_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p018_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p018_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p018/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p018_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/FLAIR/anon_sub-p019_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/FLAIR/sub-p019_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/T1w/anon_sub-p019_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/T1w/sub-p019_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p019_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p019_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p019_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p019_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p019_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p019_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p019_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p019/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p019_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/T1w/anon_sub-p019_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/T1w/sub-p019_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p019_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p019_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p019_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p019_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p019_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p019_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p019_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p019/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p019_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/FLAIR/anon_sub-p020_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/FLAIR/sub-p020_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/T1w/anon_sub-p020_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/T1w/sub-p020_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p020_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p020_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p020_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p020_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p020_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p020_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p020_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p020/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p020_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/T1w/anon_sub-p020_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/T1w/sub-p020_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p020_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p020_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p020_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p020_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p020_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p020_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p020_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p020/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p020_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/FLAIR/anon_sub-p021_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/FLAIR/sub-p021_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/T1w/anon_sub-p021_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/T1w/sub-p021_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p021_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p021_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p021_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p021_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p021_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p021_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p021_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p021/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p021_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/T1w/anon_sub-p021_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/T1w/sub-p021_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p021_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p021_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p021_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p021_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p021_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p021_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p021_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p021/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p021_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/FLAIR/anon_sub-p022_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/FLAIR/sub-p022_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/T1w/anon_sub-p022_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/T1w/sub-p022_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p022_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p022_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p022_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p022_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p022_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p022_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p022_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p022/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p022_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/T1w/anon_sub-p022_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/T1w/sub-p022_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p022_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p022_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p022_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p022_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p022_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p022_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p022_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p022/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p022_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/FLAIR/anon_sub-p023_FLAIR.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/FLAIR/sub-p023_FLAIR.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/T1w/anon_sub-p023_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/T1w/sub-p023_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p023_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p023_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p023_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p023_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p023_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p023_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p023_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/First_visit/output/sub-p023/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p023_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/T1w/anon_sub-p023_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/T1w/sub-p023_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssLICA/T1w_coreg/anon_rsub-p023_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssLICA/T1w_coreg/rsub-p023_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssRICA/T1w_coreg/anon_rsub-p023_T1w.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssRICA/T1w_coreg/rsub-p023_T1w.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssLICA/ASL_fullcoreg/anon_meano_sub-p023_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssLICA/ASL_fullcoreg/meano_sub-p023_task-AIR_acq-epi_label-ssLICA_asl_002_1.nii
+✓ Defaced -> kept: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssRICA/ASL_fullcoreg/anon_meano_sub-p023_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii | removed original copy: /data_feivel/Vincent/anon_DATA/DATA_patients/Second_visit/output/sub-p023/task-AIR/ASL/ssRICA/ASL_fullcoreg/meano_sub-p023_task-AIR_acq-epi_label-ssRICA_asl_002_1.nii
+
+--- Completed at 19-Sep-2025 16:02:34 ---
