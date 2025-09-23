@@ -282,6 +282,75 @@ class TestSetEvaluator:
         self.print_evaluation_summary()
         return True
 
+    def create_excel_for_group(self, df, group_name, timestamp):
+        """Create Excel file for a specific group (HC or Patients)"""
+        excel_file = self.output_dir / f"test_set_results_{group_name}_{timestamp}.xlsx"
+
+        # ----- Sheet 1: Per_Case_Results -----
+        per_case_cols = [
+            'Subject', 'Visit', 'Hemisphere', 'Base_Name',
+            'DSC_Volume', 'DSC_Slicewise', 'IoU',
+            'Sensitivity', 'Precision', 'Specificity',
+            'RVE_Percent', 'HD95_mm', 'ASSD_mm'
+        ]
+        per_case_df = df[per_case_cols].copy()
+
+        # ----- Sheet 2: Per_Hemisphere_Summary -----
+        metric_cols = ['DSC_Volume', 'DSC_Slicewise', 'IoU',
+                       'Sensitivity', 'Precision', 'Specificity',
+                       'RVE_Percent', 'HD95_mm', 'ASSD_mm']
+
+        hemi_rows = []
+        for hemi in ['Left', 'Right']:
+            sub = per_case_df[per_case_df['Hemisphere'] == hemi]
+            if len(sub) == 0:
+                continue
+            for col in metric_cols:
+                vals = sub[col].replace([np.inf, -np.inf], np.nan).dropna()
+                if len(vals) == 0:
+                    continue
+                hemi_rows.append({
+                    'Hemisphere': hemi,
+                    'Metric': col,
+                    'Mean': round(vals.mean(), 4),
+                    'Std': round(vals.std(), 4)
+                })
+        hemi_df = pd.DataFrame(hemi_rows)
+
+        # ----- Sheet 3: Overall_Summary -----
+        overall_rows = []
+        for col in metric_cols:
+            vals = per_case_df[col].replace([np.inf, -np.inf], np.nan).dropna()
+            if len(vals) == 0:
+                continue
+            overall_rows.append({
+                'Metric': col,
+                'Mean': round(vals.mean(), 4),
+                'Std': round(vals.std(), 4)
+            })
+        overall_df = pd.DataFrame(overall_rows)
+
+        # Write to Excel
+        with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
+            per_case_df.to_excel(writer, sheet_name='Per_Case_Results', index=False)
+            hemi_df.to_excel(writer, sheet_name='Per_Hemisphere_Summary', index=False)
+            overall_df.to_excel(writer, sheet_name='Overall_Summary', index=False)
+
+            # Auto-adjust column widths
+            for ws in writer.sheets.values():
+                for column in ws.columns:
+                    max_len = 0
+                    column = [cell for cell in column]
+                    for cell in column:
+                        try:
+                            max_len = max(max_len, len(str(cell.value)))
+                        except Exception:
+                            pass
+                    ws.column_dimensions[column[0].column_letter].width = min(max_len + 2, 50)
+
+        print(f"Results saved to Excel ({group_name}): {excel_file}")
+        return excel_file
+
     def save_results_to_excel(self):
         if not self.results:
             print("No results to save")
@@ -289,7 +358,6 @@ class TestSetEvaluator:
 
         try:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            excel_file = self.output_dir / f"test_set_results_{timestamp}.xlsx"
 
             df = pd.DataFrame(self.results)
 
@@ -301,72 +369,39 @@ class TestSetEvaluator:
             # Sort by Subject, Visit, Hemisphere
             df = df.sort_values(['Subject', 'Visit', 'Hemisphere'], na_position='last')
 
-            # ----- Sheet 1: Per_Case_Results -----
-            per_case_cols = [
-                'Subject', 'Visit', 'Hemisphere', 'Base_Name',
-                'DSC_Volume', 'DSC_Slicewise', 'IoU',
-                'Sensitivity', 'Precision', 'Specificity',
-                'RVE_Percent', 'HD95_mm', 'ASSD_mm'
-            ]
-            per_case_df = df[per_case_cols].copy()
+            # Extract subject number for grouping
+            df['Subject_Num'] = df['Subject'].str.extract(r'sub-p(\d+)').astype(int)
 
-            # ----- Sheet 2: Per_Hemisphere_Summary -----
-            metric_cols = ['DSC_Volume', 'DSC_Slicewise', 'IoU',
-                           'Sensitivity', 'Precision', 'Specificity',
-                           'RVE_Percent', 'HD95_mm', 'ASSD_mm']
+            # Separate into healthy controls (sub-p001 to sub-p015) and patients (sub-p016 to sub-p023)
+            hc_df = df[df['Subject_Num'] <= 15].copy()
+            patients_df = df[df['Subject_Num'] >= 16].copy()
 
-            hemi_rows = []
-            for hemi in ['Left', 'Right']:
-                sub = per_case_df[per_case_df['Hemisphere'] == hemi]
-                if len(sub) == 0:
-                    continue
-                for col in metric_cols:
-                    vals = sub[col].replace([np.inf, -np.inf], np.nan).dropna()
-                    if len(vals) == 0:
-                        continue
-                    hemi_rows.append({
-                        'Hemisphere': hemi,
-                        'Metric': col,
-                        'Mean': round(vals.mean(), 4),
-                        'Std': round(vals.std(), 4)
-                    })
-            hemi_df = pd.DataFrame(hemi_rows)
+            # Remove the temporary Subject_Num column
+            hc_df = hc_df.drop('Subject_Num', axis=1)
+            patients_df = patients_df.drop('Subject_Num', axis=1)
 
-            # ----- Sheet 3: Overall_Summary -----
-            overall_rows = []
-            for col in metric_cols:
-                vals = per_case_df[col].replace([np.inf, -np.inf], np.nan).dropna()
-                if len(vals) == 0:
-                    continue
-                overall_rows.append({
-                    'Metric': col,
-                    'Mean': round(vals.mean(), 4),
-                    'Std': round(vals.std(), 4)
-                })
-            overall_df = pd.DataFrame(overall_rows)
+            print(f"Healthy Controls: {len(hc_df)} cases")
+            print(f"Patients: {len(patients_df)} cases")
 
-            # Write to Excel
-            with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
-                per_case_df.to_excel(writer, sheet_name='Per_Case_Results', index=False)
-                hemi_df.to_excel(writer, sheet_name='Per_Hemisphere_Summary', index=False)
-                overall_df.to_excel(writer, sheet_name='Overall_Summary', index=False)
+            # Create separate Excel files for each group
+            excel_files = []
+            if len(hc_df) > 0:
+                excel_file_hc = self.create_excel_for_group(hc_df, 'HC', timestamp)
+                excel_files.append(excel_file_hc)
 
-                # Auto-adjust column widths
-                for ws in writer.sheets.values():
-                    for column in ws.columns:
-                        max_len = 0
-                        column = [cell for cell in column]
-                        for cell in column:
-                            try:
-                                max_len = max(max_len, len(str(cell.value)))
-                            except Exception:
-                                pass
-                        ws.column_dimensions[column[0].column_letter].width = min(max_len + 2, 50)
+            if len(patients_df) > 0:
+                excel_file_patients = self.create_excel_for_group(patients_df, 'patients', timestamp)
+                excel_files.append(excel_file_patients)
 
-            print(f"Results saved to Excel: {excel_file}")
+            # Also create a combined file for comparison
+            excel_file_combined = self.output_dir / f"test_set_results_combined_{timestamp}.xlsx"
+            self.create_excel_for_group(df.drop('Subject_Num', axis=1, errors='ignore'), 'combined', timestamp)
+
+            return excel_files
 
         except Exception as e:
             print(f"Error saving Excel file: {e}")
+            return []
 
     def print_evaluation_summary(self):
         print("\n" + "=" * 60)
@@ -382,6 +417,19 @@ class TestSetEvaluator:
         if self.results:
             df = pd.DataFrame(self.results)
 
+            # Parse subject information for grouping
+            df[['Subject', 'Visit', 'Hemisphere_Code']] = df['Base_Name'].str.extract(r'PerfTerr(\d+)-v(\d+)-([LR])')
+            df['Subject'] = 'sub-p' + df['Subject'].str.zfill(3)
+            df['Subject_Num'] = df['Subject'].str.extract(r'sub-p(\d+)').astype(int)
+
+            # Separate groups
+            hc_df = df[df['Subject_Num'] <= 15]
+            patients_df = df[df['Subject_Num'] >= 16]
+
+            print(f"\nGROUP BREAKDOWN:")
+            print(f"Healthy Controls (sub-p001 to sub-p015): {len(hc_df)} cases")
+            print(f"Patients (sub-p016 to sub-p023): {len(patients_df)} cases")
+
             print(f"\nOVERALL PERFORMANCE SUMMARY:")
             metrics = ['DSC_Volume', 'DSC_Slicewise', 'IoU', 'HD95_mm', 'ASSD_mm']
             for metric in metrics:
@@ -395,6 +443,14 @@ class TestSetEvaluator:
                 if len(hemi_data) > 0:
                     dice_mean = hemi_data['DSC_Volume'].mean()
                     print(f"{hemi:5} hemisphere: {dice_mean:.4f} Dice ({len(hemi_data)} cases)")
+
+            # Group-specific performance
+            print(f"\nGROUP-SPECIFIC PERFORMANCE:")
+            for group_name, group_df in [('Healthy Controls', hc_df), ('Patients', patients_df)]:
+                if len(group_df) > 0:
+                    dice_vals = group_df['DSC_Volume'].replace([np.inf, -np.inf], np.nan).dropna()
+                    if len(dice_vals) > 0:
+                        print(f"{group_name:16}: {dice_vals.mean():.4f} ± {dice_vals.std():.4f} Dice ({len(group_df)} cases)")
         print("=" * 60)
 
 
