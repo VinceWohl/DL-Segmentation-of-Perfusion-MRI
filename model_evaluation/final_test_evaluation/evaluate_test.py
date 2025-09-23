@@ -27,6 +27,13 @@ try:
 except ImportError:
     PANDAS_AVAILABLE = False
 
+try:
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    PLOTTING_AVAILABLE = True
+except ImportError:
+    PLOTTING_AVAILABLE = False
+
 
 class TestSetEvaluator:
     def __init__(self, predictions_dir, gt_dir, output_dir):
@@ -40,6 +47,9 @@ class TestSetEvaluator:
         self.processed_count = 0
         self.successful_count = 0
         self.failed_files = []
+
+        # Store slice-wise data for plotting
+        self.slice_wise_data = []
 
     # ---------- Loading & basic metrics ----------
     def load_nifti_file(self, file_path):
@@ -142,6 +152,60 @@ class TestSetEvaluator:
             print(f"Warning: ASSD calculation failed: {e}")
             return float('nan')
 
+    def calculate_slice_wise_assd(self, gt_mask, pred_mask, spacing, base_name):
+        """Calculate ASSD for each slice and store for plotting"""
+        slice_data = []
+        nz = gt_mask.shape[2]
+
+        # Extract group from base_name - corrected classification
+        subject_num = int(base_name.split('-')[0].replace('PerfTerr', ''))
+        group = 'HC' if subject_num in [14, 15] else 'Patients'
+
+        for z in range(nz):
+            gt_slice = gt_mask[:, :, z]
+            pred_slice = pred_mask[:, :, z]
+
+            # Skip empty slices
+            if np.sum(gt_slice) == 0 and np.sum(pred_slice) == 0:
+                continue
+
+            try:
+                # Get 2D surface points for this slice
+                gt_surface_2d = self.get_surface_points_2d(gt_slice, spacing[:2])
+                pred_surface_2d = self.get_surface_points_2d(pred_slice, spacing[:2])
+
+                if len(gt_surface_2d) == 0 and len(pred_surface_2d) == 0:
+                    assd_slice = 0.0
+                elif len(gt_surface_2d) == 0 or len(pred_surface_2d) == 0:
+                    assd_slice = float('inf')
+                else:
+                    d1 = cdist(gt_surface_2d, pred_surface_2d).min(axis=1).mean()
+                    d2 = cdist(pred_surface_2d, gt_surface_2d).min(axis=1).mean()
+                    assd_slice = float((d1 + d2) / 2.0)
+
+                if not np.isinf(assd_slice) and not np.isnan(assd_slice):
+                    slice_data.append({
+                        'Case': base_name,
+                        'Group': group,
+                        'Slice': z,
+                        'ASSD_mm': assd_slice
+                    })
+
+            except Exception as e:
+                continue  # Skip problematic slices
+
+        return slice_data
+
+    def get_surface_points_2d(self, mask_2d, spacing_2d):
+        """Get surface points for 2D slice"""
+        structure = ndimage.generate_binary_structure(2, 1)
+        eroded = ndimage.binary_erosion(mask_2d, structure)
+        boundary = mask_2d & ~eroded
+        coords = np.array(np.where(boundary)).T
+        if len(coords) > 0:
+            return coords * np.array(spacing_2d)
+        return coords
+
     def convert_multilabel_to_binary(self, multilabel_mask, hemisphere):
         """Convert multi-label ground truth to binary mask for specific hemisphere"""
         if hemisphere == 'Left':
@@ -193,6 +257,10 @@ class TestSetEvaluator:
         precision = self.calculate_precision(tp, fp)
         rve = self.calculate_relative_volume_error(gt_mask, pred_mask, spacing)
         assd = self.calculate_assd(gt_mask, pred_mask, spacing)
+
+        # Calculate slice-wise ASSD for plotting
+        slice_assd_data = self.calculate_slice_wise_assd(gt_mask, pred_mask, spacing, base_name)
+        self.slice_wise_data.extend(slice_assd_data)
 
         # Extract hemisphere from filename
         hemisphere = 'Left' if base_name.endswith('-L') else 'Right'
@@ -250,6 +318,8 @@ class TestSetEvaluator:
         if not PANDAS_AVAILABLE:
             print("ERROR: pandas package is required. Please install with: pip install pandas openpyxl")
             return False
+        if not PLOTTING_AVAILABLE:
+            print("WARNING: matplotlib/seaborn not available. Plots will be skipped. Install with: pip install matplotlib seaborn")
         if not self.predictions_dir.exists():
             print(f"ERROR: Predictions directory not found: {self.predictions_dir}")
             return False
@@ -279,6 +349,10 @@ class TestSetEvaluator:
 
         print("\nSaving results to Excel...")
         self.save_results_to_excel()
+
+        print("\nCreating box plots...")
+        self.create_box_plots()
+
         self.print_evaluation_summary()
         return True
 
@@ -372,9 +446,9 @@ class TestSetEvaluator:
             # Extract subject number for grouping
             df['Subject_Num'] = df['Subject'].str.extract(r'sub-p(\d+)').astype(int)
 
-            # Separate into healthy controls (sub-p001 to sub-p015) and patients (sub-p016 to sub-p023)
-            hc_df = df[df['Subject_Num'] <= 15].copy()
-            patients_df = df[df['Subject_Num'] >= 16].copy()
+            # Separate into healthy controls (PerfTerr014, PerfTerr015) and patients (PerfTerr017-023)
+            hc_df = df[df['Subject_Num'].isin([14, 15])].copy()
+            patients_df = df[df['Subject_Num'].isin([17, 18, 19, 20, 22, 23])].copy()
 
             # Remove the temporary Subject_Num column
             hc_df = hc_df.drop('Subject_Num', axis=1)
@@ -403,6 +477,114 @@ class TestSetEvaluator:
             print(f"Error saving Excel file: {e}")
             return []
 
+    def create_box_plots(self):
+        """Create box plots comparing HC and Patients for DSC and slice-wise ASSD"""
+        if not PLOTTING_AVAILABLE:
+            print("Warning: matplotlib/seaborn not available. Skipping box plots.")
+            return
+
+        if not self.results:
+            print("No results available for plotting")
+            return
+
+        try:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+            # Prepare data for volume-based DSC plot
+            df = pd.DataFrame(self.results)
+            df[['Subject', 'Visit', 'Hemisphere_Code']] = df['Base_Name'].str.extract(r'PerfTerr(\d+)-v(\d+)-([LR])')
+            df['Subject_Num'] = df['Subject'].astype(int)
+            df['Group'] = df['Subject_Num'].apply(lambda x: 'HC' if x in [14, 15] else 'Patients')
+
+            # Filter out invalid values
+            df_plot = df[df['DSC_Volume'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+            # Set style
+            plt.style.use('default')
+            sns.set_palette("Set2")
+
+            # Plot 1: Volume-based DSC comparison
+            fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+            sns.boxplot(data=df_plot, x='Group', y='DSC_Volume', ax=ax, notch=True, order=['HC', 'Patients'])
+            ax.set_title('Volume-based Dice Score Comparison\n(HC vs Patients)', fontsize=14, fontweight='bold')
+            ax.set_xlabel('Group', fontsize=12)
+            ax.set_ylabel('Dice Score (Volume-based)', fontsize=12)
+            ax.grid(True, alpha=0.3)
+
+            # Add sample sizes and median [IQR] annotations
+            hc_data = df_plot[df_plot['Group'] == 'HC']['DSC_Volume']
+            pat_data = df_plot[df_plot['Group'] == 'Patients']['DSC_Volume']
+
+            hc_median = hc_data.median()
+            hc_q25 = hc_data.quantile(0.25)
+            hc_q75 = hc_data.quantile(0.75)
+
+            pat_median = pat_data.median()
+            pat_q25 = pat_data.quantile(0.25)
+            pat_q75 = pat_data.quantile(0.75)
+
+            # Position annotations above the boxes (HC=0, Patients=1 with order specified)
+            y_max = ax.get_ylim()[1]
+            y_offset = (y_max - ax.get_ylim()[0]) * 0.05
+
+            ax.text(0, y_max - y_offset, f'n={len(hc_data)}\n{hc_median:.3f} [{hc_q25:.3f}-{hc_q75:.3f}]',
+                   ha='center', va='top', fontsize=10, bbox=dict(boxstyle="round,pad=0.3", facecolor="lightblue", alpha=0.7))
+            ax.text(1, y_max - y_offset, f'n={len(pat_data)}\n{pat_median:.3f} [{pat_q25:.3f}-{pat_q75:.3f}]',
+                   ha='center', va='top', fontsize=10, bbox=dict(boxstyle="round,pad=0.3", facecolor="lightcoral", alpha=0.7))
+
+            plt.tight_layout()
+            dsc_plot_file = self.output_dir / f"DSC_comparison_HC_vs_Patients_{timestamp}.png"
+            plt.savefig(dsc_plot_file, dpi=300, bbox_inches='tight')
+            plt.close()
+            print(f"DSC box plot saved: {dsc_plot_file}")
+
+            # Plot 2: Slice-wise ASSD comparison
+            if self.slice_wise_data:
+                slice_df = pd.DataFrame(self.slice_wise_data)
+                slice_df_plot = slice_df[slice_df['ASSD_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+                if len(slice_df_plot) > 0:
+                    fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+                    sns.boxplot(data=slice_df_plot, x='Group', y='ASSD_mm', ax=ax, notch=True, order=['HC', 'Patients'])
+                    ax.set_title('Slice-wise ASSD Comparison\n(HC vs Patients)', fontsize=14, fontweight='bold')
+                    ax.set_xlabel('Group', fontsize=12)
+                    ax.set_ylabel('ASSD (mm) - per slice', fontsize=12)
+                    ax.grid(True, alpha=0.3)
+
+                    # Add sample sizes and median [IQR] annotations
+                    hc_slice_data = slice_df_plot[slice_df_plot['Group'] == 'HC']['ASSD_mm']
+                    pat_slice_data = slice_df_plot[slice_df_plot['Group'] == 'Patients']['ASSD_mm']
+
+                    hc_slice_median = hc_slice_data.median()
+                    hc_slice_q25 = hc_slice_data.quantile(0.25)
+                    hc_slice_q75 = hc_slice_data.quantile(0.75)
+
+                    pat_slice_median = pat_slice_data.median()
+                    pat_slice_q25 = pat_slice_data.quantile(0.25)
+                    pat_slice_q75 = pat_slice_data.quantile(0.75)
+
+                    # Position annotations above the boxes (HC=0, Patients=1 with order specified)
+                    y_max = ax.get_ylim()[1]
+                    y_offset = (y_max - ax.get_ylim()[0]) * 0.05
+
+                    ax.text(0, y_max - y_offset, f'n={len(hc_slice_data)} slices\n{hc_slice_median:.2f} [{hc_slice_q25:.2f}-{hc_slice_q75:.2f}]',
+                           ha='center', va='top', fontsize=10, bbox=dict(boxstyle="round,pad=0.3", facecolor="lightblue", alpha=0.7))
+                    ax.text(1, y_max - y_offset, f'n={len(pat_slice_data)} slices\n{pat_slice_median:.2f} [{pat_slice_q25:.2f}-{pat_slice_q75:.2f}]',
+                           ha='center', va='top', fontsize=10, bbox=dict(boxstyle="round,pad=0.3", facecolor="lightcoral", alpha=0.7))
+
+                    plt.tight_layout()
+                    assd_plot_file = self.output_dir / f"ASSD_slicewise_comparison_HC_vs_Patients_{timestamp}.png"
+                    plt.savefig(assd_plot_file, dpi=300, bbox_inches='tight')
+                    plt.close()
+                    print(f"Slice-wise ASSD box plot saved: {assd_plot_file}")
+                else:
+                    print("No valid slice-wise ASSD data for plotting")
+            else:
+                print("No slice-wise data collected for ASSD plotting")
+
+        except Exception as e:
+            print(f"Error creating box plots: {e}")
+
     def print_evaluation_summary(self):
         print("\n" + "=" * 60)
         print("TEST SET EVALUATION SUMMARY:")
@@ -422,13 +604,13 @@ class TestSetEvaluator:
             df['Subject'] = 'sub-p' + df['Subject'].str.zfill(3)
             df['Subject_Num'] = df['Subject'].str.extract(r'sub-p(\d+)').astype(int)
 
-            # Separate groups
-            hc_df = df[df['Subject_Num'] <= 15]
-            patients_df = df[df['Subject_Num'] >= 16]
+            # Separate groups - corrected classification
+            hc_df = df[df['Subject_Num'].isin([14, 15])]
+            patients_df = df[df['Subject_Num'].isin([17, 18, 19, 20, 22, 23])]
 
             print(f"\nGROUP BREAKDOWN:")
-            print(f"Healthy Controls (sub-p001 to sub-p015): {len(hc_df)} cases")
-            print(f"Patients (sub-p016 to sub-p023): {len(patients_df)} cases")
+            print(f"Healthy Controls (PerfTerr014, PerfTerr015): {len(hc_df)} cases")
+            print(f"Patients (PerfTerr017-023): {len(patients_df)} cases")
 
             print(f"\nOVERALL PERFORMANCE SUMMARY:")
             metrics = ['DSC_Volume', 'DSC_Slicewise', 'IoU', 'HD95_mm', 'ASSD_mm']
