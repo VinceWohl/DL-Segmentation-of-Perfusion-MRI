@@ -499,17 +499,43 @@ class TestSetEvaluator:
             # Filter out invalid values
             df_plot = df[df['DSC_Volume'].replace([np.inf, -np.inf], np.nan).notna()].copy()
 
-            # Set style
+            # Set style to match inter-input plots
             plt.style.use('default')
-            sns.set_palette("Set2")
+            sns.set_palette("husl")
 
             # Plot 1: Volume-based DSC comparison
-            fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-            sns.boxplot(data=df_plot, x='Group', y='DSC_Volume', ax=ax, notch=True, order=['HC', 'Patients'])
-            ax.set_title('Volume-based Dice Score Comparison\n(HC vs Patients)', fontsize=14, fontweight='bold')
-            ax.set_xlabel('Group', fontsize=12)
-            ax.set_ylabel('Dice Score (Volume-based)', fontsize=12)
-            ax.grid(True, alpha=0.3)
+            fig, ax = plt.subplots(figsize=(14, 8))
+
+            # Create manual box plot with proper styling
+            box_parts = ax.boxplot(
+                [df_plot[df_plot['Group'] == 'HC']['DSC_Volume'].values,
+                 df_plot[df_plot['Group'] == 'Patients']['DSC_Volume'].values],
+                positions=[0, 1],
+                notch=True,
+                patch_artist=True,
+                widths=0.5
+            )
+
+            # Apply colors consistent with inter-input plots
+            colors = ['#1f77b4', '#ff7f0e']  # Blue for HC, Orange for Patients
+            for patch, color in zip(box_parts['boxes'], colors):
+                patch.set_facecolor(color)
+                patch.set_alpha(0.7)
+                patch.set_edgecolor('black')
+                patch.set_linewidth(1)
+
+            ax.set_title('Volume-based Dice Score Comparison: HC vs Patients\nTest Set Evaluation Results',
+                        fontsize=16, fontweight='bold', pad=20)
+            ax.set_xlabel('Group', fontsize=14, fontweight='bold')
+            ax.set_ylabel('DSC (volume-based)', fontsize=14, fontweight='bold')
+            ax.set_xticks([0, 1])
+            ax.set_xticklabels(['HC', 'Patients'])
+            ax.tick_params(axis='x', labelsize=12)
+            ax.tick_params(axis='y', labelsize=12)
+
+            # Add grid for better readability
+            ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+            ax.set_axisbelow(True)
 
             # Add sample sizes and median [IQR] annotations
             hc_data = df_plot[df_plot['Group'] == 'HC']['DSC_Volume']
@@ -523,14 +549,47 @@ class TestSetEvaluator:
             pat_q25 = pat_data.quantile(0.25)
             pat_q75 = pat_data.quantile(0.75)
 
-            # Position annotations above the boxes (HC=0, Patients=1 with order specified)
+            # Add median [IQR] labels above each box
             y_max = ax.get_ylim()[1]
-            y_offset = (y_max - ax.get_ylim()[0]) * 0.05
+            label_y_offset = (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.02
 
-            ax.text(0, y_max - y_offset, f'n={len(hc_data)}\n{hc_median:.3f} [{hc_q25:.3f}-{hc_q75:.3f}]',
-                   ha='center', va='top', fontsize=10, bbox=dict(boxstyle="round,pad=0.3", facecolor="lightblue", alpha=0.7))
-            ax.text(1, y_max - y_offset, f'n={len(pat_data)}\n{pat_median:.3f} [{pat_q25:.3f}-{pat_q75:.3f}]',
-                   ha='center', va='top', fontsize=10, bbox=dict(boxstyle="round,pad=0.3", facecolor="lightcoral", alpha=0.7))
+            # HC label (position 0)
+            hc_iqr = hc_q75 - hc_q25
+            hc_label = f'{hc_median:.4f} [{hc_iqr:.4f}]'
+            ax.text(0, y_max + label_y_offset, hc_label,
+                   ha='center', va='bottom', fontsize=8,
+                   color='#1f77b4', weight='bold',
+                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+                           alpha=0.8, edgecolor='#1f77b4', linewidth=0.5))
+
+            # Patients label (position 1)
+            pat_iqr = pat_q75 - pat_q25
+            pat_label = f'{pat_median:.4f} [{pat_iqr:.4f}]'
+            ax.text(1, y_max + label_y_offset, pat_label,
+                   ha='center', va='bottom', fontsize=8,
+                   color='#ff7f0e', weight='bold',
+                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+                           alpha=0.8, edgecolor='#ff7f0e', linewidth=0.5))
+
+            # Add sample size annotations below
+            y_min_offset = ax.get_ylim()[0] + (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.02
+            ax.text(0, y_min_offset, f'n={len(hc_data)}',
+                   ha='center', va='bottom', fontsize=8,
+                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
+            ax.text(1, y_min_offset, f'n={len(pat_data)}',
+                   ha='center', va='bottom', fontsize=8,
+                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
+
+            # Add explanation for median [IQR] labels
+            ax.text(0.02, 0.98, 'Median [IQR]',
+                   transform=ax.transAxes, fontsize=10,
+                   verticalalignment='top', horizontalalignment='left',
+                   bbox=dict(boxstyle='round,pad=0.4', facecolor='lightgray', alpha=0.8),
+                   weight='bold')
+
+            # Adjust y-axis limits to accommodate labels
+            current_ylim = ax.get_ylim()
+            ax.set_ylim(current_ylim[0], current_ylim[1] + (current_ylim[1] - current_ylim[0]) * 0.15)
 
             plt.tight_layout()
             dsc_plot_file = self.output_dir / f"DSC_comparison_HC_vs_Patients_{timestamp}.png"
@@ -544,12 +603,38 @@ class TestSetEvaluator:
                 slice_df_plot = slice_df[slice_df['ASSD_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
 
                 if len(slice_df_plot) > 0:
-                    fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-                    sns.boxplot(data=slice_df_plot, x='Group', y='ASSD_mm', ax=ax, notch=True, order=['HC', 'Patients'])
-                    ax.set_title('Slice-wise ASSD Comparison\n(HC vs Patients)', fontsize=14, fontweight='bold')
-                    ax.set_xlabel('Group', fontsize=12)
-                    ax.set_ylabel('ASSD (mm) - per slice', fontsize=12)
-                    ax.grid(True, alpha=0.3)
+                    fig, ax = plt.subplots(figsize=(14, 8))
+
+                    # Create manual box plot with proper styling
+                    box_parts = ax.boxplot(
+                        [slice_df_plot[slice_df_plot['Group'] == 'HC']['ASSD_mm'].values,
+                         slice_df_plot[slice_df_plot['Group'] == 'Patients']['ASSD_mm'].values],
+                        positions=[0, 1],
+                        notch=True,
+                        patch_artist=True,
+                        widths=0.5
+                    )
+
+                    # Apply colors consistent with inter-input plots
+                    colors = ['#1f77b4', '#ff7f0e']  # Blue for HC, Orange for Patients
+                    for patch, color in zip(box_parts['boxes'], colors):
+                        patch.set_facecolor(color)
+                        patch.set_alpha(0.7)
+                        patch.set_edgecolor('black')
+                        patch.set_linewidth(1)
+
+                    ax.set_title('Slice-wise ASSD Comparison: HC vs Patients\nTest Set Evaluation Results',
+                                fontsize=16, fontweight='bold', pad=20)
+                    ax.set_xlabel('Group', fontsize=14, fontweight='bold')
+                    ax.set_ylabel('ASSD (mm) - per slice', fontsize=14, fontweight='bold')
+                    ax.set_xticks([0, 1])
+                    ax.set_xticklabels(['HC', 'Patients'])
+                    ax.tick_params(axis='x', labelsize=12)
+                    ax.tick_params(axis='y', labelsize=12)
+
+                    # Add grid for better readability
+                    ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+                    ax.set_axisbelow(True)
 
                     # Add sample sizes and median [IQR] annotations
                     hc_slice_data = slice_df_plot[slice_df_plot['Group'] == 'HC']['ASSD_mm']
@@ -563,14 +648,47 @@ class TestSetEvaluator:
                     pat_slice_q25 = pat_slice_data.quantile(0.25)
                     pat_slice_q75 = pat_slice_data.quantile(0.75)
 
-                    # Position annotations above the boxes (HC=0, Patients=1 with order specified)
+                    # Add median [IQR] labels above each box
                     y_max = ax.get_ylim()[1]
-                    y_offset = (y_max - ax.get_ylim()[0]) * 0.05
+                    label_y_offset = (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.02
 
-                    ax.text(0, y_max - y_offset, f'n={len(hc_slice_data)} slices\n{hc_slice_median:.2f} [{hc_slice_q25:.2f}-{hc_slice_q75:.2f}]',
-                           ha='center', va='top', fontsize=10, bbox=dict(boxstyle="round,pad=0.3", facecolor="lightblue", alpha=0.7))
-                    ax.text(1, y_max - y_offset, f'n={len(pat_slice_data)} slices\n{pat_slice_median:.2f} [{pat_slice_q25:.2f}-{pat_slice_q75:.2f}]',
-                           ha='center', va='top', fontsize=10, bbox=dict(boxstyle="round,pad=0.3", facecolor="lightcoral", alpha=0.7))
+                    # HC label (position 0)
+                    hc_slice_iqr = hc_slice_q75 - hc_slice_q25
+                    hc_slice_label = f'{hc_slice_median:.3f} [{hc_slice_iqr:.3f}]'
+                    ax.text(0, y_max + label_y_offset, hc_slice_label,
+                           ha='center', va='bottom', fontsize=8,
+                           color='#1f77b4', weight='bold',
+                           bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+                                   alpha=0.8, edgecolor='#1f77b4', linewidth=0.5))
+
+                    # Patients label (position 1)
+                    pat_slice_iqr = pat_slice_q75 - pat_slice_q25
+                    pat_slice_label = f'{pat_slice_median:.3f} [{pat_slice_iqr:.3f}]'
+                    ax.text(1, y_max + label_y_offset, pat_slice_label,
+                           ha='center', va='bottom', fontsize=8,
+                           color='#ff7f0e', weight='bold',
+                           bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+                                   alpha=0.8, edgecolor='#ff7f0e', linewidth=0.5))
+
+                    # Add sample size annotations below
+                    y_min_offset = ax.get_ylim()[0] + (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.02
+                    ax.text(0, y_min_offset, f'n={len(hc_slice_data)} slices',
+                           ha='center', va='bottom', fontsize=8,
+                           bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
+                    ax.text(1, y_min_offset, f'n={len(pat_slice_data)} slices',
+                           ha='center', va='bottom', fontsize=8,
+                           bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
+
+                    # Add explanation for median [IQR] labels
+                    ax.text(0.02, 0.98, 'Median [IQR]',
+                           transform=ax.transAxes, fontsize=10,
+                           verticalalignment='top', horizontalalignment='left',
+                           bbox=dict(boxstyle='round,pad=0.4', facecolor='lightgray', alpha=0.8),
+                           weight='bold')
+
+                    # Adjust y-axis limits to accommodate labels
+                    current_ylim = ax.get_ylim()
+                    ax.set_ylim(current_ylim[0], current_ylim[1] + (current_ylim[1] - current_ylim[0]) * 0.15)
 
                     plt.tight_layout()
                     assd_plot_file = self.output_dir / f"ASSD_slicewise_comparison_HC_vs_Patients_{timestamp}.png"
