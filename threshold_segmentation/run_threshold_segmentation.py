@@ -3,20 +3,18 @@
 Threshold-Based Segmentation Script
 
 This script performs threshold-based segmentation on CBF maps using the mean intensity
-as the binary threshold. All voxels below the mean are set to 0, and all voxels 
+as the binary threshold. All voxels below the mean are set to 0, and all voxels
 above the mean are set to 1.
 
-Input: CBF images in data/images/ with pattern PerfTerr###-v#-L/R_0000.nii
-Output: Binary masks in data/thresholded_masks/ with pattern PerfTerr###-v#-L/R.nii
+Input: CBF images in data/imagesTr/ and data/imagesTs/ with pattern PerfTerr###-v#-L/R_0000.nii
+Output: Binary masks in data/thresholded_labelsTr/ and data/thresholded_labelsTs/ with pattern PerfTerr###-v#-L/R.nii
 
 Author: Generated for threshold segmentation analysis
 """
 
-import os
 import sys
 import numpy as np
 from pathlib import Path
-from datetime import datetime
 
 try:
     import nibabel as nib
@@ -149,39 +147,52 @@ class ThresholdSegmentation:
 
 def main():
     """Main function to run threshold segmentation"""
-    # Default paths
     script_dir = Path(__file__).parent
-    default_input_dir = script_dir / "data" / "images"
-    default_output_dir = script_dir / "data" / "thresholded_masks"
-    
-    # Allow command line arguments
-    if len(sys.argv) > 1:
-        input_dir = sys.argv[1]
-    else:
-        input_dir = default_input_dir
-    
-    if len(sys.argv) > 2:
-        output_dir = sys.argv[2]
-    else:
-        output_dir = default_output_dir
-    
+
+    # Define input and output directories
+    datasets = [
+        {
+            'input_dir': script_dir / "data" / "imagesTr",
+            'output_dir': script_dir / "data" / "thresholded_labelsTr",
+            'name': 'Training'
+        },
+        {
+            'input_dir': script_dir / "data" / "imagesTs",
+            'output_dir': script_dir / "data" / "thresholded_labelsTs",
+            'name': 'Test'
+        }
+    ]
+
     print("Threshold-Based Segmentation Script")
     print("=" * 50)
-    
-    # Initialize segmentation processor
-    segmenter = ThresholdSegmentation(input_dir, output_dir)
-    
-    # Run segmentation
-    success = segmenter.run_segmentation()
-    
-    if success:
-        print(f"\nThreshold segmentation completed!")
-        print(f"Binary masks saved in: {output_dir}")
+
+    total_success = True
+
+    # Process each dataset
+    for dataset in datasets:
+        print(f"\nProcessing {dataset['name']} Dataset")
+        print("-" * 40)
+
+        # Initialize segmentation processor
+        segmenter = ThresholdSegmentation(dataset['input_dir'], dataset['output_dir'])
+
+        # Run segmentation
+        success = segmenter.run_segmentation()
+
+        if success:
+            print(f"\n{dataset['name']} segmentation completed!")
+            print(f"Binary masks saved in: {dataset['output_dir']}")
+        else:
+            print(f"{dataset['name']} segmentation failed!")
+            total_success = False
+
+    print("\n" + "=" * 50)
+    if total_success:
+        print("All threshold segmentations completed successfully!")
+        return 0
     else:
-        print("Threshold segmentation failed!")
+        print("Some threshold segmentations failed!")
         return 1
-    
-    return 0
 
 
 if __name__ == "__main__":
