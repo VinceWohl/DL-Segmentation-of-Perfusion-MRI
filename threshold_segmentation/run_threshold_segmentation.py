@@ -44,12 +44,11 @@ class ThresholdSegmentation:
             return None, None
     
     def compute_mean_threshold(self, cbf_data):
-        """Compute mean intensity threshold for CBF data (0.9 * mean)"""
+        """Compute mean intensity threshold for CBF data"""
         # Only consider non-zero voxels for mean calculation
         nonzero_mask = cbf_data > 0
         if np.any(nonzero_mask):
-            mean_value = np.mean(cbf_data[nonzero_mask])
-            mean_threshold = 0.9 * mean_value
+            mean_threshold = np.mean(cbf_data[nonzero_mask])
             return mean_threshold
         else:
             print("Warning: No non-zero voxels found in CBF data")
