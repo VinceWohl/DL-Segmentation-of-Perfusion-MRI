@@ -1,3 +1,5 @@
 venv/
 nnUNet_master/
 nnUNet_multi-label/
+threshold_segmentation/data
+threshold_segmentation/test_data
