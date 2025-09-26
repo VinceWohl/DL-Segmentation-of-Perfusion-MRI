@@ -635,8 +635,13 @@ class TestSetEvaluator:
                 slice_df_plot = slice_df[slice_df['ASSD_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
 
                 if len(slice_df_plot) > 0:
-                    # Extract input type information from case names
+                    # Extract input type information from case names (e.g., "PerfTerr014-v1-L_CBF_only")
                     slice_df_plot['Input_Type'] = slice_df_plot['Case'].str.extract(r'.*_(CBF_\w+)$')[0].fillna('Unknown')
+
+                    # If extraction failed, try alternative pattern
+                    if slice_df_plot['Input_Type'].eq('Unknown').all():
+                        # Try pattern for cases like "PerfTerr014-v1-L_CBF_only"
+                        slice_df_plot['Input_Type'] = slice_df_plot['Case'].str.split('_').str[-1].fillna('Unknown')
 
                     if 'Input_Type' in slice_df_plot.columns and len(slice_df_plot['Input_Type'].unique()) > 1:
                         # Create input type comparison for slice-wise ASSD
