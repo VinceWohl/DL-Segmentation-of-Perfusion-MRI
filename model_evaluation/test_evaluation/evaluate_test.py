@@ -396,6 +396,9 @@ class TestSetEvaluator:
         print("\nCreating box plots...")
         self.create_box_plots()
 
+        print("\nPerforming statistical testing...")
+        self.perform_statistical_testing()
+
         self.print_evaluation_summary()
         return True
 
@@ -570,6 +573,194 @@ class TestSetEvaluator:
             import traceback
             traceback.print_exc()
 
+    def perform_statistical_testing(self):
+        """Perform Wilcoxon signed-rank test comparing segmentation approaches"""
+        from scipy import stats
+        from itertools import combinations
+
+        if not self.slice_wise_data:
+            print("  No slice-wise data available for statistical testing")
+            return
+
+        print("\n  Performing Statistical Testing (Wilcoxon signed-rank test)...")
+
+        slice_df = pd.DataFrame(self.slice_wise_data)
+        slice_df_plot = slice_df[slice_df['ASSD_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+        if len(slice_df_plot) == 0:
+            print("  No valid ASSD data for statistical testing")
+            return
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # Process each group separately (HC and Patients)
+        for group_name in ['HC', 'Patients']:
+            group_data = slice_df_plot[slice_df_plot['Group'] == group_name].copy()
+
+            if len(group_data) == 0:
+                print(f"  No data for {group_name}")
+                continue
+
+            print(f"\n  {group_name} Statistical Analysis:")
+            print(f"  {'-' * 40}")
+
+            all_stats_results = []
+
+            # Process each hemisphere separately
+            for hemisphere in ['Left', 'Right']:
+                hemi_data = group_data[group_data['Hemisphere'] == hemisphere]
+                available_approaches = hemi_data['Approach'].unique().tolist()
+
+                if len(available_approaches) < 2:
+                    print(f"    {hemisphere}: Insufficient approaches for comparison")
+                    continue
+
+                print(f"    {hemisphere} Hemisphere: {len(available_approaches)} approaches")
+
+                # Perform all pairwise comparisons
+                for approach1, approach2 in combinations(available_approaches, 2):
+                    data1_df = hemi_data[hemi_data['Approach'] == approach1]
+                    data2_df = hemi_data[hemi_data['Approach'] == approach2]
+
+                    # Find paired slices (same case and slice number)
+                    merged_df = data1_df.merge(data2_df, on=['Case', 'Slice'], suffixes=('_1', '_2'))
+
+                    if len(merged_df) < 10:  # Minimum sample size
+                        continue
+
+                    # Get paired slice-wise data
+                    paired_data1 = merged_df['ASSD_mm_1'].values
+                    paired_data2 = merged_df['ASSD_mm_2'].values
+
+                    try:
+                        # Wilcoxon signed-rank test
+                        statistic, p_value = stats.wilcoxon(paired_data1, paired_data2, alternative='two-sided')
+
+                        # Calculate effect size (r = Z / sqrt(N))
+                        n = len(paired_data1)
+                        z_score = stats.norm.ppf(1 - p_value/2) if p_value > 0 else 5.0
+                        effect_size = z_score / np.sqrt(n)
+
+                        # Calculate medians
+                        median1 = np.median(paired_data1)
+                        median2 = np.median(paired_data2)
+                        median_diff = median1 - median2
+
+                        # Determine significance
+                        if p_value < 0.001:
+                            significance = "***"
+                        elif p_value < 0.01:
+                            significance = "**"
+                        elif p_value < 0.05:
+                            significance = "*"
+                        else:
+                            significance = "ns"
+
+                        all_stats_results.append({
+                            'Hemisphere': hemisphere,
+                            'Config1': approach1,
+                            'Config2': approach2,
+                            'Median1': median1,
+                            'Median2': median2,
+                            'Median_Diff': median_diff,
+                            'Statistic': statistic,
+                            'P_Value': p_value,
+                            'Effect_Size': effect_size,
+                            'Significance': significance,
+                            'N_Paired_Slices': n,
+                            'N1_Total_Slices': len(data1_df),
+                            'N2_Total_Slices': len(data2_df)
+                        })
+
+                    except Exception as e:
+                        print(f"      Error comparing {approach1} vs {approach2}: {e}")
+
+            # Save results for this group
+            if all_stats_results:
+                self._save_statistical_results(all_stats_results, group_name, timestamp)
+            else:
+                print(f"    No statistical comparisons performed for {group_name}")
+
+    def _save_statistical_results(self, all_stats_results, group_name, timestamp):
+        """Save statistical test results to Excel file"""
+        stats_df = pd.DataFrame(all_stats_results)
+
+        # Sort by hemisphere and p-value
+        stats_df = stats_df.sort_values(['Hemisphere', 'P_Value'])
+
+        # Add effect size interpretation
+        def interpret_effect_size(r):
+            r = abs(r)
+            if r < 0.1:
+                return "Negligible"
+            elif r < 0.3:
+                return "Small"
+            elif r < 0.5:
+                return "Medium"
+            else:
+                return "Large"
+
+        stats_df['Effect_Size_Interpretation'] = stats_df['Effect_Size'].apply(interpret_effect_size)
+
+        # Apply Bonferroni correction within each hemisphere
+        corrected_results = []
+        for hemisphere, group in stats_df.groupby('Hemisphere'):
+            n_comparisons = len(group)
+            group = group.copy()
+            group['P_Value_Bonferroni'] = group['P_Value'] * n_comparisons
+            group['P_Value_Bonferroni'] = np.minimum(group['P_Value_Bonferroni'], 1.0)
+
+            # Bonferroni significance
+            def get_bonferroni_significance(p_bonf):
+                if p_bonf < 0.001:
+                    return "***"
+                elif p_bonf < 0.01:
+                    return "**"
+                elif p_bonf < 0.05:
+                    return "*"
+                else:
+                    return "ns"
+
+            group['Significance_Bonferroni'] = group['P_Value_Bonferroni'].apply(get_bonferroni_significance)
+            corrected_results.append(group)
+
+        stats_df = pd.concat(corrected_results, ignore_index=True)
+
+        # Save to Excel
+        stats_file = self.output_dir / f"test_statistical_comparison_{group_name}_{timestamp}.xlsx"
+
+        with pd.ExcelWriter(stats_file, engine='openpyxl') as writer:
+            # Main results sheet
+            stats_df.to_excel(writer, sheet_name='All_Comparisons', index=False)
+
+            # Significant results only (uncorrected)
+            significant_df = stats_df[stats_df['P_Value'] < 0.05]
+            if not significant_df.empty:
+                significant_df.to_excel(writer, sheet_name='Significant_Uncorrected', index=False)
+
+            # Significant results with Bonferroni correction
+            bonferroni_significant_df = stats_df[stats_df['P_Value_Bonferroni'] < 0.05]
+            if not bonferroni_significant_df.empty:
+                bonferroni_significant_df.to_excel(writer, sheet_name='Significant_Bonferroni', index=False)
+
+            # Summary by hemisphere
+            summary_by_hemisphere = stats_df.groupby('Hemisphere').agg({
+                'P_Value': ['count', lambda x: sum(x < 0.05), lambda x: sum(x < 0.01)],
+                'P_Value_Bonferroni': [lambda x: sum(x < 0.05)],
+                'Effect_Size': ['mean', 'std'],
+                'N_Paired_Slices': 'mean'
+            }).round(4)
+
+            summary_by_hemisphere.columns = ['Total_Comparisons', 'Significant_p05', 'Significant_p01',
+                                           'Bonferroni_Significant', 'Mean_Effect_Size', 'Std_Effect_Size',
+                                           'Avg_Paired_Slices']
+            summary_by_hemisphere.to_excel(writer, sheet_name='Summary_by_Hemisphere')
+
+        print(f"    Statistical results saved: {stats_file.name}")
+        print(f"      Total comparisons: {len(stats_df)}")
+        print(f"      Significant (p<0.05): {sum(stats_df['P_Value'] < 0.05)}")
+        print(f"      Bonferroni significant: {sum(stats_df['P_Value_Bonferroni'] < 0.05)}")
+
     def _create_dsc_boxplots(self, df, approach_order, timestamp):
         """Create DSC boxplots for HC and Patients separately - matching reference style"""
         # Filter out invalid DSC values
@@ -632,9 +823,10 @@ class TestSetEvaluator:
             bp = ax.boxplot(
                 plot_data_list,
                 positions=plot_positions,
-                notch=True,
+                notch=False,
                 patch_artist=True,
-                widths=0.5
+                widths=0.5,
+                medianprops=dict(color='black', linewidth=2)
             )
 
             # Color the boxes
@@ -649,7 +841,7 @@ class TestSetEvaluator:
                         f'Test Set Evaluation Results',
                        fontsize=16, fontweight='bold', pad=20)
             ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
-            ax.set_ylabel('DSC (volume-based)', fontsize=14, fontweight='bold')
+            ax.set_ylabel('DSC per volume', fontsize=14, fontweight='bold')
 
             # Set custom x-axis labels for hemisphere groups
             ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
@@ -663,9 +855,9 @@ class TestSetEvaluator:
 
             # Set y-axis limits
             if group_name == 'HC':
-                ax.set_ylim(0.75, 1.0)
+                ax.set_ylim(0.8, 1.0)
             else:
-                ax.set_ylim(0, 1.05)
+                ax.set_ylim(0, 1.0)
 
             # Create legend for approaches
             legend_elements = [plt.Rectangle((0,0),1,1, facecolor=approach_colors[approach],
@@ -673,8 +865,7 @@ class TestSetEvaluator:
                               for approach in approach_order]
             ax.legend(legend_elements, [self.approach_display_names.get(a, a) for a in approach_order],
                      title='Segmentation Approach', title_fontsize=12, fontsize=11,
-                     loc='lower right' if group_name == 'HC' else 'upper right',
-                     bbox_to_anchor=(1.0, 0.0) if group_name == 'HC' else (1.0, 1.0))
+                     loc='lower right', bbox_to_anchor=(1.0, 0.0))
 
             # Add median [IQR] and n annotations (matching reference positioning)
             self._add_dsc_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors)
@@ -800,9 +991,10 @@ class TestSetEvaluator:
             bp = ax.boxplot(
                 plot_data_list,
                 positions=plot_positions,
-                notch=True,
+                notch=False,
                 patch_artist=True,
-                widths=0.5
+                widths=0.5,
+                medianprops=dict(color='black', linewidth=2)
             )
 
             # Color the boxes
@@ -817,7 +1009,7 @@ class TestSetEvaluator:
                         f'Test Set Evaluation Results',
                        fontsize=16, fontweight='bold', pad=20)
             ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
-            ax.set_ylabel('ASSD (mm)', fontsize=14, fontweight='bold')
+            ax.set_ylabel('ASSD (mm) per slice', fontsize=14, fontweight='bold')
 
             # Set custom x-axis labels for hemisphere groups
             ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
