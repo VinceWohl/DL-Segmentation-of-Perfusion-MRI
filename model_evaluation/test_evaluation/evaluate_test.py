@@ -545,240 +545,360 @@ class TestSetEvaluator:
             df['Subject_Num'] = df['Subject_str'].astype(int)
             df['Group'] = df['Subject_Num'].apply(lambda x: 'HC' if x in [14, 15] else 'Patients')
 
-            # Filter out invalid values
-            df_plot = df[df['DSC_Volume'].replace([np.inf, -np.inf], np.nan).notna()].copy()
-
-            # Set style
+            # Set plot style
             plt.style.use('default')
             sns.set_palette("husl")
 
-            # Check if we have multiple input types
-            if 'Input_Type' in df_plot.columns and len(df_plot['Input_Type'].unique()) > 1:
-                # Create input type comparison plots
-                fig, axes = plt.subplots(1, 2, figsize=(16, 8))
-                fig.suptitle('DSC Comparison by Input Type: CBF-only vs CBF+T1w\nTest Set Evaluation Results',
-                            fontsize=16, fontweight='bold')
+            # Get sorted approach order for consistent plotting
+            approach_order = sorted(df['Approach'].unique(),
+                                   key=lambda x: ['Thresholding', 'CBF', 'CBF_T1w', 'CBF_FLAIR', 'CBF_T1w_FLAIR'].index(x)
+                                   if x in ['Thresholding', 'CBF', 'CBF_T1w', 'CBF_FLAIR', 'CBF_T1w_FLAIR'] else 999)
 
-                input_types = sorted(df_plot['Input_Type'].unique())
-                colors = ['#1f77b4', '#ff7f0e']  # Blue for first input type, Orange for second
+            # ====== Plot 1: DSC (volume-based) boxplots ======
+            print("  Creating DSC boxplots...")
+            self._create_dsc_boxplots(df, approach_order, timestamp)
 
-                # Plot for HC group
-                ax = axes[0]
-                hc_data = df_plot[df_plot['Group'] == 'HC']
-                if len(hc_data) > 0:
-                    box_data = [hc_data[hc_data['Input_Type'] == it]['DSC_Volume'].values for it in input_types]
-                    box_parts = ax.boxplot(box_data, positions=range(len(input_types)),
-                                          notch=True, patch_artist=True, widths=0.5)
-
-                    for patch, color in zip(box_parts['boxes'], colors):
-                        patch.set_facecolor(color)
-                        patch.set_alpha(0.7)
-                        patch.set_edgecolor('black')
-                        patch.set_linewidth(1)
-
-                    ax.set_title('Healthy Controls (HC)', fontsize=14, fontweight='bold')
-                    ax.set_xlabel('Input Type', fontsize=12)
-                    ax.set_ylabel('DSC (volume-based)', fontsize=12)
-                    ax.set_xticks(range(len(input_types)))
-                    ax.set_xticklabels(input_types, rotation=0)
-                    ax.grid(True, alpha=0.6)
-
-                    # Add median annotations
-                    for i, input_type in enumerate(input_types):
-                        data = hc_data[hc_data['Input_Type'] == input_type]['DSC_Volume']
-                        if len(data) > 0:
-                            median = data.median()
-                            ax.text(i, ax.get_ylim()[1] * 0.95, f'{median:.4f}',
-                                   ha='center', va='top', fontsize=10, weight='bold')
-
-                # Plot for Patients group
-                ax = axes[1]
-                pat_data = df_plot[df_plot['Group'] == 'Patients']
-                if len(pat_data) > 0:
-                    box_data = [pat_data[pat_data['Input_Type'] == it]['DSC_Volume'].values for it in input_types]
-                    box_parts = ax.boxplot(box_data, positions=range(len(input_types)),
-                                          notch=True, patch_artist=True, widths=0.5)
-
-                    for patch, color in zip(box_parts['boxes'], colors):
-                        patch.set_facecolor(color)
-                        patch.set_alpha(0.7)
-                        patch.set_edgecolor('black')
-                        patch.set_linewidth(1)
-
-                    ax.set_title('Patients', fontsize=14, fontweight='bold')
-                    ax.set_xlabel('Input Type', fontsize=12)
-                    ax.set_ylabel('DSC (volume-based)', fontsize=12)
-                    ax.set_xticks(range(len(input_types)))
-                    ax.set_xticklabels(input_types, rotation=0)
-                    ax.grid(True, alpha=0.6)
-
-                    # Add median annotations
-                    for i, input_type in enumerate(input_types):
-                        data = pat_data[pat_data['Input_Type'] == input_type]['DSC_Volume']
-                        if len(data) > 0:
-                            median = data.median()
-                            ax.text(i, ax.get_ylim()[1] * 0.95, f'{median:.4f}',
-                                   ha='center', va='top', fontsize=10, weight='bold')
-
-                plt.tight_layout()
-                dsc_plot_file = self.output_dir / f"DSC_comparison_InputTypes_by_Groups_{timestamp}.png"
-                plt.savefig(dsc_plot_file, dpi=300, bbox_inches='tight')
-                plt.close()
-                print(f"DSC input type comparison plot saved: {dsc_plot_file}")
-
-            else:
-                # Fallback to standard HC vs Patients comparison
-                fig, ax = plt.subplots(figsize=(14, 8))
-
-                box_parts = ax.boxplot(
-                    [df_plot[df_plot['Group'] == 'HC']['DSC_Volume'].values,
-                     df_plot[df_plot['Group'] == 'Patients']['DSC_Volume'].values],
-                    positions=[0, 1], notch=True, patch_artist=True, widths=0.5)
-
-                colors = ['#1f77b4', '#ff7f0e']
-                for patch, color in zip(box_parts['boxes'], colors):
-                    patch.set_facecolor(color)
-                    patch.set_alpha(0.7)
-                    patch.set_edgecolor('black')
-                    patch.set_linewidth(1)
-
-                ax.set_title('Volume-based Dice Score Comparison: HC vs Patients\nTest Set Evaluation Results',
-                            fontsize=16, fontweight='bold', pad=20)
-                ax.set_xlabel('Group', fontsize=14, fontweight='bold')
-                ax.set_ylabel('DSC (volume-based)', fontsize=14, fontweight='bold')
-                ax.set_xticks([0, 1])
-                ax.set_xticklabels(['HC', 'Patients'])
-                ax.grid(True, alpha=0.6)
-
-                plt.tight_layout()
-                dsc_plot_file = self.output_dir / f"DSC_comparison_HC_vs_Patients_{timestamp}.png"
-                plt.savefig(dsc_plot_file, dpi=300, bbox_inches='tight')
-                plt.close()
-                print(f"DSC box plot saved: {dsc_plot_file}")
-
-            # Plot 2: Slice-wise ASSD comparison
+            # ====== Plot 2: ASSD (slice-wise) boxplots ======
             if self.slice_wise_data:
-                slice_df = pd.DataFrame(self.slice_wise_data)
-                slice_df_plot = slice_df[slice_df['ASSD_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
-
-                if len(slice_df_plot) > 0:
-                    # Extract input type information from case names (e.g., "PerfTerr014-v1-L_CBF_only")
-                    slice_df_plot['Input_Type'] = slice_df_plot['Case'].str.extract(r'.*_(CBF_\w+)$')[0].fillna('Unknown')
-
-                    # If extraction failed, try alternative pattern
-                    if slice_df_plot['Input_Type'].eq('Unknown').all():
-                        # Try pattern for cases like "PerfTerr014-v1-L_CBF_only"
-                        slice_df_plot['Input_Type'] = slice_df_plot['Case'].str.split('_').str[-1].fillna('Unknown')
-
-                    if 'Input_Type' in slice_df_plot.columns and len(slice_df_plot['Input_Type'].unique()) > 1:
-                        # Create input type comparison for slice-wise ASSD
-                        fig, axes = plt.subplots(1, 2, figsize=(16, 8))
-                        fig.suptitle('Slice-wise ASSD Comparison by Input Type: CBF-only vs CBF+T1w\nTest Set Evaluation Results',
-                                    fontsize=16, fontweight='bold')
-
-                        input_types = sorted(slice_df_plot['Input_Type'].unique())
-                        colors = ['#1f77b4', '#ff7f0e']
-
-                        # Plot for HC group
-                        ax = axes[0]
-                        hc_slice_data = slice_df_plot[slice_df_plot['Group'] == 'HC']
-                        if len(hc_slice_data) > 0:
-                            box_data = [hc_slice_data[hc_slice_data['Input_Type'] == it]['ASSD_mm'].values for it in input_types]
-                            box_parts = ax.boxplot(box_data, positions=range(len(input_types)),
-                                                  notch=True, patch_artist=True, widths=0.5)
-
-                            for patch, color in zip(box_parts['boxes'], colors):
-                                patch.set_facecolor(color)
-                                patch.set_alpha(0.7)
-                                patch.set_edgecolor('black')
-                                patch.set_linewidth(1)
-
-                            ax.set_title('Healthy Controls (HC)', fontsize=14, fontweight='bold')
-                            ax.set_xlabel('Input Type', fontsize=12)
-                            ax.set_ylabel('ASSD (mm) - per slice', fontsize=12)
-                            ax.set_xticks(range(len(input_types)))
-                            ax.set_xticklabels(input_types, rotation=0)
-                            ax.grid(True, alpha=0.6)
-
-                            # Add median annotations
-                            for i, input_type in enumerate(input_types):
-                                data = hc_slice_data[hc_slice_data['Input_Type'] == input_type]['ASSD_mm']
-                                if len(data) > 0:
-                                    median = data.median()
-                                    ax.text(i, ax.get_ylim()[1] * 0.95, f'{median:.3f}',
-                                           ha='center', va='top', fontsize=10, weight='bold')
-
-                        # Plot for Patients group
-                        ax = axes[1]
-                        pat_slice_data = slice_df_plot[slice_df_plot['Group'] == 'Patients']
-                        if len(pat_slice_data) > 0:
-                            box_data = [pat_slice_data[pat_slice_data['Input_Type'] == it]['ASSD_mm'].values for it in input_types]
-                            box_parts = ax.boxplot(box_data, positions=range(len(input_types)),
-                                                  notch=True, patch_artist=True, widths=0.5)
-
-                            for patch, color in zip(box_parts['boxes'], colors):
-                                patch.set_facecolor(color)
-                                patch.set_alpha(0.7)
-                                patch.set_edgecolor('black')
-                                patch.set_linewidth(1)
-
-                            ax.set_title('Patients', fontsize=14, fontweight='bold')
-                            ax.set_xlabel('Input Type', fontsize=12)
-                            ax.set_ylabel('ASSD (mm) - per slice', fontsize=12)
-                            ax.set_xticks(range(len(input_types)))
-                            ax.set_xticklabels(input_types, rotation=0)
-                            ax.grid(True, alpha=0.6)
-
-                            # Add median annotations
-                            for i, input_type in enumerate(input_types):
-                                data = pat_slice_data[pat_slice_data['Input_Type'] == input_type]['ASSD_mm']
-                                if len(data) > 0:
-                                    median = data.median()
-                                    ax.text(i, ax.get_ylim()[1] * 0.95, f'{median:.3f}',
-                                           ha='center', va='top', fontsize=10, weight='bold')
-
-                        plt.tight_layout()
-                        assd_plot_file = self.output_dir / f"ASSD_slicewise_comparison_InputTypes_by_Groups_{timestamp}.png"
-                        plt.savefig(assd_plot_file, dpi=300, bbox_inches='tight')
-                        plt.close()
-                        print(f"Slice-wise ASSD input type comparison plot saved: {assd_plot_file}")
-
-                    else:
-                        # Fallback to standard HC vs Patients comparison
-                        fig, ax = plt.subplots(figsize=(14, 8))
-
-                        box_parts = ax.boxplot(
-                            [slice_df_plot[slice_df_plot['Group'] == 'HC']['ASSD_mm'].values,
-                             slice_df_plot[slice_df_plot['Group'] == 'Patients']['ASSD_mm'].values],
-                            positions=[0, 1], notch=True, patch_artist=True, widths=0.5)
-
-                        colors = ['#1f77b4', '#ff7f0e']
-                        for patch, color in zip(box_parts['boxes'], colors):
-                            patch.set_facecolor(color)
-                            patch.set_alpha(0.7)
-                            patch.set_edgecolor('black')
-                            patch.set_linewidth(1)
-
-                        ax.set_title('Slice-wise ASSD Comparison: HC vs Patients\nTest Set Evaluation Results',
-                                    fontsize=16, fontweight='bold', pad=20)
-                        ax.set_xlabel('Group', fontsize=14, fontweight='bold')
-                        ax.set_ylabel('ASSD (mm) - per slice', fontsize=14, fontweight='bold')
-                        ax.set_xticks([0, 1])
-                        ax.set_xticklabels(['HC', 'Patients'])
-                        ax.grid(True, alpha=0.6)
-
-                        plt.tight_layout()
-                        assd_plot_file = self.output_dir / f"ASSD_slicewise_comparison_HC_vs_Patients_{timestamp}.png"
-                        plt.savefig(assd_plot_file, dpi=300, bbox_inches='tight')
-                        plt.close()
-                        print(f"Slice-wise ASSD box plot saved: {assd_plot_file}")
-                else:
-                    print("No valid slice-wise ASSD data for plotting")
+                print("  Creating ASSD boxplots...")
+                self._create_assd_boxplots(approach_order, timestamp)
             else:
-                print("No slice-wise data collected for ASSD plotting")
+                print("  No slice-wise ASSD data available for plotting")
 
         except Exception as e:
             print(f"Error creating box plots: {e}")
+            import traceback
+            traceback.print_exc()
+
+    def _create_dsc_boxplots(self, df, approach_order, timestamp):
+        """Create DSC boxplots for HC and Patients separately - matching reference style"""
+        # Filter out invalid DSC values
+        df_plot = df[df['DSC_Volume'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+        # Define distinct colors for each approach (matching inter-input style)
+        approach_colors = {
+            'Thresholding': '#d62728',       # Red (matching CBF+T1w+FLAIR reference)
+            'CBF': '#1f77b4',                # Blue (matching CBF reference)
+            'CBF_T1w': '#ff7f0e',            # Orange (matching CBF+T1w reference)
+            'CBF_FLAIR': '#2ca02c',          # Green (matching CBF+FLAIR reference)
+            'CBF_T1w_FLAIR': '#9467bd'       # Purple
+        }
+
+        hemispheres = ['Left', 'Right']
+
+        for group_name in ['HC', 'Patients']:
+            group_data = df_plot[df_plot['Group'] == group_name].copy()
+            if len(group_data) == 0:
+                continue
+
+            # Create figure (matching reference)
+            fig, ax = plt.subplots(figsize=(14, 8))
+
+            # Prepare data for grouped plotting (hemisphere first, then approaches)
+            plot_positions = []
+            plot_data_list = []
+            plot_colors = []
+
+            position = 0
+            hemisphere_positions = {}
+            hemisphere_centers = {}
+
+            for hemi_idx, hemisphere in enumerate(hemispheres):
+                hemisphere_positions[hemisphere] = []
+                start_pos = position
+
+                for approach in approach_order:
+                    approach_data = group_data[(group_data['Approach'] == approach) &
+                                              (group_data['Hemisphere'] == hemisphere)]
+
+                    if not approach_data.empty:
+                        plot_data_list.append(approach_data['DSC_Volume'].values)
+                    else:
+                        plot_data_list.append([])
+
+                    plot_colors.append(approach_colors.get(approach, '#95a5a6'))
+                    plot_positions.append(position)
+                    hemisphere_positions[hemisphere].append(position)
+                    position += 0.7  # Spacing within hemisphere
+
+                # Calculate hemisphere center for labeling
+                hemisphere_centers[hemisphere] = (start_pos + position - 0.7) / 2
+
+                # Add gap between hemispheres
+                if hemi_idx < len(hemispheres) - 1:
+                    position += 0.3
+
+            # Create boxplot (matching reference style)
+            bp = ax.boxplot(
+                plot_data_list,
+                positions=plot_positions,
+                notch=True,
+                patch_artist=True,
+                widths=0.5
+            )
+
+            # Color the boxes
+            for patch, color in zip(bp['boxes'], plot_colors):
+                patch.set_facecolor(color)
+                patch.set_alpha(0.7)
+                patch.set_edgecolor('black')
+                patch.set_linewidth(1)
+
+            # Customize the plot (matching reference)
+            ax.set_title(f'{group_name} Test Set: DSC by Segmentation Approach and Hemisphere\n'
+                        f'Test Set Evaluation Results',
+                       fontsize=16, fontweight='bold', pad=20)
+            ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
+            ax.set_ylabel('DSC (volume-based)', fontsize=14, fontweight='bold')
+
+            # Set custom x-axis labels for hemisphere groups
+            ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
+            ax.set_xticklabels(['Left', 'Right'])
+            ax.tick_params(axis='x', labelsize=12)
+            ax.tick_params(axis='y', labelsize=12)
+
+            # Add grid (matching reference)
+            ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+            ax.set_axisbelow(True)
+
+            # Set y-axis limits
+            if group_name == 'HC':
+                ax.set_ylim(0.75, 1.0)
+            else:
+                ax.set_ylim(0, 1.05)
+
+            # Create legend for approaches
+            legend_elements = [plt.Rectangle((0,0),1,1, facecolor=approach_colors[approach],
+                                            alpha=0.7, edgecolor='black')
+                              for approach in approach_order]
+            ax.legend(legend_elements, [self.approach_display_names.get(a, a) for a in approach_order],
+                     title='Segmentation Approach', title_fontsize=12, fontsize=11,
+                     loc='lower right' if group_name == 'HC' else 'upper right',
+                     bbox_to_anchor=(1.0, 0.0) if group_name == 'HC' else (1.0, 1.0))
+
+            # Add median [IQR] and n annotations (matching reference positioning)
+            self._add_dsc_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors)
+
+            plt.tight_layout()
+            plot_file = self.output_dir / f"DSC_volume_{group_name}_{timestamp}.png"
+            plt.savefig(plot_file, dpi=300, bbox_inches='tight', facecolor='white')
+            plt.close()
+            print(f"    Saved: {plot_file.name}")
+
+    def _add_dsc_annotations(self, ax, group_data, hemisphere_positions, approach_order, approach_colors):
+        """Add median [IQR] and sample size annotations matching reference style"""
+        hemispheres = ['Left', 'Right']
+
+        for hemi_idx, hemisphere in enumerate(hemispheres):
+            for approach_idx, approach in enumerate(approach_order):
+                if approach_idx < len(hemisphere_positions[hemisphere]):
+                    box_position = hemisphere_positions[hemisphere][approach_idx]
+
+                    approach_data = group_data[(group_data['Approach'] == approach) &
+                                              (group_data['Hemisphere'] == hemisphere)]
+
+                    if not approach_data.empty and len(approach_data) > 0:
+                        values = approach_data['DSC_Volume'].dropna()
+
+                        if len(values) > 0:
+                            median = values.median()
+                            q1 = values.quantile(0.25)
+                            q3 = values.quantile(0.75)
+                            iqr = q3 - q1
+                            n = len(values)
+
+                            # Median [IQR] annotation above boxes
+                            y_max = ax.get_ylim()[1]
+                            label_y_offset = (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.02
+                            y_pos = y_max + label_y_offset
+
+                            # Format label: median [IQR] with 4 decimal places (matching reference)
+                            label = f'{median:.4f} [{iqr:.4f}]'
+
+                            # Use approach color for labels (matching reference)
+                            color = approach_colors[approach]
+
+                            ax.text(box_position, y_pos, label,
+                                   ha='center', va='bottom', fontsize=8,
+                                   color=color, weight='bold',
+                                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+                                           alpha=0.8, edgecolor=color, linewidth=0.5))
+
+                            # Sample size annotation at top
+                            y_pos_n = y_max - 0.01
+                            ax.text(box_position, y_pos_n, f'n={n}',
+                                   ha='center', va='bottom', fontsize=8,
+                                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
+
+        # Adjust y-axis limits to accommodate labels (matching reference)
+        current_ylim = ax.get_ylim()
+        ax.set_ylim(current_ylim[0], current_ylim[1] + (current_ylim[1] - current_ylim[0]) * 0.15)
+
+    def _create_assd_boxplots(self, approach_order, timestamp):
+        """Create ASSD slice-wise boxplots for HC and Patients separately - matching reference style"""
+        slice_df = pd.DataFrame(self.slice_wise_data)
+        slice_df_plot = slice_df[slice_df['ASSD_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+        if len(slice_df_plot) == 0:
+            print("    No valid ASSD data for plotting")
+            return
+
+        # Define distinct colors for each approach (matching DSC and reference)
+        approach_colors = {
+            'Thresholding': '#d62728',       # Red
+            'CBF': '#1f77b4',                # Blue
+            'CBF_T1w': '#ff7f0e',            # Orange
+            'CBF_FLAIR': '#2ca02c',          # Green
+            'CBF_T1w_FLAIR': '#9467bd'       # Purple
+        }
+
+        hemispheres = ['Left', 'Right']
+
+        for group_name in ['HC', 'Patients']:
+            group_data = slice_df_plot[slice_df_plot['Group'] == group_name].copy()
+            if len(group_data) == 0:
+                continue
+
+            # Create figure (matching reference)
+            fig, ax = plt.subplots(figsize=(14, 8))
+
+            # Prepare data for grouped plotting (hemisphere first, then approaches)
+            plot_positions = []
+            plot_data_list = []
+            plot_colors = []
+
+            position = 0
+            hemisphere_positions = {}
+            hemisphere_centers = {}
+
+            for hemi_idx, hemisphere in enumerate(hemispheres):
+                hemisphere_positions[hemisphere] = []
+                start_pos = position
+
+                for approach in approach_order:
+                    approach_data = group_data[(group_data['Approach'] == approach) &
+                                              (group_data['Hemisphere'] == hemisphere)]
+
+                    if not approach_data.empty:
+                        plot_data_list.append(approach_data['ASSD_mm'].values)
+                    else:
+                        plot_data_list.append([])
+
+                    plot_colors.append(approach_colors.get(approach, '#95a5a6'))
+                    plot_positions.append(position)
+                    hemisphere_positions[hemisphere].append(position)
+                    position += 0.7  # Spacing within hemisphere
+
+                # Calculate hemisphere center for labeling
+                hemisphere_centers[hemisphere] = (start_pos + position - 0.7) / 2
+
+                # Add gap between hemispheres
+                if hemi_idx < len(hemispheres) - 1:
+                    position += 0.3
+
+            # Create boxplot (matching reference style)
+            bp = ax.boxplot(
+                plot_data_list,
+                positions=plot_positions,
+                notch=True,
+                patch_artist=True,
+                widths=0.5
+            )
+
+            # Color the boxes
+            for patch, color in zip(bp['boxes'], plot_colors):
+                patch.set_facecolor(color)
+                patch.set_alpha(0.7)
+                patch.set_edgecolor('black')
+                patch.set_linewidth(1)
+
+            # Customize the plot (matching reference style)
+            ax.set_title(f'{group_name} Test Set: Slice-wise ASSD by Segmentation Approach and Hemisphere\n'
+                        f'Test Set Evaluation Results',
+                       fontsize=16, fontweight='bold', pad=20)
+            ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
+            ax.set_ylabel('ASSD (mm)', fontsize=14, fontweight='bold')
+
+            # Set custom x-axis labels for hemisphere groups
+            ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
+            ax.set_xticklabels(['Left', 'Right'])
+            ax.tick_params(axis='x', labelsize=12)
+            ax.tick_params(axis='y', labelsize=12)
+
+            # Add grid (matching reference)
+            ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+            ax.set_axisbelow(True)
+
+            # Create legend for approaches
+            legend_handles = [plt.Rectangle((0,0),1,1, facecolor=approach_colors[approach],
+                                           alpha=0.7, edgecolor='black')
+                             for approach in approach_order]
+            ax.legend(legend_handles, [self.approach_display_names.get(a, a) for a in approach_order],
+                     title='Segmentation Approach', title_fontsize=12, fontsize=11,
+                     loc='upper right', bbox_to_anchor=(1.0, 1.0))
+
+            # Add median [IQR] and n annotations (matching reference positioning - below boxes)
+            self._add_assd_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors)
+
+            plt.tight_layout()
+            plot_file = self.output_dir / f"ASSD_slicewise_{group_name}_{timestamp}.png"
+            plt.savefig(plot_file, dpi=300, bbox_inches='tight', facecolor='white')
+            plt.close()
+            print(f"    Saved: {plot_file.name}")
+
+    def _add_assd_annotations(self, ax, group_data, hemisphere_positions, approach_order, approach_colors):
+        """Add median [IQR] and sample size annotations for ASSD - matching reference style with labels below"""
+        hemispheres = ['Left', 'Right']
+
+        for hemi_idx, hemisphere in enumerate(hemispheres):
+            for approach_idx, approach in enumerate(approach_order):
+                if approach_idx < len(hemisphere_positions[hemisphere]):
+                    box_position = hemisphere_positions[hemisphere][approach_idx]
+
+                    approach_data = group_data[(group_data['Approach'] == approach) &
+                                              (group_data['Hemisphere'] == hemisphere)]
+
+                    if not approach_data.empty and len(approach_data) > 0:
+                        values = approach_data['ASSD_mm'].dropna()
+
+                        if len(values) > 0:
+                            median = values.median()
+                            q1 = values.quantile(0.25)
+                            q3 = values.quantile(0.75)
+                            n = len(values)
+
+                            # Median [Q1-Q3] annotation below boxes (matching ASSD reference)
+                            y_min = ax.get_ylim()[0]
+                            y_offset = (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.02
+                            y_pos = y_min - y_offset
+
+                            # Format label: median [Q1-Q3] (matching reference)
+                            label = f'{median:.1f} [{q1:.1f}-{q3:.1f}]'
+
+                            # Use approach color for labels (matching reference)
+                            color = approach_colors[approach]
+
+                            ax.text(box_position, y_pos, label,
+                                   ha='center', va='top', fontsize=8,
+                                   color=color, weight='bold',
+                                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+                                           alpha=0.9, edgecolor=color, linewidth=1.0))
+
+                            # Sample size annotation further below
+                            y_offset_n = (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.06
+                            y_pos_n = y_min - y_offset_n
+
+                            ax.text(box_position, y_pos_n, f'n={n}',
+                                   ha='center', va='top', fontsize=8,
+                                   color='black', weight='bold',
+                                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+                                           alpha=0.9, edgecolor='black', linewidth=1.0))
+
+        # Adjust y-axis limits to accommodate labels below (matching reference with more space)
+        current_ylim = ax.get_ylim()
+        y_range = current_ylim[1] - current_ylim[0]
+        new_y_min = current_ylim[0] - y_range * 0.25
+        ax.set_ylim(new_y_min, current_ylim[1])
 
     def print_evaluation_summary(self):
         print("\n" + "=" * 60)
@@ -832,13 +952,16 @@ class TestSetEvaluator:
 
 
 def main():
-    # Define both prediction directories for comparison by default
+    # Define all 5 prediction directories for all segmentation approaches
     predictions_dirs = {
-        'CBF_only': "/home/ubuntu/DLSegPerf/data/other/nnUNet_results_Single-class_CBF/Dataset001_PerfusionTerritories/nnUNetTrainer__nnUNetPlans__2d/fold_all/predictions",
-        'CBF_T1w': "/home/ubuntu/DLSegPerf/data/other/nnUNet_results_Single-class_CBF_T1w/Dataset001_PerfusionTerritories/nnUNetTrainer__nnUNetPlans__2d/fold_all/predictions"
+        'Thresholding': "/home/ubuntu/DLSegPerf/data/other/thresholding_results/thresholded_labelsTs",
+        'CBF': "/home/ubuntu/DLSegPerf/data/other/nnUNet_results_Single-class_CBF/Dataset001_PerfusionTerritories/nnUNetTrainer__nnUNetPlans__2d/fold_all/predictions",
+        'CBF_T1w': "/home/ubuntu/DLSegPerf/data/other/nnUNet_results_Single-class_CBF_T1w/Dataset001_PerfusionTerritories/nnUNetTrainer__nnUNetPlans__2d/fold_all/predictions",
+        'CBF_FLAIR': "/home/ubuntu/DLSegPerf/data/other/nnUNet_results_Single-class_CBF_FLAIR/Dataset001_PerfusionTerritories/nnUNetTrainer__nnUNetPlans__2d/fold_all/predictions",
+        'CBF_T1w_FLAIR': "/home/ubuntu/DLSegPerf/data/other/nnUNet_results_Single-class_CBF_T1w_FLAIR/Dataset001_PerfusionTerritories/nnUNetTrainer__nnUNetPlans__2d/fold_all/predictions"
     }
 
-    default_gt = "/home/ubuntu/DLSegPerf/data/nnUNet_raw/Dataset001_PerfusionTerritories/labelsTs"
+    default_gt = "/home/ubuntu/DLSegPerf/data/other/GroundTruthMasks"
     default_output = "/home/ubuntu/DLSegPerf/model_evaluation/test_evaluation/results"
 
     # Parse command line arguments - support backwards compatibility
@@ -851,16 +974,15 @@ def main():
     gt_dir = Path(sys.argv[2]) if len(sys.argv) > 2 else default_gt
     output_dir = Path(sys.argv[3]) if len(sys.argv) > 3 else default_output
 
-    print("Test Set nnUNet Evaluation Script - CBF vs CBF+T1w Comparison")
+    print("Test Set Evaluation Script - All Segmentation Approaches")
     print("=" * 70)
-    if len(predictions_dirs) > 1:
-        print("Input Types:")
-        print("  CBF_only: CBF LICA + CBF RICA channels")
-        print("  CBF_T1w:  CBF LICA + CBF RICA + T1w channels")
-    print("Prediction directories:")
-    for input_type, pred_dir in predictions_dirs.items():
-        print(f"  {input_type}: {pred_dir}")
-    print(f"Ground truth: {gt_dir}")
+    print("Segmentation approaches:")
+    print("  Thresholding")
+    print("  CBF (CBF LICA + CBF RICA)")
+    print("  CBF+T1w (CBF LICA + CBF RICA + T1w)")
+    print("  CBF+FLAIR (CBF LICA + CBF RICA + FLAIR)")
+    print("  CBF+T1w+FLAIR (CBF LICA + CBF RICA + T1w + FLAIR)")
+    print(f"\nGround truth: {gt_dir}")
     print(f"Output dir: {output_dir}\n")
 
     evaluator = TestSetEvaluator(predictions_dirs, gt_dir, output_dir)
@@ -870,30 +992,22 @@ def main():
         print(f"\nEvaluation completed successfully!")
         print(f"Results saved in: {output_dir}")
 
-        # Print input type comparison if multiple input types
-        if len(predictions_dirs) > 1 and evaluator.results:
+        # Print approach comparison summary
+        if evaluator.results:
             import pandas as pd
             import numpy as np
 
             df = pd.DataFrame(evaluator.results)
-            print("\nINPUT TYPE PERFORMANCE SUMMARY:")
-            print("-" * 40)
+            print("\nAPPROACH PERFORMANCE SUMMARY:")
+            print("-" * 60)
 
-            for input_type in sorted(df['Input_Type'].unique()):
-                input_data = df[df['Input_Type'] == input_type]
-                dice_vals = input_data['DSC_Volume'].replace([np.inf, -np.inf], np.nan).dropna()
-                if len(dice_vals) > 0:
-                    print(f"{input_type:15}: {dice_vals.mean():.4f} ± {dice_vals.std():.4f} DSC ({len(input_data)} cases)")
-
-            # Calculate difference if exactly 2 input types
-            if len(df['Input_Type'].unique()) == 2:
-                input_types = sorted(df['Input_Type'].unique())
-                type1_dice = df[df['Input_Type'] == input_types[0]]['DSC_Volume'].replace([np.inf, -np.inf], np.nan).dropna()
-                type2_dice = df[df['Input_Type'] == input_types[1]]['DSC_Volume'].replace([np.inf, -np.inf], np.nan).dropna()
-
-                if len(type1_dice) > 0 and len(type2_dice) > 0:
-                    diff = type2_dice.mean() - type1_dice.mean()
-                    print(f"\nDifference ({input_types[1]} - {input_types[0]}): {diff:+.4f} DSC")
+            for approach in ['Thresholding', 'CBF', 'CBF_T1w', 'CBF_FLAIR', 'CBF_T1w_FLAIR']:
+                if approach in df['Approach'].unique():
+                    approach_data = df[df['Approach'] == approach]
+                    dice_vals = approach_data['DSC_Volume'].replace([np.inf, -np.inf], np.nan).dropna()
+                    if len(dice_vals) > 0:
+                        display_name = evaluator.approach_display_names.get(approach, approach)
+                        print(f"{display_name:20}: {dice_vals.mean():.4f} ± {dice_vals.std():.4f} DSC ({len(approach_data)} cases)")
 
         return 0
     else:
