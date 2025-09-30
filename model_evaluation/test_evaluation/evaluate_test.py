@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """
 Test Set nnUNet Results Evaluation Script
-Evaluates predictions on test set and creates Excel aligned with cross-validation evaluation:
-  - Sheets: Per_Case_Results, Per_Hemisphere_Summary, Overall_Summary
+Evaluates predictions on test set for all segmentation approaches and creates Excel files and boxplots.
+Compares: Thresholding, CBF-only, CBF+T1w, CBF+FLAIR, CBF+T1w+FLAIR
+  - Separate analysis for HC (sub-p014, sub-p015) and Patients (sub-p017-023)
+  - Sheets per Excel: Per_Case_Details, Per_Hemisphere_Summary, Overall_Summary
   - Metrics: DSC_Volume, DSC_Slicewise, IoU, Sensitivity, Precision,
              Specificity, RVE_Percent, HD95_mm, ASSD_mm
+  - Boxplots: DSC (volume-based) and ASSD (slice-wise) with Left/Right hemisphere separation
 """
 
 import os
@@ -49,14 +52,32 @@ class TestSetEvaluator:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Results storage - now includes input type
+        # Results storage - now includes approach type
         self.results = []
         self.processed_count = 0
         self.successful_count = 0
         self.failed_files = []
 
-        # Store slice-wise data for plotting
+        # Store slice-wise data for plotting (includes ASSD per slice)
         self.slice_wise_data = []
+
+        # Mapping from internal keys to display names
+        self.approach_display_names = {
+            'Thresholding': 'Thresholding',
+            'CBF': 'CBF',
+            'CBF_T1w': 'CBF+T1w',
+            'CBF_FLAIR': 'CBF+FLAIR',
+            'CBF_T1w_FLAIR': 'CBF+T1w+FLAIR'
+        }
+
+        # Mapping for Excel file naming
+        self.approach_file_names = {
+            'Thresholding': 'Thresholding',
+            'CBF': 'Single-class_CBF',
+            'CBF_T1w': 'Single-class_CBF_T1w',
+            'CBF_FLAIR': 'Single-class_CBF_FLAIR',
+            'CBF_T1w_FLAIR': 'Single-class_CBF_T1w_FLAIR'
+        }
 
     # ---------- Loading & basic metrics ----------
     def load_nifti_file(self, file_path):
@@ -159,15 +180,18 @@ class TestSetEvaluator:
             print(f"Warning: ASSD calculation failed: {e}")
             return float('nan')
 
-    def calculate_slice_wise_assd(self, gt_mask, pred_mask, spacing, base_name):
+    def calculate_slice_wise_assd(self, gt_mask, pred_mask, spacing, base_name, approach):
         """Calculate ASSD for each slice and store for plotting"""
         slice_data = []
         nz = gt_mask.shape[2]
 
-        # Extract group from base_name and handle input type suffix
+        # Extract group from base_name
         case_base = base_name.split('_')[0] if '_' in base_name else base_name
         subject_num = int(case_base.split('-')[0].replace('PerfTerr', ''))
         group = 'HC' if subject_num in [14, 15] else 'Patients'
+
+        # Extract hemisphere from filename
+        hemisphere = 'Left' if base_name.endswith('-L') else 'Right'
 
         for z in range(nz):
             gt_slice = gt_mask[:, :, z]
@@ -195,6 +219,8 @@ class TestSetEvaluator:
                     slice_data.append({
                         'Case': base_name,
                         'Group': group,
+                        'Hemisphere': hemisphere,
+                        'Approach': approach,
                         'Slice': z,
                         'ASSD_mm': assd_slice
                     })
@@ -237,8 +263,8 @@ class TestSetEvaluator:
         else:
             raise ValueError(f"Unexpected prediction shape: {pred_mask.shape}")
 
-    def evaluate_single_case(self, pred_file, gt_file, base_name, input_type):
-        print(f"  Evaluating {base_name} ({input_type})...")
+    def evaluate_single_case(self, pred_file, gt_file, base_name, approach):
+        print(f"  Evaluating {base_name} ({approach})...")
 
         # Load prediction and ground truth (both are already binary for the specific hemisphere)
         pred_mask, _ = self.load_nifti_file(pred_file)
@@ -267,7 +293,7 @@ class TestSetEvaluator:
         assd = self.calculate_assd(gt_mask, pred_mask, spacing)
 
         # Calculate slice-wise ASSD for plotting
-        slice_assd_data = self.calculate_slice_wise_assd(gt_mask, pred_mask, spacing, base_name)
+        slice_assd_data = self.calculate_slice_wise_assd(gt_mask, pred_mask, spacing, base_name, approach)
         self.slice_wise_data.extend(slice_assd_data)
 
         # Extract hemisphere from filename
@@ -277,7 +303,7 @@ class TestSetEvaluator:
 
         return {
             'Base_Name': base_name,
-            'Input_Type': input_type,
+            'Approach': approach,
             'Hemisphere': hemisphere,
             'DSC_Volume': dice_score,
             'DSC_Slicewise': dice_slice,
@@ -291,10 +317,10 @@ class TestSetEvaluator:
         }
 
     def find_test_cases(self):
-        """Find matching prediction and ground truth files for all input types"""
+        """Find matching prediction and ground truth files for all approaches"""
         all_test_cases = []
 
-        for input_type, predictions_dir in self.predictions_dirs.items():
+        for approach, predictions_dir in self.predictions_dirs.items():
             pred_files = list(predictions_dir.glob("*-[LR].nii*"))
 
             for pred_file in pred_files:
@@ -309,18 +335,18 @@ class TestSetEvaluator:
                     gt_file = self.gt_dir / f"{base_name}.nii.gz"
 
                 if gt_file.exists():
-                    all_test_cases.append((pred_file, gt_file, base_name, input_type))
+                    all_test_cases.append((pred_file, gt_file, base_name, approach))
                 else:
-                    print(f"Warning: No matching GT file for {base_name} ({input_type})")
+                    print(f"Warning: No matching GT file for {base_name} ({approach})")
 
         return all_test_cases
 
     def run_evaluation(self):
-        print("Test Set nnUNet Results Evaluation - Multi-Input Comparison")
+        print("Test Set Results Evaluation - All Segmentation Approaches")
         print("=" * 70)
-        print("Prediction directories:")
-        for input_type, pred_dir in self.predictions_dirs.items():
-            print(f"  {input_type}: {pred_dir}")
+        print("Segmentation approaches:")
+        for approach, pred_dir in self.predictions_dirs.items():
+            print(f"  {self.approach_display_names.get(approach, approach)}: {pred_dir}")
         print(f"Ground truth: {self.gt_dir}")
         print(f"Output directory: {self.output_dir}\n")
 
@@ -335,9 +361,9 @@ class TestSetEvaluator:
             print("WARNING: matplotlib/seaborn not available. Plots will be skipped. Install with: pip install matplotlib seaborn")
 
         # Check all prediction directories exist
-        for input_type, pred_dir in self.predictions_dirs.items():
+        for approach, pred_dir in self.predictions_dirs.items():
             if not pred_dir.exists():
-                print(f"ERROR: Predictions directory not found ({input_type}): {pred_dir}")
+                print(f"ERROR: Predictions directory not found ({approach}): {pred_dir}")
                 return False
 
         if not self.gt_dir.exists():
@@ -350,19 +376,19 @@ class TestSetEvaluator:
             print("ERROR: No test cases found")
             return False
 
-        print(f"Found {len(test_cases)} test cases across {len(self.predictions_dirs)} input types")
+        print(f"Found {len(test_cases)} test cases across {len(self.predictions_dirs)} approaches")
 
         # Evaluate each case
-        for pred_file, gt_file, base_name, input_type in test_cases:
-            print(f"\nProcessing {base_name} ({input_type}):")
+        for pred_file, gt_file, base_name, approach in test_cases:
+            print(f"\nProcessing {base_name} ({approach}):")
 
             self.processed_count += 1
-            result = self.evaluate_single_case(pred_file, gt_file, base_name, input_type)
+            result = self.evaluate_single_case(pred_file, gt_file, base_name, approach)
             if result is not None:
                 self.results.append(result)
                 self.successful_count += 1
             else:
-                self.failed_files.append(f"{base_name} ({input_type})")
+                self.failed_files.append(f"{base_name} ({approach})")
 
         print("\nSaving results to Excel...")
         self.save_results_to_excel()
@@ -373,29 +399,22 @@ class TestSetEvaluator:
         self.print_evaluation_summary()
         return True
 
-    def create_excel_for_group(self, df, group_name, timestamp):
-        """Create Excel file for a specific group (HC or Patients)"""
-        excel_file = self.output_dir / f"test_set_results_{group_name}_{timestamp}.xlsx"
+    def create_excel_for_approach_and_group(self, df, approach, group_name, timestamp):
+        """Create Excel file for a specific approach and group (HC or Patients)"""
+        # Get file name components
+        approach_file_name = self.approach_file_names.get(approach, approach)
+        excel_file = self.output_dir / f"test_results_{group_name}_{approach_file_name}_{timestamp}.xlsx"
 
-        # ----- Sheet 1: Per_Case_Results -----
-        # Include Input_Type only if it exists and has multiple values
+        # ----- Sheet 1: Per_Case_Details -----
         base_cols = ['Subject', 'Visit', 'Hemisphere', 'Base_Name']
         metric_cols = ['DSC_Volume', 'DSC_Slicewise', 'IoU',
                       'Sensitivity', 'Precision', 'Specificity',
                       'RVE_Percent', 'HD95_mm', 'ASSD_mm']
 
-        if 'Input_Type' in df.columns and len(df['Input_Type'].unique()) > 1:
-            per_case_cols = base_cols[:2] + ['Input_Type'] + base_cols[2:] + metric_cols
-        else:
-            per_case_cols = base_cols + metric_cols
-
+        per_case_cols = base_cols + metric_cols
         per_case_df = df[per_case_cols].copy()
 
         # ----- Sheet 2: Per_Hemisphere_Summary -----
-        metric_cols = ['DSC_Volume', 'DSC_Slicewise', 'IoU',
-                       'Sensitivity', 'Precision', 'Specificity',
-                       'RVE_Percent', 'HD95_mm', 'ASSD_mm']
-
         hemi_rows = []
         for hemi in ['Left', 'Right']:
             sub = per_case_df[per_case_df['Hemisphere'] == hemi]
@@ -428,7 +447,7 @@ class TestSetEvaluator:
 
         # Write to Excel
         with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
-            per_case_df.to_excel(writer, sheet_name='Per_Case_Results', index=False)
+            per_case_df.to_excel(writer, sheet_name='Per_Case_Details', index=False)
             hemi_df.to_excel(writer, sheet_name='Per_Hemisphere_Summary', index=False)
             overall_df.to_excel(writer, sheet_name='Overall_Summary', index=False)
 
@@ -444,10 +463,11 @@ class TestSetEvaluator:
                             pass
                     ws.column_dimensions[column[0].column_letter].width = min(max_len + 2, 50)
 
-        print(f"Results saved to Excel ({group_name}): {excel_file}")
+        print(f"  Excel saved ({group_name}, {approach}): {excel_file.name}")
         return excel_file
 
     def save_results_to_excel(self):
+        """Create separate Excel files for each approach and group combination"""
         if not self.results:
             print("No results to save")
             return
@@ -462,45 +482,52 @@ class TestSetEvaluator:
             df['Subject'] = 'sub-p' + df['Subject'].str.zfill(3)
             df['Visit'] = 'v' + df['Visit']
 
-            # Sort by Subject, Visit, Hemisphere
-            df = df.sort_values(['Subject', 'Visit', 'Hemisphere'], na_position='last')
-
             # Extract subject number for grouping
             df['Subject_Num'] = df['Subject'].str.extract(r'sub-p(\d+)').astype(int)
+
+            # Sort by Approach, Subject, Visit, Hemisphere
+            df = df.sort_values(['Approach', 'Subject', 'Visit', 'Hemisphere'], na_position='last')
 
             # Separate into healthy controls (PerfTerr014, PerfTerr015) and patients (PerfTerr017-023)
             hc_df = df[df['Subject_Num'].isin([14, 15])].copy()
             patients_df = df[df['Subject_Num'].isin([17, 18, 19, 20, 22, 23])].copy()
 
-            # Remove the temporary Subject_Num column
-            hc_df = hc_df.drop('Subject_Num', axis=1)
-            patients_df = patients_df.drop('Subject_Num', axis=1)
+            print(f"Total: {len(df)} cases")
+            print(f"  Healthy Controls: {len(hc_df)} cases")
+            print(f"  Patients: {len(patients_df)} cases")
 
-            print(f"Healthy Controls: {len(hc_df)} cases")
-            print(f"Patients: {len(patients_df)} cases")
-
-            # Create separate Excel files for each group
+            # Create separate Excel files for each approach and group
             excel_files = []
-            if len(hc_df) > 0:
-                excel_file_hc = self.create_excel_for_group(hc_df, 'HC', timestamp)
-                excel_files.append(excel_file_hc)
+            for approach in df['Approach'].unique():
+                # HC group
+                hc_approach_df = hc_df[hc_df['Approach'] == approach].copy()
+                if len(hc_approach_df) > 0:
+                    hc_approach_df = hc_approach_df.drop(['Subject_Num', 'Hemisphere_Code', 'Approach'], axis=1, errors='ignore')
+                    excel_file = self.create_excel_for_approach_and_group(hc_approach_df, approach, 'HC', timestamp)
+                    excel_files.append(excel_file)
 
-            if len(patients_df) > 0:
-                excel_file_patients = self.create_excel_for_group(patients_df, 'patients', timestamp)
-                excel_files.append(excel_file_patients)
+                # Patients group
+                patients_approach_df = patients_df[patients_df['Approach'] == approach].copy()
+                if len(patients_approach_df) > 0:
+                    patients_approach_df = patients_approach_df.drop(['Subject_Num', 'Hemisphere_Code', 'Approach'], axis=1, errors='ignore')
+                    excel_file = self.create_excel_for_approach_and_group(patients_approach_df, approach, 'patients', timestamp)
+                    excel_files.append(excel_file)
 
-            # Also create a combined file for comparison
-            excel_file_combined = self.output_dir / f"test_set_results_combined_{timestamp}.xlsx"
-            self.create_excel_for_group(df.drop('Subject_Num', axis=1, errors='ignore'), 'combined', timestamp)
-
+            print(f"Created {len(excel_files)} Excel files")
             return excel_files
 
         except Exception as e:
             print(f"Error saving Excel file: {e}")
+            import traceback
+            traceback.print_exc()
             return []
 
     def create_box_plots(self):
-        """Create box plots comparing input types (CBF-only vs CBF+T1w) within HC and Patients groups for DSC and slice-wise ASSD"""
+        """
+        Create separate boxplot PNG files for HC and Patients groups.
+        Each PNG shows all 5 approaches with Left and Right hemisphere boxes.
+        Creates plots for both DSC (volume-based) and ASSD (slice-wise).
+        """
         if not PLOTTING_AVAILABLE:
             print("Warning: matplotlib/seaborn not available. Skipping box plots.")
             return
@@ -512,10 +539,10 @@ class TestSetEvaluator:
         try:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-            # Prepare data for volume-based DSC plot
+            # Prepare data
             df = pd.DataFrame(self.results)
-            df[['Subject', 'Visit', 'Hemisphere_Code']] = df['Base_Name'].str.extract(r'PerfTerr(\d+)-v(\d+)-([LR])')
-            df['Subject_Num'] = df['Subject'].astype(int)
+            df[['Subject_str', 'Visit', 'Hemisphere_Code']] = df['Base_Name'].str.extract(r'PerfTerr(\d+)-v(\d+)-([LR])')
+            df['Subject_Num'] = df['Subject_str'].astype(int)
             df['Group'] = df['Subject_Num'].apply(lambda x: 'HC' if x in [14, 15] else 'Patients')
 
             # Filter out invalid values
