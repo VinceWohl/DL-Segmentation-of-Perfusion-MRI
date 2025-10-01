@@ -878,11 +878,12 @@ class TestSetEvaluator:
             # Add median [IQR] and n annotations (matching reference positioning)
             self._add_dsc_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors)
 
-            # Add significance brackets (Bonferroni-corrected) for each hemisphere
+            # Add significance brackets (Bonferroni-corrected) for both hemispheres
+            # For DSC plots, brackets go above boxes
             stats_df = self.statistical_results.get(group_name, None)
             if stats_df is not None:
-                for hemisphere in hemispheres:
-                    self._add_significance_brackets(ax, stats_df, hemisphere, hemisphere_positions, approach_order)
+                self._add_significance_brackets_both_hemispheres(ax, stats_df, hemisphere_positions, approach_order,
+                                                                 hemispheres, position='above')
 
             plt.tight_layout()
             plot_file = self.output_dir / f"DSC_volume_{group_name}_{timestamp}.png"
@@ -890,8 +891,157 @@ class TestSetEvaluator:
             plt.close()
             print(f"    Saved: {plot_file.name}")
 
-    def _add_significance_brackets(self, ax, stats_df, hemisphere, hemisphere_positions, approach_order):
-        """Add significance brackets showing Bonferroni-corrected significant differences"""
+    def _add_significance_brackets_both_hemispheres(self, ax, stats_df, hemisphere_positions, approach_order, hemispheres, position='above'):
+        """Add significance brackets for both hemispheres with coordinated heights"""
+        if stats_df is None or stats_df.empty:
+            return
+
+        # Get y-axis limits
+        y_min, y_max = ax.get_ylim()
+        y_range = y_max - y_min
+
+        # Collect all significant pairs from both hemispheres
+        all_pairs_by_hemisphere = {}
+
+        for hemisphere in hemispheres:
+            # Filter for this hemisphere and Bonferroni-significant results only
+            hemi_stats = stats_df[(stats_df['Hemisphere'] == hemisphere) &
+                                  (stats_df['P_Value_Bonferroni'] < 0.05)].copy()
+
+            if hemi_stats.empty:
+                all_pairs_by_hemisphere[hemisphere] = []
+                continue
+
+            # Get the mapping from approach names to positions
+            approach_to_pos = {approach: hemisphere_positions[hemisphere][i]
+                              for i, approach in enumerate(approach_order)
+                              if i < len(hemisphere_positions[hemisphere])}
+
+            # Prepare list of significant pairs with their positions
+            significant_pairs = []
+            for _, row in hemi_stats.iterrows():
+                approach1 = row['Config1']
+                approach2 = row['Config2']
+                p_bonf = row['P_Value_Bonferroni']
+
+                if approach1 in approach_to_pos and approach2 in approach_to_pos:
+                    pos1 = approach_to_pos[approach1]
+                    pos2 = approach_to_pos[approach2]
+
+                    # Determine significance symbol
+                    if p_bonf < 0.001:
+                        symbol = '***'
+                    elif p_bonf < 0.01:
+                        symbol = '**'
+                    elif p_bonf < 0.05:
+                        symbol = '*'
+                    else:
+                        continue
+
+                    significant_pairs.append({
+                        'pos1': min(pos1, pos2),
+                        'pos2': max(pos1, pos2),
+                        'symbol': symbol,
+                        'span': abs(pos2 - pos1),
+                        'hemisphere': hemisphere
+                    })
+
+            # Sort by span (smallest first) to minimize overlap
+            significant_pairs.sort(key=lambda x: x['span'])
+            all_pairs_by_hemisphere[hemisphere] = significant_pairs
+
+        # Check if we have any brackets to draw
+        total_brackets = sum(len(pairs) for pairs in all_pairs_by_hemisphere.values())
+        if total_brackets == 0:
+            return
+
+        # Assign bracket heights with coordination across hemispheres
+        # All brackets share the same height levels
+        bracket_heights = []
+        bracket_height_increment = y_range * 0.032  # 3.2% of y-range per bracket level
+        bracket_base_offset = y_range * 0.003  # Start very close (0.3% from boxes)
+
+        # Process all pairs together, alternating between hemispheres to pack efficiently
+        all_pairs_flat = []
+        for hemisphere in hemispheres:
+            for pair in all_pairs_by_hemisphere[hemisphere]:
+                all_pairs_flat.append(pair)
+
+        # Sort all pairs by span
+        all_pairs_flat.sort(key=lambda x: x['span'])
+
+        for pair in all_pairs_flat:
+            # Find the first available height that doesn't overlap
+            level = 0
+            while True:
+                if position == 'above':
+                    height = y_max + bracket_base_offset + (level * bracket_height_increment)
+                else:  # below
+                    height = y_min - bracket_base_offset - (level * bracket_height_increment)
+
+                # Check if this height overlaps with any existing bracket in the same x-range
+                overlaps = False
+                for existing_pair, existing_height in bracket_heights:
+                    # Check x-range overlap
+                    if not (pair['pos2'] < existing_pair['pos1'] or pair['pos1'] > existing_pair['pos2']):
+                        # Check height overlap (within one increment)
+                        if abs(height - existing_height) < bracket_height_increment * 0.8:
+                            overlaps = True
+                            break
+
+                if not overlaps:
+                    bracket_heights.append((pair, height))
+                    break
+
+                level += 1
+                if level > 15:  # Safety limit
+                    break
+
+        # Draw all brackets
+        for pair, height in bracket_heights:
+            pos1 = pair['pos1']
+            pos2 = pair['pos2']
+            symbol = pair['symbol']
+
+            # Draw horizontal line
+            ax.plot([pos1, pos2], [height, height], 'k-', linewidth=1.5)
+
+            # Draw vertical ticks at ends
+            tick_height = y_range * 0.01
+            if position == 'above':
+                ax.plot([pos1, pos1], [height, height - tick_height], 'k-', linewidth=1.5)
+                ax.plot([pos2, pos2], [height, height - tick_height], 'k-', linewidth=1.5)
+                # Add significance symbol above the line (minimal spacing)
+                mid_x = (pos1 + pos2) / 2
+                ax.text(mid_x, height + y_range * 0.002, symbol, ha='center', va='bottom',
+                       fontsize=12, fontweight='bold')
+            else:  # below
+                ax.plot([pos1, pos1], [height, height + tick_height], 'k-', linewidth=1.5)
+                ax.plot([pos2, pos2], [height, height + tick_height], 'k-', linewidth=1.5)
+                # Add significance symbol below the line (increased spacing to avoid overlap)
+                mid_x = (pos1 + pos2) / 2
+                ax.text(mid_x, height - y_range * 0.008, symbol, ha='center', va='top',
+                       fontsize=12, fontweight='bold')
+
+        # Adjust y-axis to accommodate brackets (ensure they stay within plot)
+        if bracket_heights:
+            if position == 'above':
+                max_bracket_height = max(h for _, h in bracket_heights)
+                # Add padding for the symbol above the bracket
+                new_y_max = max_bracket_height + y_range * 0.025  # 2.5% padding for symbol
+                ax.set_ylim(y_min, new_y_max)
+            else:  # below
+                min_bracket_height = min(h for _, h in bracket_heights)
+                # Add padding for the symbol below the bracket
+                new_y_min = min_bracket_height - y_range * 0.025  # 2.5% padding for symbol
+                ax.set_ylim(new_y_min, y_max)
+
+    def _add_significance_brackets(self, ax, stats_df, hemisphere, hemisphere_positions, approach_order, position='above'):
+        """Add significance brackets showing Bonferroni-corrected significant differences
+
+        Args:
+            position: 'above' or 'below' - where to place brackets relative to boxes
+        """
         if stats_df is None or stats_df.empty:
             return
 
@@ -907,7 +1057,7 @@ class TestSetEvaluator:
                           for i, approach in enumerate(approach_order)
                           if i < len(hemisphere_positions[hemisphere])}
 
-        # Get y-axis limits
+        # Get y-axis limits (CURRENT limits, before adding brackets)
         y_min, y_max = ax.get_ylim()
         y_range = y_max - y_min
 
@@ -947,14 +1097,21 @@ class TestSetEvaluator:
 
         # Assign bracket heights to avoid overlaps
         bracket_heights = []
-        bracket_height_increment = y_range * 0.06  # 6% of y-range per bracket level (increased spacing)
-        bracket_base_offset = y_range * 0.03  # Start brackets 3% above the top (closer to boxes)
+        bracket_height_increment = y_range * 0.05  # 5% of y-range per bracket level
+
+        if position == 'above':
+            bracket_base_offset = y_range * 0.015  # Start very close to top (1.5% above)
+        else:  # below
+            bracket_base_offset = y_range * 0.015  # Start very close to bottom (1.5% below)
 
         for pair in significant_pairs:
             # Find the first available height that doesn't overlap with existing brackets
             level = 0
             while True:
-                height = y_max + bracket_base_offset + (level * bracket_height_increment)
+                if position == 'above':
+                    height = y_max + bracket_base_offset + (level * bracket_height_increment)
+                else:  # below
+                    height = y_min - bracket_base_offset - (level * bracket_height_increment)
 
                 # Check if this height overlaps with any existing bracket in the same x-range
                 overlaps = False
@@ -985,19 +1142,31 @@ class TestSetEvaluator:
 
             # Draw vertical ticks at ends
             tick_height = y_range * 0.01
-            ax.plot([pos1, pos1], [height, height - tick_height], 'k-', linewidth=1.5)
-            ax.plot([pos2, pos2], [height, height - tick_height], 'k-', linewidth=1.5)
-
-            # Add significance symbol
-            mid_x = (pos1 + pos2) / 2
-            ax.text(mid_x, height, symbol, ha='center', va='bottom',
-                   fontsize=12, fontweight='bold')
+            if position == 'above':
+                ax.plot([pos1, pos1], [height, height - tick_height], 'k-', linewidth=1.5)
+                ax.plot([pos2, pos2], [height, height - tick_height], 'k-', linewidth=1.5)
+                # Add significance symbol above the line
+                mid_x = (pos1 + pos2) / 2
+                ax.text(mid_x, height, symbol, ha='center', va='bottom',
+                       fontsize=12, fontweight='bold')
+            else:  # below
+                ax.plot([pos1, pos1], [height, height + tick_height], 'k-', linewidth=1.5)
+                ax.plot([pos2, pos2], [height, height + tick_height], 'k-', linewidth=1.5)
+                # Add significance symbol below the line
+                mid_x = (pos1 + pos2) / 2
+                ax.text(mid_x, height, symbol, ha='center', va='top',
+                       fontsize=12, fontweight='bold')
 
         # Adjust y-axis to accommodate brackets
         if bracket_heights:
-            max_bracket_height = max(h for _, h in bracket_heights)
-            new_y_max = max_bracket_height + y_range * 0.05  # Add 5% padding above highest bracket
-            ax.set_ylim(y_min, new_y_max)
+            if position == 'above':
+                max_bracket_height = max(h for _, h in bracket_heights)
+                new_y_max = max_bracket_height + y_range * 0.03  # Add 3% padding above highest bracket
+                ax.set_ylim(y_min, new_y_max)
+            else:  # below
+                min_bracket_height = min(h for _, h in bracket_heights)
+                new_y_min = min_bracket_height - y_range * 0.03  # Add 3% padding below lowest bracket
+                ax.set_ylim(new_y_min, y_max)
 
     def _add_dsc_annotations(self, ax, group_data, hemisphere_positions, approach_order, approach_colors):
         """Add median [IQR] and sample size annotations matching reference style"""
@@ -1155,11 +1324,12 @@ class TestSetEvaluator:
             # Add median [IQR] and n annotations (matching reference positioning - below boxes)
             self._add_assd_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors)
 
-            # Add significance brackets (Bonferroni-corrected) for each hemisphere
+            # Add significance brackets (Bonferroni-corrected) for both hemispheres
+            # For ASSD plots, brackets go below boxes
             stats_df = self.statistical_results.get(group_name, None)
             if stats_df is not None:
-                for hemisphere in hemispheres:
-                    self._add_significance_brackets(ax, stats_df, hemisphere, hemisphere_positions, approach_order)
+                self._add_significance_brackets_both_hemispheres(ax, stats_df, hemisphere_positions, approach_order,
+                                                                 hemispheres, position='below')
 
             plt.tight_layout()
             plot_file = self.output_dir / f"ASSD_slicewise_{group_name}_{timestamp}.png"
