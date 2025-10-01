@@ -61,6 +61,9 @@ class TestSetEvaluator:
         # Store slice-wise data for plotting (includes ASSD per slice)
         self.slice_wise_data = []
 
+        # Store statistical results for significance brackets
+        self.statistical_results = {}  # Format: {group_name: DataFrame with statistical comparisons}
+
         # Mapping from internal keys to display names
         self.approach_display_names = {
             'Thresholding': 'Thresholding',
@@ -393,11 +396,11 @@ class TestSetEvaluator:
         print("\nSaving results to Excel...")
         self.save_results_to_excel()
 
-        print("\nCreating box plots...")
-        self.create_box_plots()
-
         print("\nPerforming statistical testing...")
         self.perform_statistical_testing()
+
+        print("\nCreating box plots...")
+        self.create_box_plots()
 
         self.print_evaluation_summary()
         return True
@@ -677,7 +680,9 @@ class TestSetEvaluator:
 
             # Save results for this group
             if all_stats_results:
-                self._save_statistical_results(all_stats_results, group_name, timestamp)
+                stats_df = self._save_statistical_results(all_stats_results, group_name, timestamp)
+                # Store for significance brackets in plots
+                self.statistical_results[group_name] = stats_df
             else:
                 print(f"    No statistical comparisons performed for {group_name}")
 
@@ -760,6 +765,9 @@ class TestSetEvaluator:
         print(f"      Total comparisons: {len(stats_df)}")
         print(f"      Significant (p<0.05): {sum(stats_df['P_Value'] < 0.05)}")
         print(f"      Bonferroni significant: {sum(stats_df['P_Value_Bonferroni'] < 0.05)}")
+
+        # Return the DataFrame for use in plotting
+        return stats_df
 
     def _create_dsc_boxplots(self, df, approach_order, timestamp):
         """Create DSC boxplots for HC and Patients separately - matching reference style"""
@@ -870,11 +878,126 @@ class TestSetEvaluator:
             # Add median [IQR] and n annotations (matching reference positioning)
             self._add_dsc_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors)
 
+            # Add significance brackets (Bonferroni-corrected) for each hemisphere
+            stats_df = self.statistical_results.get(group_name, None)
+            if stats_df is not None:
+                for hemisphere in hemispheres:
+                    self._add_significance_brackets(ax, stats_df, hemisphere, hemisphere_positions, approach_order)
+
             plt.tight_layout()
             plot_file = self.output_dir / f"DSC_volume_{group_name}_{timestamp}.png"
             plt.savefig(plot_file, dpi=300, bbox_inches='tight', facecolor='white')
             plt.close()
             print(f"    Saved: {plot_file.name}")
+
+    def _add_significance_brackets(self, ax, stats_df, hemisphere, hemisphere_positions, approach_order):
+        """Add significance brackets showing Bonferroni-corrected significant differences"""
+        if stats_df is None or stats_df.empty:
+            return
+
+        # Filter for this hemisphere and Bonferroni-significant results only
+        hemi_stats = stats_df[(stats_df['Hemisphere'] == hemisphere) &
+                              (stats_df['P_Value_Bonferroni'] < 0.05)].copy()
+
+        if hemi_stats.empty:
+            return
+
+        # Get the mapping from approach names to positions
+        approach_to_pos = {approach: hemisphere_positions[hemisphere][i]
+                          for i, approach in enumerate(approach_order)
+                          if i < len(hemisphere_positions[hemisphere])}
+
+        # Get y-axis limits
+        y_min, y_max = ax.get_ylim()
+        y_range = y_max - y_min
+
+        # Prepare list of significant pairs with their positions
+        significant_pairs = []
+        for _, row in hemi_stats.iterrows():
+            approach1 = row['Config1']
+            approach2 = row['Config2']
+            p_bonf = row['P_Value_Bonferroni']
+
+            if approach1 in approach_to_pos and approach2 in approach_to_pos:
+                pos1 = approach_to_pos[approach1]
+                pos2 = approach_to_pos[approach2]
+
+                # Determine significance symbol
+                if p_bonf < 0.001:
+                    symbol = '***'
+                elif p_bonf < 0.01:
+                    symbol = '**'
+                elif p_bonf < 0.05:
+                    symbol = '*'
+                else:
+                    continue  # Skip non-significant
+
+                significant_pairs.append({
+                    'pos1': min(pos1, pos2),
+                    'pos2': max(pos1, pos2),
+                    'symbol': symbol,
+                    'span': abs(pos2 - pos1)
+                })
+
+        if not significant_pairs:
+            return
+
+        # Sort by span (smallest first) to minimize overlap
+        significant_pairs.sort(key=lambda x: x['span'])
+
+        # Assign bracket heights to avoid overlaps
+        bracket_heights = []
+        bracket_height_increment = y_range * 0.06  # 6% of y-range per bracket level (increased spacing)
+        bracket_base_offset = y_range * 0.03  # Start brackets 3% above the top (closer to boxes)
+
+        for pair in significant_pairs:
+            # Find the first available height that doesn't overlap with existing brackets
+            level = 0
+            while True:
+                height = y_max + bracket_base_offset + (level * bracket_height_increment)
+
+                # Check if this height overlaps with any existing bracket in the same x-range
+                overlaps = False
+                for existing_pair, existing_height in bracket_heights:
+                    # Check x-range overlap
+                    if not (pair['pos2'] < existing_pair['pos1'] or pair['pos1'] > existing_pair['pos2']):
+                        # Check height overlap (within one increment)
+                        if abs(height - existing_height) < bracket_height_increment * 0.8:
+                            overlaps = True
+                            break
+
+                if not overlaps:
+                    bracket_heights.append((pair, height))
+                    break
+
+                level += 1
+                if level > 10:  # Safety limit
+                    break
+
+        # Draw the brackets
+        for pair, height in bracket_heights:
+            pos1 = pair['pos1']
+            pos2 = pair['pos2']
+            symbol = pair['symbol']
+
+            # Draw horizontal line
+            ax.plot([pos1, pos2], [height, height], 'k-', linewidth=1.5)
+
+            # Draw vertical ticks at ends
+            tick_height = y_range * 0.01
+            ax.plot([pos1, pos1], [height, height - tick_height], 'k-', linewidth=1.5)
+            ax.plot([pos2, pos2], [height, height - tick_height], 'k-', linewidth=1.5)
+
+            # Add significance symbol
+            mid_x = (pos1 + pos2) / 2
+            ax.text(mid_x, height, symbol, ha='center', va='bottom',
+                   fontsize=12, fontweight='bold')
+
+        # Adjust y-axis to accommodate brackets
+        if bracket_heights:
+            max_bracket_height = max(h for _, h in bracket_heights)
+            new_y_max = max_bracket_height + y_range * 0.05  # Add 5% padding above highest bracket
+            ax.set_ylim(y_min, new_y_max)
 
     def _add_dsc_annotations(self, ax, group_data, hemisphere_positions, approach_order, approach_colors):
         """Add median [IQR] and sample size annotations matching reference style"""
@@ -1031,6 +1154,12 @@ class TestSetEvaluator:
 
             # Add median [IQR] and n annotations (matching reference positioning - below boxes)
             self._add_assd_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors)
+
+            # Add significance brackets (Bonferroni-corrected) for each hemisphere
+            stats_df = self.statistical_results.get(group_name, None)
+            if stats_df is not None:
+                for hemisphere in hemispheres:
+                    self._add_significance_brackets(ax, stats_df, hemisphere, hemisphere_positions, approach_order)
 
             plt.tight_layout()
             plot_file = self.output_dir / f"ASSD_slicewise_{group_name}_{timestamp}.png"
