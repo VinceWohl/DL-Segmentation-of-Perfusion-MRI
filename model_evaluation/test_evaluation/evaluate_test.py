@@ -285,6 +285,12 @@ class TestSetEvaluator:
 
         # Calculate all metrics
         dice_score = self.calculate_dice_score(gt_mask, pred_mask)
+
+        # EXCLUDE volumes with DSC of zero from further evaluation
+        if dice_score == 0.0:
+            print(f"    EXCLUDED: DSC = 0.0 (volume excluded from evaluation)")
+            return None
+
         dice_slice = self.calculate_dice_score_slicewise(gt_mask, pred_mask)
         tp, fp, fn, tn = self.calculate_cardinalities(gt_mask, pred_mask)
         sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0.0
@@ -609,21 +615,22 @@ class TestSetEvaluator:
 
             all_stats_results = []
 
-            # Process each hemisphere separately
-            for hemisphere in ['Left', 'Right']:
-                hemi_data = group_data[group_data['Hemisphere'] == hemisphere]
-                available_approaches = hemi_data['Approach'].unique().tolist()
+            # For HC: compare approaches across combined hemispheres
+            # For Patients: compare approaches within each hemisphere separately
+            if group_name == 'HC':
+                # HC: Combined hemisphere comparison
+                available_approaches = group_data['Approach'].unique().tolist()
 
                 if len(available_approaches) < 2:
-                    print(f"    {hemisphere}: Insufficient approaches for comparison")
+                    print(f"    Insufficient approaches for comparison")
                     continue
 
-                print(f"    {hemisphere} Hemisphere: {len(available_approaches)} approaches")
+                print(f"    Combined Hemispheres: {len(available_approaches)} approaches")
 
-                # Perform all pairwise comparisons
+                # Perform all pairwise comparisons across approaches
                 for approach1, approach2 in combinations(available_approaches, 2):
-                    data1_df = hemi_data[hemi_data['Approach'] == approach1]
-                    data2_df = hemi_data[hemi_data['Approach'] == approach2]
+                    data1_df = group_data[group_data['Approach'] == approach1]
+                    data2_df = group_data[group_data['Approach'] == approach2]
 
                     # Find paired slices (same case and slice number)
                     merged_df = data1_df.merge(data2_df, on=['Case', 'Slice'], suffixes=('_1', '_2'))
@@ -660,7 +667,7 @@ class TestSetEvaluator:
                             significance = "ns"
 
                         all_stats_results.append({
-                            'Hemisphere': hemisphere,
+                            'Hemisphere': 'Combined',  # For HC, mark as combined
                             'Config1': approach1,
                             'Config2': approach2,
                             'Median1': median1,
@@ -677,6 +684,76 @@ class TestSetEvaluator:
 
                     except Exception as e:
                         print(f"      Error comparing {approach1} vs {approach2}: {e}")
+
+            else:
+                # Patients: Process each hemisphere separately
+                for hemisphere in ['Left', 'Right']:
+                    hemi_data = group_data[group_data['Hemisphere'] == hemisphere]
+                    available_approaches = hemi_data['Approach'].unique().tolist()
+
+                    if len(available_approaches) < 2:
+                        print(f"    {hemisphere}: Insufficient approaches for comparison")
+                        continue
+
+                    print(f"    {hemisphere} Hemisphere: {len(available_approaches)} approaches")
+
+                    # Perform all pairwise comparisons
+                    for approach1, approach2 in combinations(available_approaches, 2):
+                        data1_df = hemi_data[hemi_data['Approach'] == approach1]
+                        data2_df = hemi_data[hemi_data['Approach'] == approach2]
+
+                        # Find paired slices (same case and slice number)
+                        merged_df = data1_df.merge(data2_df, on=['Case', 'Slice'], suffixes=('_1', '_2'))
+
+                        if len(merged_df) < 10:  # Minimum sample size
+                            continue
+
+                        # Get paired slice-wise data
+                        paired_data1 = merged_df['ASSD_mm_1'].values
+                        paired_data2 = merged_df['ASSD_mm_2'].values
+
+                        try:
+                            # Wilcoxon signed-rank test
+                            statistic, p_value = stats.wilcoxon(paired_data1, paired_data2, alternative='two-sided')
+
+                            # Calculate effect size (r = Z / sqrt(N))
+                            n = len(paired_data1)
+                            z_score = stats.norm.ppf(1 - p_value/2) if p_value > 0 else 5.0
+                            effect_size = z_score / np.sqrt(n)
+
+                            # Calculate medians
+                            median1 = np.median(paired_data1)
+                            median2 = np.median(paired_data2)
+                            median_diff = median1 - median2
+
+                            # Determine significance
+                            if p_value < 0.001:
+                                significance = "***"
+                            elif p_value < 0.01:
+                                significance = "**"
+                            elif p_value < 0.05:
+                                significance = "*"
+                            else:
+                                significance = "ns"
+
+                            all_stats_results.append({
+                                'Hemisphere': hemisphere,
+                                'Config1': approach1,
+                                'Config2': approach2,
+                                'Median1': median1,
+                                'Median2': median2,
+                                'Median_Diff': median_diff,
+                                'Statistic': statistic,
+                                'P_Value': p_value,
+                                'Effect_Size': effect_size,
+                                'Significance': significance,
+                                'N_Paired_Slices': n,
+                                'N1_Total_Slices': len(data1_df),
+                                'N2_Total_Slices': len(data2_df)
+                            })
+
+                        except Exception as e:
+                            print(f"      Error comparing {approach1} vs {approach2}: {e}")
 
             # Save results for this group
             if all_stats_results:
@@ -770,7 +847,10 @@ class TestSetEvaluator:
         return stats_df
 
     def _create_dsc_boxplots(self, df, approach_order, timestamp):
-        """Create DSC boxplots for HC and Patients separately - matching reference style"""
+        """Create DSC boxplots for HC and Patients separately - matching reference style
+        For HC: combine left and right hemispheres
+        For Patients: keep hemispheres separate
+        """
         # Filter out invalid DSC values
         df_plot = df[df['DSC_Volume'].replace([np.inf, -np.inf], np.nan).notna()].copy()
 
@@ -783,8 +863,6 @@ class TestSetEvaluator:
             'CBF_T1w_FLAIR': '#9467bd'       # Purple
         }
 
-        hemispheres = ['Left', 'Right']
-
         for group_name in ['HC', 'Patients']:
             group_data = df_plot[df_plot['Group'] == group_name].copy()
             if len(group_data) == 0:
@@ -793,7 +871,7 @@ class TestSetEvaluator:
             # Create figure (matching reference)
             fig, ax = plt.subplots(figsize=(14, 8))
 
-            # Prepare data for grouped plotting (hemisphere first, then approaches)
+            # Prepare data for grouped plotting
             plot_positions = []
             plot_data_list = []
             plot_colors = []
@@ -802,13 +880,16 @@ class TestSetEvaluator:
             hemisphere_positions = {}
             hemisphere_centers = {}
 
-            for hemi_idx, hemisphere in enumerate(hemispheres):
-                hemisphere_positions[hemisphere] = []
+            # For HC: combine hemispheres, for Patients: keep separate
+            if group_name == 'HC':
+                # HC: Single group combining both hemispheres
+                hemispheres = ['Combined']
+                hemisphere_positions['Combined'] = []
                 start_pos = position
 
                 for approach in approach_order:
-                    approach_data = group_data[(group_data['Approach'] == approach) &
-                                              (group_data['Hemisphere'] == hemisphere)]
+                    # Combine data from both hemispheres
+                    approach_data = group_data[group_data['Approach'] == approach]
 
                     if not approach_data.empty:
                         plot_data_list.append(approach_data['DSC_Volume'].values)
@@ -817,15 +898,40 @@ class TestSetEvaluator:
 
                     plot_colors.append(approach_colors.get(approach, '#95a5a6'))
                     plot_positions.append(position)
-                    hemisphere_positions[hemisphere].append(position)
-                    position += 0.7  # Spacing within hemisphere
+                    hemisphere_positions['Combined'].append(position)
+                    position += 0.7  # Spacing within group
 
-                # Calculate hemisphere center for labeling
-                hemisphere_centers[hemisphere] = (start_pos + position - 0.7) / 2
+                # Calculate center for labeling
+                hemisphere_centers['Combined'] = (start_pos + position - 0.7) / 2
 
-                # Add gap between hemispheres
-                if hemi_idx < len(hemispheres) - 1:
-                    position += 0.3
+            else:
+                # Patients: Separate hemispheres
+                hemispheres = ['Left', 'Right']
+
+                for hemi_idx, hemisphere in enumerate(hemispheres):
+                    hemisphere_positions[hemisphere] = []
+                    start_pos = position
+
+                    for approach in approach_order:
+                        approach_data = group_data[(group_data['Approach'] == approach) &
+                                                  (group_data['Hemisphere'] == hemisphere)]
+
+                        if not approach_data.empty:
+                            plot_data_list.append(approach_data['DSC_Volume'].values)
+                        else:
+                            plot_data_list.append([])
+
+                        plot_colors.append(approach_colors.get(approach, '#95a5a6'))
+                        plot_positions.append(position)
+                        hemisphere_positions[hemisphere].append(position)
+                        position += 0.7  # Spacing within hemisphere
+
+                    # Calculate hemisphere center for labeling
+                    hemisphere_centers[hemisphere] = (start_pos + position - 0.7) / 2
+
+                    # Add gap between hemispheres
+                    if hemi_idx < len(hemispheres) - 1:
+                        position += 0.3
 
             # Create boxplot (matching reference style)
             bp = ax.boxplot(
@@ -845,16 +951,37 @@ class TestSetEvaluator:
                 patch.set_linewidth(1)
 
             # Customize the plot (matching reference)
-            ax.set_title(f'{group_name} Test Set: DSC by Segmentation Approach and Hemisphere\n'
-                        f'Test Set Evaluation Results',
-                       fontsize=16, fontweight='bold', pad=20)
-            ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
+            if group_name == 'HC':
+                ax.set_title(f'{group_name} Test Set: DSC by Segmentation Approach / Input Configuration\n'
+                            f'Test Set Evaluation Results (Left and Right Hemispheres Combined)',
+                           fontsize=16, fontweight='bold', pad=20)
+                ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
+            else:
+                ax.set_title(f'{group_name} Test Set: DSC by Segmentation Approach and Hemisphere\n'
+                            f'Test Set Evaluation Results',
+                           fontsize=16, fontweight='bold', pad=20)
+                ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
+
             ax.set_ylabel('DSC per volume', fontsize=14, fontweight='bold')
 
-            # Set custom x-axis labels for hemisphere groups
-            ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
-            ax.set_xticklabels(['Left', 'Right'])
-            ax.tick_params(axis='x', labelsize=12)
+            # Set custom x-axis labels
+            if group_name == 'HC':
+                # Custom labels for each approach with descriptive names
+                approach_labels = {
+                    'Thresholding': 'Thresholding',
+                    'CBF': 'nnUNet w/\nCBF',
+                    'CBF_T1w': 'nnUNet w/\nCBF+T1w',
+                    'CBF_FLAIR': 'nnUNet w/\nCBF+FLAIR',
+                    'CBF_T1w_FLAIR': 'nnUNet w/\nCBF+T1w+FLAIR'
+                }
+                tick_positions = [hemisphere_positions['Combined'][i] for i in range(len(approach_order))]
+                tick_labels = [approach_labels.get(a, a) for a in approach_order]
+                ax.set_xticks(tick_positions)
+                ax.set_xticklabels(tick_labels)
+            else:
+                ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
+                ax.set_xticklabels(['Left', 'Right'])
+            ax.tick_params(axis='x', labelsize=11)
             ax.tick_params(axis='y', labelsize=12)
 
             # Add grid (matching reference)
@@ -867,29 +994,169 @@ class TestSetEvaluator:
             else:
                 ax.set_ylim(0, 1.0)
 
-            # Create legend for approaches
-            legend_elements = [plt.Rectangle((0,0),1,1, facecolor=approach_colors[approach],
-                                            alpha=0.7, edgecolor='black')
-                              for approach in approach_order]
-            ax.legend(legend_elements, [self.approach_display_names.get(a, a) for a in approach_order],
-                     title='Segmentation Approach', title_fontsize=12, fontsize=11,
-                     loc='lower right', bbox_to_anchor=(1.0, 0.0))
+            # Create legend for approaches - only for Patients
+            if group_name == 'Patients':
+                legend_elements = [plt.Rectangle((0,0),1,1, facecolor=approach_colors[approach],
+                                                alpha=0.7, edgecolor='black')
+                                  for approach in approach_order]
+                ax.legend(legend_elements, [self.approach_display_names.get(a, a) for a in approach_order],
+                         title='Segmentation Approach', title_fontsize=12, fontsize=11,
+                         loc='lower right', bbox_to_anchor=(1.0, 0.0))
 
             # Add median [IQR] and n annotations (matching reference positioning)
-            self._add_dsc_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors)
+            self._add_dsc_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors, hemispheres)
 
-            # Add significance brackets (Bonferroni-corrected) for both hemispheres
+            # Add significance brackets (Bonferroni-corrected)
             # For DSC plots, brackets go above boxes
-            stats_df = self.statistical_results.get(group_name, None)
-            if stats_df is not None:
-                self._add_significance_brackets_both_hemispheres(ax, stats_df, hemisphere_positions, approach_order,
-                                                                 hemispheres, position='above')
+            if group_name == 'HC':
+                # HC: Show significance between approaches (combined hemispheres)
+                stats_df = self.statistical_results.get(group_name, None)
+                if stats_df is not None:
+                    self._add_significance_brackets_approaches(ax, stats_df, hemisphere_positions['Combined'],
+                                                              approach_order, position='above')
+            else:
+                # Patients: Show significance for both hemispheres separately
+                stats_df = self.statistical_results.get(group_name, None)
+                if stats_df is not None:
+                    self._add_significance_brackets_both_hemispheres(ax, stats_df, hemisphere_positions, approach_order,
+                                                                     hemispheres, position='above')
 
             plt.tight_layout()
             plot_file = self.output_dir / f"DSC_volume_{group_name}_{timestamp}.png"
             plt.savefig(plot_file, dpi=300, bbox_inches='tight', facecolor='white')
             plt.close()
             print(f"    Saved: {plot_file.name}")
+
+    def _add_significance_brackets_approaches(self, ax, stats_df, approach_positions, approach_order, position='above'):
+        """Add significance brackets for approach comparisons (used for HC combined hemispheres)
+
+        Args:
+            ax: matplotlib axis
+            stats_df: DataFrame with statistical results
+            approach_positions: list of x-positions for each approach
+            approach_order: list of approach names in order
+            position: 'above' or 'below' - where to place brackets relative to boxes
+        """
+        if stats_df is None or stats_df.empty:
+            return
+
+        # Filter for Bonferroni-significant results only
+        significant_stats = stats_df[stats_df['P_Value_Bonferroni'] < 0.05].copy()
+
+        if significant_stats.empty:
+            return
+
+        # Get the mapping from approach names to positions
+        approach_to_pos = {approach: approach_positions[i]
+                          for i, approach in enumerate(approach_order)
+                          if i < len(approach_positions)}
+
+        # Get y-axis limits
+        y_min, y_max = ax.get_ylim()
+        y_range = y_max - y_min
+
+        # Prepare list of significant pairs with their positions
+        significant_pairs = []
+        for _, row in significant_stats.iterrows():
+            approach1 = row['Config1']
+            approach2 = row['Config2']
+            p_bonf = row['P_Value_Bonferroni']
+
+            if approach1 in approach_to_pos and approach2 in approach_to_pos:
+                pos1 = approach_to_pos[approach1]
+                pos2 = approach_to_pos[approach2]
+
+                # Determine significance symbol
+                if p_bonf < 0.001:
+                    symbol = '***'
+                elif p_bonf < 0.01:
+                    symbol = '**'
+                elif p_bonf < 0.05:
+                    symbol = '*'
+                else:
+                    continue
+
+                significant_pairs.append({
+                    'pos1': min(pos1, pos2),
+                    'pos2': max(pos1, pos2),
+                    'symbol': symbol,
+                    'span': abs(pos2 - pos1)
+                })
+
+        if not significant_pairs:
+            return
+
+        # Sort by span (smallest first) to minimize overlap
+        significant_pairs.sort(key=lambda x: x['span'])
+
+        # Assign bracket heights to avoid overlaps
+        bracket_heights = []
+        bracket_height_increment = y_range * 0.032  # 3.2% of y-range per bracket level
+        bracket_base_offset = y_range * 0.003  # Start very close (0.3% from boxes)
+
+        for pair in significant_pairs:
+            # Find the first available height that doesn't overlap
+            level = 0
+            while True:
+                if position == 'above':
+                    height = y_max + bracket_base_offset + (level * bracket_height_increment)
+                else:  # below
+                    height = y_min - bracket_base_offset - (level * bracket_height_increment)
+
+                # Check if this height overlaps with any existing bracket in the same x-range
+                overlaps = False
+                for existing_pair, existing_height in bracket_heights:
+                    # Check x-range overlap
+                    if not (pair['pos2'] < existing_pair['pos1'] or pair['pos1'] > existing_pair['pos2']):
+                        # Check height overlap (within one increment)
+                        if abs(height - existing_height) < bracket_height_increment * 0.8:
+                            overlaps = True
+                            break
+
+                if not overlaps:
+                    bracket_heights.append((pair, height))
+                    break
+
+                level += 1
+                if level > 15:  # Safety limit
+                    break
+
+        # Draw all brackets
+        for pair, height in bracket_heights:
+            pos1 = pair['pos1']
+            pos2 = pair['pos2']
+            symbol = pair['symbol']
+
+            # Draw horizontal line
+            ax.plot([pos1, pos2], [height, height], 'k-', linewidth=1.5)
+
+            # Draw vertical ticks at ends
+            tick_height = y_range * 0.01
+            if position == 'above':
+                ax.plot([pos1, pos1], [height, height - tick_height], 'k-', linewidth=1.5)
+                ax.plot([pos2, pos2], [height, height - tick_height], 'k-', linewidth=1.5)
+                # Add significance symbol above the line
+                mid_x = (pos1 + pos2) / 2
+                ax.text(mid_x, height + y_range * 0.002, symbol, ha='center', va='bottom',
+                       fontsize=12, fontweight='bold')
+            else:  # below
+                ax.plot([pos1, pos1], [height, height + tick_height], 'k-', linewidth=1.5)
+                ax.plot([pos2, pos2], [height, height + tick_height], 'k-', linewidth=1.5)
+                # Add significance symbol below the line
+                mid_x = (pos1 + pos2) / 2
+                ax.text(mid_x, height - y_range * 0.008, symbol, ha='center', va='top',
+                       fontsize=12, fontweight='bold')
+
+        # Adjust y-axis to accommodate brackets
+        if bracket_heights:
+            if position == 'above':
+                max_bracket_height = max(h for _, h in bracket_heights)
+                new_y_max = max_bracket_height + y_range * 0.025  # 2.5% padding for symbol
+                ax.set_ylim(y_min, new_y_max)
+            else:  # below
+                min_bracket_height = min(h for _, h in bracket_heights)
+                new_y_min = min_bracket_height - y_range * 0.025  # 2.5% padding for symbol
+                ax.set_ylim(new_y_min, y_max)
 
     def _add_significance_brackets_both_hemispheres(self, ax, stats_df, hemisphere_positions, approach_order, hemispheres, position='above'):
         """Add significance brackets for both hemispheres with coordinated heights"""
@@ -1168,17 +1435,19 @@ class TestSetEvaluator:
                 new_y_min = min_bracket_height - y_range * 0.03  # Add 3% padding below lowest bracket
                 ax.set_ylim(new_y_min, y_max)
 
-    def _add_dsc_annotations(self, ax, group_data, hemisphere_positions, approach_order, approach_colors):
+    def _add_dsc_annotations(self, ax, group_data, hemisphere_positions, approach_order, approach_colors, hemispheres):
         """Add median [IQR] and sample size annotations matching reference style"""
-        hemispheres = ['Left', 'Right']
-
         for hemi_idx, hemisphere in enumerate(hemispheres):
             for approach_idx, approach in enumerate(approach_order):
                 if approach_idx < len(hemisphere_positions[hemisphere]):
                     box_position = hemisphere_positions[hemisphere][approach_idx]
 
-                    approach_data = group_data[(group_data['Approach'] == approach) &
-                                              (group_data['Hemisphere'] == hemisphere)]
+                    # For combined HC hemispheres, get all data regardless of hemisphere
+                    if hemisphere == 'Combined':
+                        approach_data = group_data[group_data['Approach'] == approach]
+                    else:
+                        approach_data = group_data[(group_data['Approach'] == approach) &
+                                                  (group_data['Hemisphere'] == hemisphere)]
 
                     if not approach_data.empty and len(approach_data) > 0:
                         values = approach_data['DSC_Volume'].dropna()
@@ -1218,7 +1487,10 @@ class TestSetEvaluator:
         ax.set_ylim(current_ylim[0], current_ylim[1] + (current_ylim[1] - current_ylim[0]) * 0.15)
 
     def _create_assd_boxplots(self, approach_order, timestamp):
-        """Create ASSD slice-wise boxplots for HC and Patients separately - matching reference style"""
+        """Create ASSD slice-wise boxplots for HC and Patients separately - matching reference style
+        For HC: combine left and right hemispheres
+        For Patients: keep hemispheres separate
+        """
         slice_df = pd.DataFrame(self.slice_wise_data)
         slice_df_plot = slice_df[slice_df['ASSD_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
 
@@ -1235,8 +1507,6 @@ class TestSetEvaluator:
             'CBF_T1w_FLAIR': '#9467bd'       # Purple
         }
 
-        hemispheres = ['Left', 'Right']
-
         for group_name in ['HC', 'Patients']:
             group_data = slice_df_plot[slice_df_plot['Group'] == group_name].copy()
             if len(group_data) == 0:
@@ -1245,7 +1515,7 @@ class TestSetEvaluator:
             # Create figure (matching reference)
             fig, ax = plt.subplots(figsize=(14, 8))
 
-            # Prepare data for grouped plotting (hemisphere first, then approaches)
+            # Prepare data for grouped plotting
             plot_positions = []
             plot_data_list = []
             plot_colors = []
@@ -1254,13 +1524,16 @@ class TestSetEvaluator:
             hemisphere_positions = {}
             hemisphere_centers = {}
 
-            for hemi_idx, hemisphere in enumerate(hemispheres):
-                hemisphere_positions[hemisphere] = []
+            # For HC: combine hemispheres, for Patients: keep separate
+            if group_name == 'HC':
+                # HC: Single group combining both hemispheres
+                hemispheres = ['Combined']
+                hemisphere_positions['Combined'] = []
                 start_pos = position
 
                 for approach in approach_order:
-                    approach_data = group_data[(group_data['Approach'] == approach) &
-                                              (group_data['Hemisphere'] == hemisphere)]
+                    # Combine data from both hemispheres
+                    approach_data = group_data[group_data['Approach'] == approach]
 
                     if not approach_data.empty:
                         plot_data_list.append(approach_data['ASSD_mm'].values)
@@ -1269,15 +1542,40 @@ class TestSetEvaluator:
 
                     plot_colors.append(approach_colors.get(approach, '#95a5a6'))
                     plot_positions.append(position)
-                    hemisphere_positions[hemisphere].append(position)
-                    position += 0.7  # Spacing within hemisphere
+                    hemisphere_positions['Combined'].append(position)
+                    position += 0.7  # Spacing within group
 
-                # Calculate hemisphere center for labeling
-                hemisphere_centers[hemisphere] = (start_pos + position - 0.7) / 2
+                # Calculate center for labeling
+                hemisphere_centers['Combined'] = (start_pos + position - 0.7) / 2
 
-                # Add gap between hemispheres
-                if hemi_idx < len(hemispheres) - 1:
-                    position += 0.3
+            else:
+                # Patients: Separate hemispheres
+                hemispheres = ['Left', 'Right']
+
+                for hemi_idx, hemisphere in enumerate(hemispheres):
+                    hemisphere_positions[hemisphere] = []
+                    start_pos = position
+
+                    for approach in approach_order:
+                        approach_data = group_data[(group_data['Approach'] == approach) &
+                                                  (group_data['Hemisphere'] == hemisphere)]
+
+                        if not approach_data.empty:
+                            plot_data_list.append(approach_data['ASSD_mm'].values)
+                        else:
+                            plot_data_list.append([])
+
+                        plot_colors.append(approach_colors.get(approach, '#95a5a6'))
+                        plot_positions.append(position)
+                        hemisphere_positions[hemisphere].append(position)
+                        position += 0.7  # Spacing within hemisphere
+
+                    # Calculate hemisphere center for labeling
+                    hemisphere_centers[hemisphere] = (start_pos + position - 0.7) / 2
+
+                    # Add gap between hemispheres
+                    if hemi_idx < len(hemispheres) - 1:
+                        position += 0.3
 
             # Create boxplot (matching reference style)
             bp = ax.boxplot(
@@ -1297,39 +1595,69 @@ class TestSetEvaluator:
                 patch.set_linewidth(1)
 
             # Customize the plot (matching reference style)
-            ax.set_title(f'{group_name} Test Set: Slice-wise ASSD by Segmentation Approach and Hemisphere\n'
-                        f'Test Set Evaluation Results',
-                       fontsize=16, fontweight='bold', pad=20)
-            ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
+            if group_name == 'HC':
+                ax.set_title(f'{group_name} Test Set: Slice-wise ASSD by Segmentation Approach / Input Configuration\n'
+                            f'Test Set Evaluation Results (Left and Right Hemispheres Combined)',
+                           fontsize=16, fontweight='bold', pad=20)
+                ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
+            else:
+                ax.set_title(f'{group_name} Test Set: Slice-wise ASSD by Segmentation Approach and Hemisphere\n'
+                            f'Test Set Evaluation Results',
+                           fontsize=16, fontweight='bold', pad=20)
+                ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
+
             ax.set_ylabel('ASSD (mm) per slice', fontsize=14, fontweight='bold')
 
-            # Set custom x-axis labels for hemisphere groups
-            ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
-            ax.set_xticklabels(['Left', 'Right'])
-            ax.tick_params(axis='x', labelsize=12)
+            # Set custom x-axis labels
+            if group_name == 'HC':
+                # Custom labels for each approach with descriptive names
+                approach_labels = {
+                    'Thresholding': 'Thresholding',
+                    'CBF': 'nnUNet w/\nCBF',
+                    'CBF_T1w': 'nnUNet w/\nCBF+T1w',
+                    'CBF_FLAIR': 'nnUNet w/\nCBF+FLAIR',
+                    'CBF_T1w_FLAIR': 'nnUNet w/\nCBF+T1w+FLAIR'
+                }
+                tick_positions = [hemisphere_positions['Combined'][i] for i in range(len(approach_order))]
+                tick_labels = [approach_labels.get(a, a) for a in approach_order]
+                ax.set_xticks(tick_positions)
+                ax.set_xticklabels(tick_labels)
+            else:
+                ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
+                ax.set_xticklabels(['Left', 'Right'])
+            ax.tick_params(axis='x', labelsize=11)
             ax.tick_params(axis='y', labelsize=12)
 
             # Add grid (matching reference)
             ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
             ax.set_axisbelow(True)
 
-            # Create legend for approaches
-            legend_handles = [plt.Rectangle((0,0),1,1, facecolor=approach_colors[approach],
-                                           alpha=0.7, edgecolor='black')
-                             for approach in approach_order]
-            ax.legend(legend_handles, [self.approach_display_names.get(a, a) for a in approach_order],
-                     title='Segmentation Approach', title_fontsize=12, fontsize=11,
-                     loc='upper right', bbox_to_anchor=(1.0, 1.0))
+            # Create legend for approaches - only for Patients
+            if group_name == 'Patients':
+                legend_handles = [plt.Rectangle((0,0),1,1, facecolor=approach_colors[approach],
+                                               alpha=0.7, edgecolor='black')
+                                 for approach in approach_order]
+                ax.legend(legend_handles, [self.approach_display_names.get(a, a) for a in approach_order],
+                         title='Segmentation Approach', title_fontsize=12, fontsize=11,
+                         loc='upper right', bbox_to_anchor=(1.0, 1.0))
 
             # Add median [IQR] and n annotations (matching reference positioning - below boxes)
-            self._add_assd_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors)
+            self._add_assd_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors, hemispheres)
 
-            # Add significance brackets (Bonferroni-corrected) for both hemispheres
+            # Add significance brackets (Bonferroni-corrected)
             # For ASSD plots, brackets go below boxes
-            stats_df = self.statistical_results.get(group_name, None)
-            if stats_df is not None:
-                self._add_significance_brackets_both_hemispheres(ax, stats_df, hemisphere_positions, approach_order,
-                                                                 hemispheres, position='below')
+            if group_name == 'HC':
+                # HC: Show significance between approaches (combined hemispheres)
+                stats_df = self.statistical_results.get(group_name, None)
+                if stats_df is not None:
+                    self._add_significance_brackets_approaches(ax, stats_df, hemisphere_positions['Combined'],
+                                                              approach_order, position='below')
+            else:
+                # Patients: Show significance for both hemispheres separately
+                stats_df = self.statistical_results.get(group_name, None)
+                if stats_df is not None:
+                    self._add_significance_brackets_both_hemispheres(ax, stats_df, hemisphere_positions, approach_order,
+                                                                     hemispheres, position='below')
 
             plt.tight_layout()
             plot_file = self.output_dir / f"ASSD_slicewise_{group_name}_{timestamp}.png"
@@ -1337,17 +1665,19 @@ class TestSetEvaluator:
             plt.close()
             print(f"    Saved: {plot_file.name}")
 
-    def _add_assd_annotations(self, ax, group_data, hemisphere_positions, approach_order, approach_colors):
+    def _add_assd_annotations(self, ax, group_data, hemisphere_positions, approach_order, approach_colors, hemispheres):
         """Add median [IQR] and sample size annotations for ASSD - matching reference style with labels below"""
-        hemispheres = ['Left', 'Right']
-
         for hemi_idx, hemisphere in enumerate(hemispheres):
             for approach_idx, approach in enumerate(approach_order):
                 if approach_idx < len(hemisphere_positions[hemisphere]):
                     box_position = hemisphere_positions[hemisphere][approach_idx]
 
-                    approach_data = group_data[(group_data['Approach'] == approach) &
-                                              (group_data['Hemisphere'] == hemisphere)]
+                    # For combined HC hemispheres, get all data regardless of hemisphere
+                    if hemisphere == 'Combined':
+                        approach_data = group_data[group_data['Approach'] == approach]
+                    else:
+                        approach_data = group_data[(group_data['Approach'] == approach) &
+                                                  (group_data['Hemisphere'] == hemisphere)]
 
                     if not approach_data.empty and len(approach_data) > 0:
                         values = approach_data['ASSD_mm'].dropna()
