@@ -952,17 +952,16 @@ class TestSetEvaluator:
 
             # Customize the plot (matching reference)
             if group_name == 'HC':
-                ax.set_title(f'{group_name} Test Set: DSC by Segmentation Approach / Input Configuration\n'
-                            f'Test Set Evaluation Results (Left and Right Hemispheres Combined)',
-                           fontsize=16, fontweight='bold', pad=20)
-                ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
+                ax.set_title(f'{group_name} Test Set Evaluation: Volume-wise DSC by Segmentation Approach / Input Configuration',
+                           fontsize=20, fontweight='bold', pad=25)
+                ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=16, fontweight='bold')
             else:
                 ax.set_title(f'{group_name} Test Set: DSC by Segmentation Approach and Hemisphere\n'
                             f'Test Set Evaluation Results',
-                           fontsize=16, fontweight='bold', pad=20)
-                ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
+                           fontsize=20, fontweight='bold', pad=25)
+                ax.set_xlabel('Hemisphere', fontsize=16, fontweight='bold')
 
-            ax.set_ylabel('DSC per volume', fontsize=14, fontweight='bold')
+            ax.set_ylabel('DSC per volume', fontsize=16, fontweight='bold')
 
             # Set custom x-axis labels
             if group_name == 'HC':
@@ -981,8 +980,8 @@ class TestSetEvaluator:
             else:
                 ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
                 ax.set_xticklabels(['Left', 'Right'])
-            ax.tick_params(axis='x', labelsize=11)
-            ax.tick_params(axis='y', labelsize=12)
+            ax.tick_params(axis='x', labelsize=14)
+            ax.tick_params(axis='y', labelsize=14)
 
             # Add grid (matching reference)
             ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
@@ -1002,6 +1001,13 @@ class TestSetEvaluator:
                 ax.legend(legend_elements, [self.approach_display_names.get(a, a) for a in approach_order],
                          title='Segmentation Approach', title_fontsize=12, fontsize=11,
                          loc='lower right', bbox_to_anchor=(1.0, 0.0))
+            else:
+                # HC: Add legend box with "Median [IQR]" explanation
+                ax.text(0.98, 0.02, 'Median [IQR]\nn = sample size',
+                       transform=ax.transAxes, fontsize=11,
+                       verticalalignment='bottom', horizontalalignment='right',
+                       bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
+                                alpha=0.9, edgecolor='gray', linewidth=1.5))
 
             # Add median [IQR] and n annotations (matching reference positioning)
             self._add_dsc_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors, hemispheres)
@@ -1091,8 +1097,8 @@ class TestSetEvaluator:
 
         # Assign bracket heights to avoid overlaps
         bracket_heights = []
-        bracket_height_increment = y_range * 0.032  # 3.2% of y-range per bracket level
-        bracket_base_offset = y_range * 0.003  # Start very close (0.3% from boxes)
+        bracket_height_increment = y_range * 0.045  # 4.5% of y-range per bracket level (increased to prevent overlap)
+        bracket_base_offset = y_range * 0.008  # Start with some separation (0.8% from boxes)
 
         for pair in significant_pairs:
             # Find the first available height that doesn't overlap
@@ -1135,27 +1141,29 @@ class TestSetEvaluator:
             if position == 'above':
                 ax.plot([pos1, pos1], [height, height - tick_height], 'k-', linewidth=1.5)
                 ax.plot([pos2, pos2], [height, height - tick_height], 'k-', linewidth=1.5)
-                # Add significance symbol above the line
+                # Add significance symbol above the line (with proper spacing)
                 mid_x = (pos1 + pos2) / 2
-                ax.text(mid_x, height + y_range * 0.002, symbol, ha='center', va='bottom',
-                       fontsize=12, fontweight='bold')
+                ax.text(mid_x, height + y_range * 0.005, symbol, ha='center', va='bottom',
+                       fontsize=16, fontweight='bold')
             else:  # below
                 ax.plot([pos1, pos1], [height, height + tick_height], 'k-', linewidth=1.5)
                 ax.plot([pos2, pos2], [height, height + tick_height], 'k-', linewidth=1.5)
-                # Add significance symbol below the line
+                # Add significance symbol below the line (with proper spacing)
                 mid_x = (pos1 + pos2) / 2
-                ax.text(mid_x, height - y_range * 0.008, symbol, ha='center', va='top',
-                       fontsize=12, fontweight='bold')
+                ax.text(mid_x, height - y_range * 0.010, symbol, ha='center', va='top',
+                       fontsize=16, fontweight='bold')
 
-        # Adjust y-axis to accommodate brackets
+        # Adjust y-axis to accommodate brackets (ensure brackets stay within plot)
         if bracket_heights:
             if position == 'above':
                 max_bracket_height = max(h for _, h in bracket_heights)
-                new_y_max = max_bracket_height + y_range * 0.025  # 2.5% padding for symbol
+                # Calculate new y_range based on extended limits
+                new_y_max = max_bracket_height + y_range * 0.050  # 5% padding for symbol
                 ax.set_ylim(y_min, new_y_max)
             else:  # below
                 min_bracket_height = min(h for _, h in bracket_heights)
-                new_y_min = min_bracket_height - y_range * 0.025  # 2.5% padding for symbol
+                # Calculate new y_range based on extended limits
+                new_y_min = min_bracket_height - y_range * 0.050  # 5% padding for symbol
                 ax.set_ylim(new_y_min, y_max)
 
     def _add_significance_brackets_both_hemispheres(self, ax, stats_df, hemisphere_positions, approach_order, hemispheres, position='above'):
@@ -1225,8 +1233,8 @@ class TestSetEvaluator:
         # Assign bracket heights with coordination across hemispheres
         # All brackets share the same height levels
         bracket_heights = []
-        bracket_height_increment = y_range * 0.032  # 3.2% of y-range per bracket level
-        bracket_base_offset = y_range * 0.003  # Start very close (0.3% from boxes)
+        bracket_height_increment = y_range * 0.045  # 4.5% of y-range per bracket level (increased to prevent overlap)
+        bracket_base_offset = y_range * 0.008  # Start with some separation (0.8% from boxes)
 
         # Process all pairs together, alternating between hemispheres to pack efficiently
         all_pairs_flat = []
@@ -1278,29 +1286,29 @@ class TestSetEvaluator:
             if position == 'above':
                 ax.plot([pos1, pos1], [height, height - tick_height], 'k-', linewidth=1.5)
                 ax.plot([pos2, pos2], [height, height - tick_height], 'k-', linewidth=1.5)
-                # Add significance symbol above the line (minimal spacing)
+                # Add significance symbol above the line (with proper spacing)
                 mid_x = (pos1 + pos2) / 2
-                ax.text(mid_x, height + y_range * 0.002, symbol, ha='center', va='bottom',
-                       fontsize=12, fontweight='bold')
+                ax.text(mid_x, height + y_range * 0.005, symbol, ha='center', va='bottom',
+                       fontsize=16, fontweight='bold')
             else:  # below
                 ax.plot([pos1, pos1], [height, height + tick_height], 'k-', linewidth=1.5)
                 ax.plot([pos2, pos2], [height, height + tick_height], 'k-', linewidth=1.5)
-                # Add significance symbol below the line (increased spacing to avoid overlap)
+                # Add significance symbol below the line (with proper spacing)
                 mid_x = (pos1 + pos2) / 2
-                ax.text(mid_x, height - y_range * 0.008, symbol, ha='center', va='top',
-                       fontsize=12, fontweight='bold')
+                ax.text(mid_x, height - y_range * 0.010, symbol, ha='center', va='top',
+                       fontsize=16, fontweight='bold')
 
-        # Adjust y-axis to accommodate brackets (ensure they stay within plot)
+        # Adjust y-axis to accommodate brackets (ensure brackets stay within plot)
         if bracket_heights:
             if position == 'above':
                 max_bracket_height = max(h for _, h in bracket_heights)
                 # Add padding for the symbol above the bracket
-                new_y_max = max_bracket_height + y_range * 0.025  # 2.5% padding for symbol
+                new_y_max = max_bracket_height + y_range * 0.050  # 5% padding for symbol
                 ax.set_ylim(y_min, new_y_max)
             else:  # below
                 min_bracket_height = min(h for _, h in bracket_heights)
                 # Add padding for the symbol below the bracket
-                new_y_min = min_bracket_height - y_range * 0.025  # 2.5% padding for symbol
+                new_y_min = min_bracket_height - y_range * 0.050  # 5% padding for symbol
                 ax.set_ylim(new_y_min, y_max)
 
     def _add_significance_brackets(self, ax, stats_df, hemisphere, hemisphere_positions, approach_order, position='above'):
@@ -1461,7 +1469,8 @@ class TestSetEvaluator:
 
                             # Median [IQR] annotation above boxes
                             y_max = ax.get_ylim()[1]
-                            label_y_offset = (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.02
+                            y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+                            label_y_offset = y_range * 0.02
                             y_pos = y_max + label_y_offset
 
                             # Format label: median [IQR] with 4 decimal places (matching reference)
@@ -1471,16 +1480,16 @@ class TestSetEvaluator:
                             color = approach_colors[approach]
 
                             ax.text(box_position, y_pos, label,
-                                   ha='center', va='bottom', fontsize=8,
+                                   ha='center', va='bottom', fontsize=12,
                                    color=color, weight='bold',
-                                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
-                                           alpha=0.8, edgecolor=color, linewidth=0.5))
+                                   bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                                           alpha=0.8, edgecolor=color, linewidth=0.8))
 
-                            # Sample size annotation at top
-                            y_pos_n = y_max - 0.01
+                            # Sample size annotation lower with better separation from median/IQR (matching ASSD spacing)
+                            y_pos_n = y_max - y_range * 0.06
                             ax.text(box_position, y_pos_n, f'n={n}',
-                                   ha='center', va='bottom', fontsize=8,
-                                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
+                                   ha='center', va='bottom', fontsize=12, fontweight='bold',
+                                   bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.7))
 
         # Adjust y-axis limits to accommodate labels (matching reference)
         current_ylim = ax.get_ylim()
@@ -1596,17 +1605,16 @@ class TestSetEvaluator:
 
             # Customize the plot (matching reference style)
             if group_name == 'HC':
-                ax.set_title(f'{group_name} Test Set: Slice-wise ASSD by Segmentation Approach / Input Configuration\n'
-                            f'Test Set Evaluation Results (Left and Right Hemispheres Combined)',
-                           fontsize=16, fontweight='bold', pad=20)
-                ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
+                ax.set_title(f'{group_name} Test Set Evaluation: Slice-wise ASSD by Segmentation Approach / Input Configuration',
+                           fontsize=20, fontweight='bold', pad=25)
+                ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=16, fontweight='bold')
             else:
                 ax.set_title(f'{group_name} Test Set: Slice-wise ASSD by Segmentation Approach and Hemisphere\n'
                             f'Test Set Evaluation Results',
-                           fontsize=16, fontweight='bold', pad=20)
-                ax.set_xlabel('Hemisphere', fontsize=14, fontweight='bold')
+                           fontsize=20, fontweight='bold', pad=25)
+                ax.set_xlabel('Hemisphere', fontsize=16, fontweight='bold')
 
-            ax.set_ylabel('ASSD (mm) per slice', fontsize=14, fontweight='bold')
+            ax.set_ylabel('ASSD (mm) per slice', fontsize=16, fontweight='bold')
 
             # Set custom x-axis labels
             if group_name == 'HC':
@@ -1625,8 +1633,8 @@ class TestSetEvaluator:
             else:
                 ax.set_xticks([hemisphere_centers['Left'], hemisphere_centers['Right']])
                 ax.set_xticklabels(['Left', 'Right'])
-            ax.tick_params(axis='x', labelsize=11)
-            ax.tick_params(axis='y', labelsize=12)
+            ax.tick_params(axis='x', labelsize=14)
+            ax.tick_params(axis='y', labelsize=14)
 
             # Add grid (matching reference)
             ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
@@ -1640,6 +1648,13 @@ class TestSetEvaluator:
                 ax.legend(legend_handles, [self.approach_display_names.get(a, a) for a in approach_order],
                          title='Segmentation Approach', title_fontsize=12, fontsize=11,
                          loc='upper right', bbox_to_anchor=(1.0, 1.0))
+            else:
+                # HC: Add legend box with "Median [IQR]" explanation
+                ax.text(0.98, 0.98, 'Median [Q1-Q3]\nn = sample size',
+                       transform=ax.transAxes, fontsize=11,
+                       verticalalignment='top', horizontalalignment='right',
+                       bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
+                                alpha=0.9, edgecolor='gray', linewidth=1.5))
 
             # Add median [IQR] and n annotations (matching reference positioning - below boxes)
             self._add_assd_annotations(ax, group_data, hemisphere_positions, approach_order, approach_colors, hemispheres)
@@ -1700,20 +1715,20 @@ class TestSetEvaluator:
                             color = approach_colors[approach]
 
                             ax.text(box_position, y_pos, label,
-                                   ha='center', va='top', fontsize=8,
+                                   ha='center', va='top', fontsize=12,
                                    color=color, weight='bold',
-                                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
-                                           alpha=0.9, edgecolor=color, linewidth=1.0))
+                                   bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                                           alpha=0.9, edgecolor=color, linewidth=0.8))
 
-                            # Sample size annotation further below
-                            y_offset_n = (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.06
+                            # Sample size annotation further below with more separation
+                            y_offset_n = (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.12
                             y_pos_n = y_min - y_offset_n
 
                             ax.text(box_position, y_pos_n, f'n={n}',
-                                   ha='center', va='top', fontsize=8,
+                                   ha='center', va='top', fontsize=12,
                                    color='black', weight='bold',
-                                   bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
-                                           alpha=0.9, edgecolor='black', linewidth=1.0))
+                                   bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                                           alpha=0.9, edgecolor='black', linewidth=0.8))
 
         # Adjust y-axis limits to accommodate labels below (matching reference with more space)
         current_ylim = ax.get_ylim()
