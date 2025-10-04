@@ -899,10 +899,10 @@ class TestSetEvaluator:
                     plot_colors.append(approach_colors.get(approach, '#95a5a6'))
                     plot_positions.append(position)
                     hemisphere_positions['Combined'].append(position)
-                    position += 0.7  # Spacing within group
+                    position += 0.5  # Spacing within group (reduced from 0.7)
 
                 # Calculate center for labeling
-                hemisphere_centers['Combined'] = (start_pos + position - 0.7) / 2
+                hemisphere_centers['Combined'] = (start_pos + position - 0.5) / 2
 
             else:
                 # Patients: Separate hemispheres
@@ -924,14 +924,14 @@ class TestSetEvaluator:
                         plot_colors.append(approach_colors.get(approach, '#95a5a6'))
                         plot_positions.append(position)
                         hemisphere_positions[hemisphere].append(position)
-                        position += 0.7  # Spacing within hemisphere
+                        position += 0.5  # Spacing within hemisphere (reduced from 0.7)
 
                     # Calculate hemisphere center for labeling
-                    hemisphere_centers[hemisphere] = (start_pos + position - 0.7) / 2
+                    hemisphere_centers[hemisphere] = (start_pos + position - 0.5) / 2
 
                     # Add gap between hemispheres
                     if hemi_idx < len(hemispheres) - 1:
-                        position += 0.3
+                        position += 0.2  # Gap between hemispheres (reduced from 0.3)
 
             # Create boxplot (matching reference style)
             bp = ax.boxplot(
@@ -969,9 +969,9 @@ class TestSetEvaluator:
                 approach_labels = {
                     'Thresholding': 'Thresholding',
                     'CBF': 'nnUNet w/\nCBF',
-                    'CBF_T1w': 'nnUNet w/\nCBF+T1w',
+                    'CBF_T1w': 'nnUNet w/\nCBF+MP-RAGE',
                     'CBF_FLAIR': 'nnUNet w/\nCBF+FLAIR',
-                    'CBF_T1w_FLAIR': 'nnUNet w/\nCBF+T1w+FLAIR'
+                    'CBF_T1w_FLAIR': 'nnUNet w/\nCBF+MP-RAGE+FLAIR'
                 }
                 tick_positions = [hemisphere_positions['Combined'][i] for i in range(len(approach_order))]
                 tick_labels = [approach_labels.get(a, a) for a in approach_order]
@@ -1002,8 +1002,8 @@ class TestSetEvaluator:
                          title='Segmentation Approach', title_fontsize=12, fontsize=11,
                          loc='lower right', bbox_to_anchor=(1.0, 0.0))
             else:
-                # HC: Add legend box with "Median [IQR]" explanation
-                ax.text(0.98, 0.02, 'Median [IQR]\nn = sample size',
+                # HC: Add legend box with "Median [Q1-Q3]" explanation
+                ax.text(0.98, 0.02, 'Median [Q1-Q3]\nn = sample size',
                        transform=ax.transAxes, fontsize=11,
                        verticalalignment='bottom', horizontalalignment='right',
                        bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
@@ -1141,9 +1141,9 @@ class TestSetEvaluator:
             if position == 'above':
                 ax.plot([pos1, pos1], [height, height - tick_height], 'k-', linewidth=1.5)
                 ax.plot([pos2, pos2], [height, height - tick_height], 'k-', linewidth=1.5)
-                # Add significance symbol above the line (with proper spacing)
+                # Add significance symbol above the line (closer to bracket)
                 mid_x = (pos1 + pos2) / 2
-                ax.text(mid_x, height + y_range * 0.005, symbol, ha='center', va='bottom',
+                ax.text(mid_x, height + y_range * 0.002, symbol, ha='center', va='bottom',
                        fontsize=16, fontweight='bold')
             else:  # below
                 ax.plot([pos1, pos1], [height, height + tick_height], 'k-', linewidth=1.5)
@@ -1552,10 +1552,10 @@ class TestSetEvaluator:
                     plot_colors.append(approach_colors.get(approach, '#95a5a6'))
                     plot_positions.append(position)
                     hemisphere_positions['Combined'].append(position)
-                    position += 0.7  # Spacing within group
+                    position += 0.5  # Spacing within group (reduced from 0.7)
 
                 # Calculate center for labeling
-                hemisphere_centers['Combined'] = (start_pos + position - 0.7) / 2
+                hemisphere_centers['Combined'] = (start_pos + position - 0.5) / 2
 
             else:
                 # Patients: Separate hemispheres
@@ -1577,14 +1577,14 @@ class TestSetEvaluator:
                         plot_colors.append(approach_colors.get(approach, '#95a5a6'))
                         plot_positions.append(position)
                         hemisphere_positions[hemisphere].append(position)
-                        position += 0.7  # Spacing within hemisphere
+                        position += 0.5  # Spacing within hemisphere (reduced from 0.7)
 
                     # Calculate hemisphere center for labeling
-                    hemisphere_centers[hemisphere] = (start_pos + position - 0.7) / 2
+                    hemisphere_centers[hemisphere] = (start_pos + position - 0.5) / 2
 
                     # Add gap between hemispheres
                     if hemi_idx < len(hemispheres) - 1:
-                        position += 0.3
+                        position += 0.2  # Gap between hemispheres (reduced from 0.3)
 
             # Create boxplot (matching reference style)
             bp = ax.boxplot(
@@ -1622,9 +1622,9 @@ class TestSetEvaluator:
                 approach_labels = {
                     'Thresholding': 'Thresholding',
                     'CBF': 'nnUNet w/\nCBF',
-                    'CBF_T1w': 'nnUNet w/\nCBF+T1w',
+                    'CBF_T1w': 'nnUNet w/\nCBF+MP-RAGE',
                     'CBF_FLAIR': 'nnUNet w/\nCBF+FLAIR',
-                    'CBF_T1w_FLAIR': 'nnUNet w/\nCBF+T1w+FLAIR'
+                    'CBF_T1w_FLAIR': 'nnUNet w/\nCBF+MP-RAGE+FLAIR'
                 }
                 tick_positions = [hemisphere_positions['Combined'][i] for i in range(len(approach_order))]
                 tick_labels = [approach_labels.get(a, a) for a in approach_order]
