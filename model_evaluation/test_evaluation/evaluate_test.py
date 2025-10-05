@@ -359,6 +359,17 @@ class TestSetEvaluator:
         print(f"Ground truth: {self.gt_dir}")
         print(f"Output directory: {self.output_dir}\n")
 
+        # Delete old result files before creating new ones
+        print("Cleaning up old result files...")
+        for old_file in self.output_dir.glob("*"):
+            if old_file.is_file():
+                try:
+                    old_file.unlink()
+                    print(f"  Deleted: {old_file.name}")
+                except Exception as e:
+                    print(f"  Warning: Could not delete {old_file.name}: {e}")
+        print()
+
         # Check dependencies
         if not NIBABEL_AVAILABLE:
             print("ERROR: nibabel package is required. Please install with: pip install nibabel")
@@ -567,13 +578,18 @@ class TestSetEvaluator:
                                    if x in ['Thresholding', 'CBF', 'CBF_T1w', 'CBF_FLAIR', 'CBF_T1w_FLAIR'] else 999)
 
             # ====== Plot 1: DSC (volume-based) boxplots ======
-            print("  Creating DSC boxplots...")
-            self._create_dsc_boxplots(df, approach_order, timestamp)
+            # print("  Creating DSC boxplots...")
+            # self._create_dsc_boxplots(df, approach_order, timestamp)
 
             # ====== Plot 2: ASSD (slice-wise) boxplots ======
+            # if self.slice_wise_data:
+            #     print("  Creating ASSD boxplots...")
+            #     self._create_assd_boxplots(approach_order, timestamp)
+
+            # ====== Plot 3: Combined HC plot (DSC + ASSD) ======
             if self.slice_wise_data:
-                print("  Creating ASSD boxplots...")
-                self._create_assd_boxplots(approach_order, timestamp)
+                print("  Creating combined HC plot...")
+                self._create_combined_hc_plot(df, approach_order, timestamp)
             else:
                 print("  No slice-wise ASSD data available for plotting")
 
@@ -899,10 +915,10 @@ class TestSetEvaluator:
                     plot_colors.append(approach_colors.get(approach, '#95a5a6'))
                     plot_positions.append(position)
                     hemisphere_positions['Combined'].append(position)
-                    position += 0.5  # Spacing within group (reduced from 0.7)
+                    position += 0.6  # Spacing within group (balanced spacing)
 
                 # Calculate center for labeling
-                hemisphere_centers['Combined'] = (start_pos + position - 0.5) / 2
+                hemisphere_centers['Combined'] = (start_pos + position - 0.6) / 2
 
             else:
                 # Patients: Separate hemispheres
@@ -924,14 +940,14 @@ class TestSetEvaluator:
                         plot_colors.append(approach_colors.get(approach, '#95a5a6'))
                         plot_positions.append(position)
                         hemisphere_positions[hemisphere].append(position)
-                        position += 0.5  # Spacing within hemisphere (reduced from 0.7)
+                        position += 0.6  # Spacing within hemisphere (balanced spacing)
 
                     # Calculate hemisphere center for labeling
-                    hemisphere_centers[hemisphere] = (start_pos + position - 0.5) / 2
+                    hemisphere_centers[hemisphere] = (start_pos + position - 0.6) / 2
 
                     # Add gap between hemispheres
                     if hemi_idx < len(hemispheres) - 1:
-                        position += 0.2  # Gap between hemispheres (reduced from 0.3)
+                        position += 0.25  # Gap between hemispheres (balanced spacing)
 
             # Create boxplot (matching reference style)
             bp = ax.boxplot(
@@ -1143,7 +1159,7 @@ class TestSetEvaluator:
                 ax.plot([pos2, pos2], [height, height - tick_height], 'k-', linewidth=1.5)
                 # Add significance symbol above the line (closer to bracket)
                 mid_x = (pos1 + pos2) / 2
-                ax.text(mid_x, height + y_range * 0.002, symbol, ha='center', va='bottom',
+                ax.text(mid_x, height - y_range * 0.012, symbol, ha='center', va='bottom',
                        fontsize=16, fontweight='bold')
             else:  # below
                 ax.plot([pos1, pos1], [height, height + tick_height], 'k-', linewidth=1.5)
@@ -1552,10 +1568,10 @@ class TestSetEvaluator:
                     plot_colors.append(approach_colors.get(approach, '#95a5a6'))
                     plot_positions.append(position)
                     hemisphere_positions['Combined'].append(position)
-                    position += 0.5  # Spacing within group (reduced from 0.7)
+                    position += 0.6  # Spacing within group (balanced spacing)
 
                 # Calculate center for labeling
-                hemisphere_centers['Combined'] = (start_pos + position - 0.5) / 2
+                hemisphere_centers['Combined'] = (start_pos + position - 0.6) / 2
 
             else:
                 # Patients: Separate hemispheres
@@ -1577,14 +1593,14 @@ class TestSetEvaluator:
                         plot_colors.append(approach_colors.get(approach, '#95a5a6'))
                         plot_positions.append(position)
                         hemisphere_positions[hemisphere].append(position)
-                        position += 0.5  # Spacing within hemisphere (reduced from 0.7)
+                        position += 0.6  # Spacing within hemisphere (balanced spacing)
 
                     # Calculate hemisphere center for labeling
-                    hemisphere_centers[hemisphere] = (start_pos + position - 0.5) / 2
+                    hemisphere_centers[hemisphere] = (start_pos + position - 0.6) / 2
 
                     # Add gap between hemispheres
                     if hemi_idx < len(hemispheres) - 1:
-                        position += 0.2  # Gap between hemispheres (reduced from 0.3)
+                        position += 0.25  # Gap between hemispheres (balanced spacing)
 
             # Create boxplot (matching reference style)
             bp = ax.boxplot(
@@ -1735,6 +1751,473 @@ class TestSetEvaluator:
         y_range = current_ylim[1] - current_ylim[0]
         new_y_min = current_ylim[0] - y_range * 0.25
         ax.set_ylim(new_y_min, current_ylim[1])
+
+    def _create_combined_hc_plot(self, df, approach_order, timestamp):
+        """Create a combined plot with DSC, ASSD, RVE, and HD95 for HC group only"""
+        # Filter for HC only
+        group_data = df[df['Group'] == 'HC'].copy()
+
+        if len(group_data) == 0:
+            print("    No HC data available")
+            return
+
+        slice_df = pd.DataFrame(self.slice_wise_data)
+        slice_df_hc = slice_df[slice_df['Group'] == 'HC'].copy()
+
+        if len(slice_df_hc) == 0:
+            print("    No HC slice-wise data available")
+            return
+
+        # Create figure with 2x2 subplots
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(20, 16))
+
+        # Common settings
+        approach_colors = {
+            'Thresholding': '#d62728',
+            'CBF': '#1f77b4',
+            'CBF_T1w': '#ff7f0e',
+            'CBF_FLAIR': '#2ca02c',
+            'CBF_T1w_FLAIR': '#9467bd'
+        }
+
+        approach_labels = {
+            'Thresholding': 'Thresholding',
+            'CBF': 'nnUNet w/\nCBF',
+            'CBF_T1w': 'nnUNet w/\nCBF+MP-RAGE',
+            'CBF_FLAIR': 'nnUNet w/\nCBF+FLAIR',
+            'CBF_T1w_FLAIR': 'nnUNet w/\nCBF+MP-RAGE+FLAIR'
+        }
+
+        # ===== TOP LEFT SUBPLOT: DSC =====
+        self._plot_hc_dsc_subplot(ax1, group_data, approach_order, approach_colors, approach_labels)
+
+        # ===== TOP RIGHT SUBPLOT: ASSD =====
+        self._plot_hc_assd_subplot(ax2, slice_df_hc, approach_order, approach_colors, approach_labels)
+
+        # ===== BOTTOM LEFT SUBPLOT: Relative Volume Error (Thresholding vs CBF only) =====
+        self._plot_hc_rve_subplot(ax3, group_data, approach_colors, approach_labels)
+
+        # ===== BOTTOM RIGHT SUBPLOT: HD95 (Thresholding vs CBF only) =====
+        self._plot_hc_hd95_subplot(ax4, group_data, approach_colors, approach_labels)
+
+        # Overall title
+        fig.suptitle('HC Test Set Evaluation: Segmentation Approach / Input Configuration',
+                    fontsize=22, fontweight='bold', y=0.99)
+
+        plt.tight_layout(rect=[0, 0, 1, 0.98])  # Leave space for suptitle
+
+        plot_file = self.output_dir / f"HC_box-plots_{timestamp}.png"
+        plt.savefig(plot_file, dpi=300, bbox_inches='tight', facecolor='white')
+        plt.close()
+
+        print(f"    Saved: {plot_file.name}")
+
+    def _plot_hc_dsc_subplot(self, ax, group_data, approach_order, approach_colors, approach_labels):
+        """Plot DSC boxplot for HC in a subplot"""
+        # Filter valid DSC values
+        df_plot = group_data[group_data['DSC_Volume'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+        # Prepare box plot data
+        plot_data_list = []
+        plot_positions = []
+        plot_colors = []
+        position = 0
+        box_positions_dict = {}
+
+        for approach in approach_order:
+            approach_data = df_plot[df_plot['Approach'] == approach]
+            if not approach_data.empty:
+                plot_data_list.append(approach_data['DSC_Volume'].values)
+            else:
+                plot_data_list.append([])
+
+            plot_colors.append(approach_colors.get(approach, '#95a5a6'))
+            plot_positions.append(position)
+            box_positions_dict[approach] = position
+            position += 0.6
+
+        # Create boxplot
+        bp = ax.boxplot(
+            plot_data_list,
+            positions=plot_positions,
+            notch=False,
+            patch_artist=True,
+            widths=0.5,
+            medianprops=dict(color='black', linewidth=2)
+        )
+
+        # Color boxes
+        for patch, color in zip(bp['boxes'], plot_colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.7)
+            patch.set_edgecolor('black')
+            patch.set_linewidth(1)
+
+        # Subplot title and labels
+        ax.set_title('(A) DSC per volume', fontsize=18, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
+        ax.set_ylabel('DSC per volume', fontsize=14, fontweight='bold')
+
+        # X-axis labels
+        ax.set_xticks(plot_positions)
+        ax.set_xticklabels([approach_labels.get(a, a) for a in approach_order])
+        ax.tick_params(axis='x', labelsize=12)
+        ax.tick_params(axis='y', labelsize=12)
+
+        # Grid
+        ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+        ax.set_axisbelow(True)
+
+        # Y-axis limits
+        ax.set_ylim(0.8, 1.0)
+
+        # Add annotations (median, IQR, n)
+        for i, approach in enumerate(approach_order):
+            approach_data = df_plot[df_plot['Approach'] == approach]
+            if not approach_data.empty:
+                values = approach_data['DSC_Volume'].dropna()
+                if len(values) > 0:
+                    median = values.median()
+                    q1 = values.quantile(0.25)
+                    q3 = values.quantile(0.75)
+                    iqr = q3 - q1
+                    n = len(values)
+
+                    # Median [IQR]
+                    y_max = ax.get_ylim()[1]
+                    y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+                    label = f'{median:.4f} [{iqr:.4f}]'
+                    color = approach_colors[approach]
+
+                    ax.text(plot_positions[i], y_max - y_range * 0.08, label,
+                           ha='center', va='bottom', fontsize=10,
+                           color=color, weight='bold',
+                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                                   alpha=0.8, edgecolor=color, linewidth=0.8))
+
+                    # Sample size
+                    ax.text(plot_positions[i], y_max - y_range * 0.17, f'n={n}',
+                           ha='center', va='bottom', fontsize=10, fontweight='bold',
+                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.7))
+
+        # Add significance brackets if available
+        stats_df = self.statistical_results.get('HC', None)
+        if stats_df is not None:
+            self._add_significance_brackets_approaches(ax, stats_df, list(box_positions_dict.values()),
+                                                      approach_order, position='above')
+
+        # Add legend box
+        ax.text(0.98, 0.02, 'Median [IQR]\nn = sample size',
+               transform=ax.transAxes, fontsize=11,
+               verticalalignment='bottom', horizontalalignment='right',
+               bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
+                        alpha=0.9, edgecolor='gray', linewidth=1.5))
+
+    def _plot_hc_assd_subplot(self, ax, slice_df_hc, approach_order, approach_colors, approach_labels):
+        """Plot ASSD boxplot for HC in a subplot"""
+        # Filter valid ASSD values
+        df_plot = slice_df_hc[slice_df_hc['ASSD_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+        # Prepare box plot data
+        plot_data_list = []
+        plot_positions = []
+        plot_colors = []
+        position = 0
+        box_positions_dict = {}
+
+        for approach in approach_order:
+            approach_data = df_plot[df_plot['Approach'] == approach]
+            if not approach_data.empty:
+                plot_data_list.append(approach_data['ASSD_mm'].values)
+            else:
+                plot_data_list.append([])
+
+            plot_colors.append(approach_colors.get(approach, '#95a5a6'))
+            plot_positions.append(position)
+            box_positions_dict[approach] = position
+            position += 0.6
+
+        # Create boxplot
+        bp = ax.boxplot(
+            plot_data_list,
+            positions=plot_positions,
+            notch=False,
+            patch_artist=True,
+            widths=0.5,
+            medianprops=dict(color='black', linewidth=2)
+        )
+
+        # Color boxes
+        for patch, color in zip(bp['boxes'], plot_colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.7)
+            patch.set_edgecolor('black')
+            patch.set_linewidth(1)
+
+        # Subplot title and labels
+        ax.set_title('(B) ASSD per slice', fontsize=18, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
+        ax.set_ylabel('ASSD (mm) per slice', fontsize=14, fontweight='bold')
+
+        # X-axis labels
+        ax.set_xticks(plot_positions)
+        ax.set_xticklabels([approach_labels.get(a, a) for a in approach_order])
+        ax.tick_params(axis='x', labelsize=12)
+        ax.tick_params(axis='y', labelsize=12)
+
+        # Grid
+        ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+        ax.set_axisbelow(True)
+
+        # Add annotations (median, Q1-Q3, n)
+        for i, approach in enumerate(approach_order):
+            approach_data = df_plot[df_plot['Approach'] == approach]
+            if not approach_data.empty:
+                values = approach_data['ASSD_mm'].dropna()
+                if len(values) > 0:
+                    median = values.median()
+                    q1 = values.quantile(0.25)
+                    q3 = values.quantile(0.75)
+                    n = len(values)
+
+                    # Median [IQR]
+                    y_min = ax.get_ylim()[0]
+                    y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+                    iqr = q3 - q1
+                    label = f'{median:.1f} [{iqr:.1f}]'
+                    color = approach_colors[approach]
+
+                    ax.text(plot_positions[i], y_min - y_range * 0.02, label,
+                           ha='center', va='top', fontsize=10,
+                           color=color, weight='bold',
+                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                                   alpha=0.9, edgecolor=color, linewidth=0.8))
+
+                    # Sample size
+                    ax.text(plot_positions[i], y_min - y_range * 0.12, f'n={n}',
+                           ha='center', va='top', fontsize=10,
+                           color='black', weight='bold',
+                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                                   alpha=0.9, edgecolor='black', linewidth=0.8))
+
+        # Adjust y-limits for annotations
+        current_ylim = ax.get_ylim()
+        y_range = current_ylim[1] - current_ylim[0]
+        new_y_min = current_ylim[0] - y_range * 0.25
+        ax.set_ylim(new_y_min, current_ylim[1])
+
+        # Add significance brackets if available
+        stats_df = self.statistical_results.get('HC', None)
+        if stats_df is not None:
+            self._add_significance_brackets_approaches(ax, stats_df, list(box_positions_dict.values()),
+                                                      approach_order, position='below')
+
+        # Add legend box
+        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size',
+               transform=ax.transAxes, fontsize=11,
+               verticalalignment='top', horizontalalignment='right',
+               bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
+                        alpha=0.9, edgecolor='gray', linewidth=1.5))
+
+    def _plot_hc_rve_subplot(self, ax, group_data, approach_colors, approach_labels):
+        """Plot Relative Volume Error boxplot for HC (Thresholding vs CBF only)"""
+        # Filter for Thresholding and CBF only
+        approaches_to_plot = ['Thresholding', 'CBF']
+        df_plot = group_data[group_data['Approach'].isin(approaches_to_plot)].copy()
+        df_plot = df_plot[df_plot['RVE_Percent'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+        # Prepare box plot data
+        plot_data_list = []
+        plot_positions = []
+        plot_colors = []
+        position = 0
+
+        for approach in approaches_to_plot:
+            approach_data = df_plot[df_plot['Approach'] == approach]
+            if not approach_data.empty:
+                plot_data_list.append(approach_data['RVE_Percent'].values)
+            else:
+                plot_data_list.append([])
+
+            plot_colors.append(approach_colors.get(approach, '#95a5a6'))
+            plot_positions.append(position)
+            position += 0.8
+
+        # Create boxplot
+        bp = ax.boxplot(
+            plot_data_list,
+            positions=plot_positions,
+            notch=False,
+            patch_artist=True,
+            widths=0.6,
+            medianprops=dict(color='black', linewidth=2)
+        )
+
+        # Color boxes
+        for patch, color in zip(bp['boxes'], plot_colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.7)
+            patch.set_edgecolor('black')
+            patch.set_linewidth(1)
+
+        # Subplot title and labels
+        ax.set_title('(C) Relative Volume Error', fontsize=18, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
+        ax.set_ylabel('Relative Volume Error (%)', fontsize=14, fontweight='bold')
+
+        # X-axis labels
+        ax.set_xticks(plot_positions)
+        ax.set_xticklabels([approach_labels.get(a, a) for a in approaches_to_plot])
+        ax.tick_params(axis='x', labelsize=12)
+        ax.tick_params(axis='y', labelsize=12)
+
+        # Grid
+        ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+        ax.set_axisbelow(True)
+
+        # Add annotations (median, IQR, n)
+        for i, approach in enumerate(approaches_to_plot):
+            approach_data = df_plot[df_plot['Approach'] == approach]
+            if not approach_data.empty:
+                values = approach_data['RVE_Percent'].dropna()
+                if len(values) > 0:
+                    median = values.median()
+                    q1 = values.quantile(0.25)
+                    q3 = values.quantile(0.75)
+                    iqr = q3 - q1
+                    n = len(values)
+
+                    # Median [IQR]
+                    y_min = ax.get_ylim()[0]
+                    y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+                    label = f'{median:.1f} [{iqr:.1f}]'
+                    color = approach_colors[approach]
+
+                    ax.text(plot_positions[i], y_min - y_range * 0.02, label,
+                           ha='center', va='top', fontsize=10,
+                           color=color, weight='bold',
+                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                                   alpha=0.9, edgecolor=color, linewidth=0.8))
+
+                    # Sample size
+                    ax.text(plot_positions[i], y_min - y_range * 0.12, f'n={n}',
+                           ha='center', va='top', fontsize=10,
+                           color='black', weight='bold',
+                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                                   alpha=0.9, edgecolor='black', linewidth=0.8))
+
+        # Adjust y-limits for annotations
+        current_ylim = ax.get_ylim()
+        y_range = current_ylim[1] - current_ylim[0]
+        new_y_min = current_ylim[0] - y_range * 0.25
+        ax.set_ylim(new_y_min, current_ylim[1])
+
+        # Add legend box (top right)
+        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size',
+               transform=ax.transAxes, fontsize=11,
+               verticalalignment='top', horizontalalignment='right',
+               bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
+                        alpha=0.9, edgecolor='gray', linewidth=1.5))
+
+    def _plot_hc_hd95_subplot(self, ax, group_data, approach_colors, approach_labels):
+        """Plot HD95 boxplot for HC (Thresholding vs CBF only)"""
+        # Filter for Thresholding and CBF only
+        approaches_to_plot = ['Thresholding', 'CBF']
+        df_plot = group_data[group_data['Approach'].isin(approaches_to_plot)].copy()
+        df_plot = df_plot[df_plot['HD95_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+        # Prepare box plot data
+        plot_data_list = []
+        plot_positions = []
+        plot_colors = []
+        position = 0
+
+        for approach in approaches_to_plot:
+            approach_data = df_plot[df_plot['Approach'] == approach]
+            if not approach_data.empty:
+                plot_data_list.append(approach_data['HD95_mm'].values)
+            else:
+                plot_data_list.append([])
+
+            plot_colors.append(approach_colors.get(approach, '#95a5a6'))
+            plot_positions.append(position)
+            position += 0.8
+
+        # Create boxplot
+        bp = ax.boxplot(
+            plot_data_list,
+            positions=plot_positions,
+            notch=False,
+            patch_artist=True,
+            widths=0.6,
+            medianprops=dict(color='black', linewidth=2)
+        )
+
+        # Color boxes
+        for patch, color in zip(bp['boxes'], plot_colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.7)
+            patch.set_edgecolor('black')
+            patch.set_linewidth(1)
+
+        # Subplot title and labels
+        ax.set_title('(D) 95th Percentile Hausdorff Distance per volume', fontsize=18, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
+        ax.set_ylabel('HD95 (mm) per volume', fontsize=14, fontweight='bold')
+
+        # X-axis labels
+        ax.set_xticks(plot_positions)
+        ax.set_xticklabels([approach_labels.get(a, a) for a in approaches_to_plot])
+        ax.tick_params(axis='x', labelsize=12)
+        ax.tick_params(axis='y', labelsize=12)
+
+        # Grid
+        ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+        ax.set_axisbelow(True)
+
+        # Add annotations (median, IQR, n)
+        for i, approach in enumerate(approaches_to_plot):
+            approach_data = df_plot[df_plot['Approach'] == approach]
+            if not approach_data.empty:
+                values = approach_data['HD95_mm'].dropna()
+                if len(values) > 0:
+                    median = values.median()
+                    q1 = values.quantile(0.25)
+                    q3 = values.quantile(0.75)
+                    iqr = q3 - q1
+                    n = len(values)
+
+                    # Median [IQR]
+                    y_min = ax.get_ylim()[0]
+                    y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+                    label = f'{median:.1f} [{iqr:.1f}]'
+                    color = approach_colors[approach]
+
+                    ax.text(plot_positions[i], y_min - y_range * 0.02, label,
+                           ha='center', va='top', fontsize=10,
+                           color=color, weight='bold',
+                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                                   alpha=0.9, edgecolor=color, linewidth=0.8))
+
+                    # Sample size
+                    ax.text(plot_positions[i], y_min - y_range * 0.12, f'n={n}',
+                           ha='center', va='top', fontsize=10,
+                           color='black', weight='bold',
+                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                                   alpha=0.9, edgecolor='black', linewidth=0.8))
+
+        # Adjust y-limits for annotations
+        current_ylim = ax.get_ylim()
+        y_range = current_ylim[1] - current_ylim[0]
+        new_y_min = current_ylim[0] - y_range * 0.25
+        ax.set_ylim(new_y_min, current_ylim[1])
+
+        # Add legend box (top right)
+        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size',
+               transform=ax.transAxes, fontsize=11,
+               verticalalignment='top', horizontalalignment='right',
+               bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
+                        alpha=0.9, edgecolor='gray', linewidth=1.5))
 
     def print_evaluation_summary(self):
         print("\n" + "=" * 60)
