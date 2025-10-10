@@ -1986,7 +1986,7 @@ class TestSetEvaluator:
 
         plt.tight_layout(rect=[0, 0, 1, 0.98])  # Leave space for suptitle
 
-        fig.subplots_adjust(hspace=0.285)
+        fig.subplots_adjust(hspace=0.29)
 
         plot_file = self.output_dir / f"HC_box-plots_{timestamp}.png"
         plt.savefig(plot_file, dpi=300, bbox_inches='tight', facecolor='white')
@@ -2090,7 +2090,7 @@ class TestSetEvaluator:
 
         # Add legend box
         ax.text(0.98, 0.02, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
-               transform=ax.transAxes, fontsize=12,
+               transform=ax.transAxes, fontsize=13,
                verticalalignment='bottom', horizontalalignment='right',
                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
                         alpha=0.9, edgecolor='gray', linewidth=1.5))
@@ -2196,7 +2196,7 @@ class TestSetEvaluator:
 
         # Add legend box
         ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
-               transform=ax.transAxes, fontsize=12,
+               transform=ax.transAxes, fontsize=13,
                verticalalignment='top', horizontalalignment='right',
                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
                         alpha=0.9, edgecolor='gray', linewidth=1.5))
@@ -2302,7 +2302,7 @@ class TestSetEvaluator:
 
         # Add legend box (top right)
         ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
-               transform=ax.transAxes, fontsize=12,
+               transform=ax.transAxes, fontsize=13,
                verticalalignment='top', horizontalalignment='right',
                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
                         alpha=0.9, edgecolor='gray', linewidth=1.5))
@@ -2408,7 +2408,7 @@ class TestSetEvaluator:
 
         # Add legend box (top right)
         ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
-               transform=ax.transAxes, fontsize=12,
+               transform=ax.transAxes, fontsize=13,
                verticalalignment='top', horizontalalignment='right',
                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
                         alpha=0.9, edgecolor='gray', linewidth=1.5))
