@@ -1986,6 +1986,8 @@ class TestSetEvaluator:
 
         plt.tight_layout(rect=[0, 0, 1, 0.98])  # Leave space for suptitle
 
+        fig.subplots_adjust(hspace=0.285)
+
         plot_file = self.output_dir / f"HC_box-plots_{timestamp}.png"
         plt.savefig(plot_file, dpi=300, bbox_inches='tight', facecolor='white')
         plt.close()
@@ -2014,7 +2016,7 @@ class TestSetEvaluator:
             plot_colors.append(approach_colors.get(approach, '#95a5a6'))
             plot_positions.append(position)
             box_positions_dict[approach] = position
-            position += 0.6
+            position += 1.0
 
         # Create boxplot
         bp = ax.boxplot(
@@ -2022,7 +2024,7 @@ class TestSetEvaluator:
             positions=plot_positions,
             notch=False,
             patch_artist=True,
-            widths=0.5,
+            widths=0.7,
             medianprops=dict(color='black', linewidth=2)
         )
 
@@ -2115,7 +2117,7 @@ class TestSetEvaluator:
             plot_colors.append(approach_colors.get(approach, '#95a5a6'))
             plot_positions.append(position)
             box_positions_dict[approach] = position
-            position += 0.6
+            position += 1.0
 
         # Create boxplot
         bp = ax.boxplot(
@@ -2123,7 +2125,7 @@ class TestSetEvaluator:
             positions=plot_positions,
             notch=False,
             patch_artist=True,
-            widths=0.5,
+            widths=0.7,
             medianprops=dict(color='black', linewidth=2)
         )
 
@@ -2219,7 +2221,7 @@ class TestSetEvaluator:
 
             plot_colors.append(approach_colors.get(approach, '#95a5a6'))
             plot_positions.append(position)
-            position += 0.6
+            position += 1.0
 
         # Create boxplot
         bp = ax.boxplot(
@@ -2227,7 +2229,7 @@ class TestSetEvaluator:
             positions=plot_positions,
             notch=False,
             patch_artist=True,
-            widths=0.5,
+            widths=0.7,
             medianprops=dict(color='black', linewidth=2)
         )
 
@@ -2325,7 +2327,7 @@ class TestSetEvaluator:
 
             plot_colors.append(approach_colors.get(approach, '#95a5a6'))
             plot_positions.append(position)
-            position += 0.6
+            position += 1.0
 
         # Create boxplot
         bp = ax.boxplot(
@@ -2333,7 +2335,7 @@ class TestSetEvaluator:
             positions=plot_positions,
             notch=False,
             patch_artist=True,
-            widths=0.5,
+            widths=0.7,
             medianprops=dict(color='black', linewidth=2)
         )
 
