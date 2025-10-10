@@ -415,6 +415,7 @@ class TestSetEvaluator:
 
         print("\nPerforming statistical testing...")
         self.perform_statistical_testing()
+        self.perform_volumewise_statistical_testing()
 
         print("\nCreating box plots...")
         self.create_box_plots()
@@ -858,6 +859,185 @@ class TestSetEvaluator:
         print(f"      Total comparisons: {len(stats_df)}")
         print(f"      Significant (p<0.05): {sum(stats_df['P_Value'] < 0.05)}")
         print(f"      Bonferroni significant: {sum(stats_df['P_Value_Bonferroni'] < 0.05)}")
+
+        # Return the DataFrame for use in plotting
+        return stats_df
+
+    def perform_volumewise_statistical_testing(self):
+        """Perform Wilcoxon signed-rank test for volume-wise metrics (DSC, RVE, HD95)"""
+        from scipy import stats
+        from itertools import combinations
+
+        if not self.results:
+            print("  No volume-wise data available for statistical testing")
+            return
+
+        print("\n  Performing Volume-wise Statistical Testing (Wilcoxon signed-rank test)...")
+
+        df = pd.DataFrame(self.results)
+        df[['Subject_str', 'Visit', 'Hemisphere_Code']] = df['Base_Name'].str.extract(r'PerfTerr(\d+)-v(\d+)-([LR])')
+        df['Subject_Num'] = df['Subject_str'].astype(int)
+        df['Group'] = df['Subject_Num'].apply(lambda x: 'HC' if x in [14, 15] else 'Patients')
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # Process HC group only for now
+        for group_name in ['HC']:
+            group_data = df[df['Group'] == group_name].copy()
+
+            if len(group_data) == 0:
+                print(f"  No data for {group_name}")
+                continue
+
+            print(f"\n  {group_name} Volume-wise Statistical Analysis:")
+            print(f"  {'-' * 40}")
+
+            # Test each metric separately
+            for metric_name, metric_col in [('DSC', 'DSC_Volume'), ('RVE', 'RVE_Percent'), ('HD95', 'HD95_mm')]:
+                print(f"\n    Testing {metric_name}...")
+
+                # Filter valid values for this metric
+                metric_data = group_data[group_data[metric_col].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+                if len(metric_data) == 0:
+                    print(f"      No valid {metric_name} data")
+                    continue
+
+                all_stats_results = []
+                available_approaches = metric_data['Approach'].unique().tolist()
+
+                if len(available_approaches) < 2:
+                    print(f"      Insufficient approaches for comparison")
+                    continue
+
+                # Perform all pairwise comparisons across approaches
+                for approach1, approach2 in combinations(available_approaches, 2):
+                    data1_df = metric_data[metric_data['Approach'] == approach1]
+                    data2_df = metric_data[metric_data['Approach'] == approach2]
+
+                    # Find paired volumes (same case)
+                    merged_df = data1_df.merge(data2_df, on='Base_Name', suffixes=('_1', '_2'))
+
+                    if len(merged_df) < 5:  # Minimum sample size
+                        continue
+
+                    # Get paired volume-wise data
+                    paired_data1 = merged_df[f'{metric_col}_1'].values
+                    paired_data2 = merged_df[f'{metric_col}_2'].values
+
+                    try:
+                        # Wilcoxon signed-rank test
+                        statistic, p_value = stats.wilcoxon(paired_data1, paired_data2, alternative='two-sided')
+
+                        # Calculate effect size (r = Z / sqrt(N))
+                        n = len(paired_data1)
+                        z_score = stats.norm.ppf(1 - p_value/2) if p_value > 0 else 5.0
+                        effect_size = z_score / np.sqrt(n)
+
+                        # Calculate medians
+                        median1 = np.median(paired_data1)
+                        median2 = np.median(paired_data2)
+                        median_diff = median1 - median2
+
+                        # Determine significance
+                        if p_value < 0.001:
+                            significance = "***"
+                        elif p_value < 0.01:
+                            significance = "**"
+                        elif p_value < 0.05:
+                            significance = "*"
+                        else:
+                            significance = "ns"
+
+                        all_stats_results.append({
+                            'Metric': metric_name,
+                            'Config1': approach1,
+                            'Config2': approach2,
+                            'Median1': median1,
+                            'Median2': median2,
+                            'Median_Diff': median_diff,
+                            'Statistic': statistic,
+                            'P_Value': p_value,
+                            'Effect_Size': effect_size,
+                            'Significance': significance,
+                            'N_Paired_Volumes': n,
+                            'N1_Total_Volumes': len(data1_df),
+                            'N2_Total_Volumes': len(data2_df)
+                        })
+
+                    except Exception as e:
+                        print(f"        Error comparing {approach1} vs {approach2}: {e}")
+
+                # Save results for this metric
+                if all_stats_results:
+                    stats_df = self._save_volumewise_statistical_results(all_stats_results, group_name, metric_name, timestamp)
+                    # Store for significance brackets in plots
+                    if not hasattr(self, 'volumewise_statistical_results'):
+                        self.volumewise_statistical_results = {}
+                    self.volumewise_statistical_results[f'{group_name}_{metric_name}'] = stats_df
+                else:
+                    print(f"      No statistical comparisons performed for {metric_name}")
+
+    def _save_volumewise_statistical_results(self, all_stats_results, group_name, metric_name, timestamp):
+        """Save volume-wise statistical test results to Excel file"""
+        stats_df = pd.DataFrame(all_stats_results)
+
+        # Sort by p-value
+        stats_df = stats_df.sort_values(['P_Value'])
+
+        # Add effect size interpretation
+        def interpret_effect_size(r):
+            r = abs(r)
+            if r < 0.1:
+                return "Negligible"
+            elif r < 0.3:
+                return "Small"
+            elif r < 0.5:
+                return "Medium"
+            else:
+                return "Large"
+
+        stats_df['Effect_Size_Interpretation'] = stats_df['Effect_Size'].apply(interpret_effect_size)
+
+        # Apply Bonferroni correction
+        n_comparisons = len(stats_df)
+        stats_df['P_Value_Bonferroni'] = stats_df['P_Value'] * n_comparisons
+        stats_df['P_Value_Bonferroni'] = np.minimum(stats_df['P_Value_Bonferroni'], 1.0)
+
+        # Bonferroni significance
+        def get_bonferroni_significance(p_bonf):
+            if p_bonf < 0.001:
+                return "***"
+            elif p_bonf < 0.01:
+                return "**"
+            elif p_bonf < 0.05:
+                return "*"
+            else:
+                return "ns"
+
+        stats_df['Significance_Bonferroni'] = stats_df['P_Value_Bonferroni'].apply(get_bonferroni_significance)
+
+        # Save to Excel
+        stats_file = self.output_dir / f"test_statistical_comparison_{group_name}_{metric_name}_{timestamp}.xlsx"
+
+        with pd.ExcelWriter(stats_file, engine='openpyxl') as writer:
+            # Main results sheet
+            stats_df.to_excel(writer, sheet_name='All_Comparisons', index=False)
+
+            # Significant results only (uncorrected)
+            significant_df = stats_df[stats_df['P_Value'] < 0.05]
+            if not significant_df.empty:
+                significant_df.to_excel(writer, sheet_name='Significant_Uncorrected', index=False)
+
+            # Significant results with Bonferroni correction
+            bonferroni_significant_df = stats_df[stats_df['P_Value_Bonferroni'] < 0.05]
+            if not bonferroni_significant_df.empty:
+                bonferroni_significant_df.to_excel(writer, sheet_name='Significant_Bonferroni', index=False)
+
+        print(f"      {metric_name} results saved: {stats_file.name}")
+        print(f"        Total comparisons: {len(stats_df)}")
+        print(f"        Significant (p<0.05): {sum(stats_df['P_Value'] < 0.05)}")
+        print(f"        Bonferroni significant: {sum(stats_df['P_Value_Bonferroni'] < 0.05)}")
 
         # Return the DataFrame for use in plotting
         return stats_df
@@ -1489,8 +1669,8 @@ class TestSetEvaluator:
                             label_y_offset = y_range * 0.02
                             y_pos = y_max + label_y_offset
 
-                            # Format label: median [IQR] with 4 decimal places (matching reference)
-                            label = f'{median:.4f} [{iqr:.4f}]'
+                            # Format label: median [IQR] with 3 decimal places (matching reference)
+                            label = f'{median:.3f} [{iqr:.3f}]'
 
                             # Use approach color for labels (matching reference)
                             color = approach_colors[approach]
@@ -1791,18 +1971,18 @@ class TestSetEvaluator:
         # ===== TOP LEFT SUBPLOT: DSC =====
         self._plot_hc_dsc_subplot(ax1, group_data, approach_order, approach_colors, approach_labels)
 
-        # ===== TOP RIGHT SUBPLOT: ASSD =====
-        self._plot_hc_assd_subplot(ax2, slice_df_hc, approach_order, approach_colors, approach_labels)
+        # ===== TOP RIGHT SUBPLOT: Relative Volume Error (all approaches) =====
+        self._plot_hc_rve_subplot(ax2, group_data, approach_order, approach_colors, approach_labels)
 
-        # ===== BOTTOM LEFT SUBPLOT: Relative Volume Error (Thresholding vs CBF only) =====
-        self._plot_hc_rve_subplot(ax3, group_data, approach_colors, approach_labels)
+        # ===== BOTTOM LEFT SUBPLOT: ASSD =====
+        self._plot_hc_assd_subplot(ax3, slice_df_hc, approach_order, approach_colors, approach_labels)
 
-        # ===== BOTTOM RIGHT SUBPLOT: HD95 (Thresholding vs CBF only) =====
-        self._plot_hc_hd95_subplot(ax4, group_data, approach_colors, approach_labels)
+        # ===== BOTTOM RIGHT SUBPLOT: HD95 (all approaches) =====
+        self._plot_hc_hd95_subplot(ax4, group_data, approach_order, approach_colors, approach_labels)
 
         # Overall title
         fig.suptitle('HC Test Set Evaluation: Segmentation Approach / Input Configuration',
-                    fontsize=22, fontweight='bold', y=0.99)
+                    fontsize=24, fontweight='bold', y=0.99)
 
         plt.tight_layout(rect=[0, 0, 1, 0.98])  # Leave space for suptitle
 
@@ -1854,15 +2034,15 @@ class TestSetEvaluator:
             patch.set_linewidth(1)
 
         # Subplot title and labels
-        ax.set_title('(A) DSC per volume', fontsize=18, fontweight='bold', pad=15, loc='left')
-        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
-        ax.set_ylabel('DSC per volume', fontsize=14, fontweight='bold')
+        ax.set_title('(A) DSC per volume', fontsize=22, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=16, fontweight='bold')
+        ax.set_ylabel('DSC per volume', fontsize=16, fontweight='bold')
 
         # X-axis labels
         ax.set_xticks(plot_positions)
         ax.set_xticklabels([approach_labels.get(a, a) for a in approach_order])
-        ax.tick_params(axis='x', labelsize=12)
-        ax.tick_params(axis='y', labelsize=12)
+        ax.tick_params(axis='x', labelsize=14)
+        ax.tick_params(axis='y', labelsize=14)
 
         # Grid
         ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
@@ -1886,18 +2066,18 @@ class TestSetEvaluator:
                     # Median [IQR]
                     y_max = ax.get_ylim()[1]
                     y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
-                    label = f'{median:.4f} [{iqr:.4f}]'
+                    label = f'{median:.3f} [{iqr:.3f}]'
                     color = approach_colors[approach]
 
                     ax.text(plot_positions[i], y_max - y_range * 0.08, label,
-                           ha='center', va='bottom', fontsize=10,
+                           ha='center', va='bottom', fontsize=12,
                            color=color, weight='bold',
                            bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                    alpha=0.8, edgecolor=color, linewidth=0.8))
 
                     # Sample size
                     ax.text(plot_positions[i], y_max - y_range * 0.17, f'n={n}',
-                           ha='center', va='bottom', fontsize=10, fontweight='bold',
+                           ha='center', va='bottom', fontsize=12, fontweight='bold',
                            bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.7))
 
         # Add significance brackets if available
@@ -1907,8 +2087,8 @@ class TestSetEvaluator:
                                                       approach_order, position='above')
 
         # Add legend box
-        ax.text(0.98, 0.02, 'Median [IQR]\nn = sample size',
-               transform=ax.transAxes, fontsize=11,
+        ax.text(0.98, 0.02, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
+               transform=ax.transAxes, fontsize=12,
                verticalalignment='bottom', horizontalalignment='right',
                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
                         alpha=0.9, edgecolor='gray', linewidth=1.5))
@@ -1955,15 +2135,15 @@ class TestSetEvaluator:
             patch.set_linewidth(1)
 
         # Subplot title and labels
-        ax.set_title('(B) ASSD per slice', fontsize=18, fontweight='bold', pad=15, loc='left')
-        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
-        ax.set_ylabel('ASSD (mm) per slice', fontsize=14, fontweight='bold')
+        ax.set_title('(C) ASSD per slice', fontsize=22, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=16, fontweight='bold')
+        ax.set_ylabel('ASSD (mm) per slice', fontsize=16, fontweight='bold')
 
         # X-axis labels
         ax.set_xticks(plot_positions)
         ax.set_xticklabels([approach_labels.get(a, a) for a in approach_order])
-        ax.tick_params(axis='x', labelsize=12)
-        ax.tick_params(axis='y', labelsize=12)
+        ax.tick_params(axis='x', labelsize=14)
+        ax.tick_params(axis='y', labelsize=14)
 
         # Grid
         ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
@@ -1988,14 +2168,14 @@ class TestSetEvaluator:
                     color = approach_colors[approach]
 
                     ax.text(plot_positions[i], y_min - y_range * 0.02, label,
-                           ha='center', va='top', fontsize=10,
+                           ha='center', va='top', fontsize=12,
                            color=color, weight='bold',
                            bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                    alpha=0.9, edgecolor=color, linewidth=0.8))
 
                     # Sample size
                     ax.text(plot_positions[i], y_min - y_range * 0.12, f'n={n}',
-                           ha='center', va='top', fontsize=10,
+                           ha='center', va='top', fontsize=12,
                            color='black', weight='bold',
                            bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                    alpha=0.9, edgecolor='black', linewidth=0.8))
@@ -2013,18 +2193,16 @@ class TestSetEvaluator:
                                                       approach_order, position='below')
 
         # Add legend box
-        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size',
-               transform=ax.transAxes, fontsize=11,
+        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
+               transform=ax.transAxes, fontsize=12,
                verticalalignment='top', horizontalalignment='right',
                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
                         alpha=0.9, edgecolor='gray', linewidth=1.5))
 
-    def _plot_hc_rve_subplot(self, ax, group_data, approach_colors, approach_labels):
-        """Plot Relative Volume Error boxplot for HC (Thresholding vs CBF only)"""
-        # Filter for Thresholding and CBF only
-        approaches_to_plot = ['Thresholding', 'CBF']
-        df_plot = group_data[group_data['Approach'].isin(approaches_to_plot)].copy()
-        df_plot = df_plot[df_plot['RVE_Percent'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+    def _plot_hc_rve_subplot(self, ax, group_data, approach_order, approach_colors, approach_labels):
+        """Plot Relative Volume Error boxplot for HC (all approaches)"""
+        # Filter valid RVE values
+        df_plot = group_data[group_data['RVE_Percent'].replace([np.inf, -np.inf], np.nan).notna()].copy()
 
         # Prepare box plot data
         plot_data_list = []
@@ -2032,7 +2210,7 @@ class TestSetEvaluator:
         plot_colors = []
         position = 0
 
-        for approach in approaches_to_plot:
+        for approach in approach_order:
             approach_data = df_plot[df_plot['Approach'] == approach]
             if not approach_data.empty:
                 plot_data_list.append(approach_data['RVE_Percent'].values)
@@ -2041,7 +2219,7 @@ class TestSetEvaluator:
 
             plot_colors.append(approach_colors.get(approach, '#95a5a6'))
             plot_positions.append(position)
-            position += 0.8
+            position += 0.6
 
         # Create boxplot
         bp = ax.boxplot(
@@ -2049,7 +2227,7 @@ class TestSetEvaluator:
             positions=plot_positions,
             notch=False,
             patch_artist=True,
-            widths=0.6,
+            widths=0.5,
             medianprops=dict(color='black', linewidth=2)
         )
 
@@ -2061,22 +2239,22 @@ class TestSetEvaluator:
             patch.set_linewidth(1)
 
         # Subplot title and labels
-        ax.set_title('(C) Relative Volume Error', fontsize=18, fontweight='bold', pad=15, loc='left')
-        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
-        ax.set_ylabel('Relative Volume Error (%)', fontsize=14, fontweight='bold')
+        ax.set_title('(B) Relative Volume Error', fontsize=22, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=16, fontweight='bold')
+        ax.set_ylabel('Relative Volume Error (%)', fontsize=16, fontweight='bold')
 
         # X-axis labels
         ax.set_xticks(plot_positions)
-        ax.set_xticklabels([approach_labels.get(a, a) for a in approaches_to_plot])
-        ax.tick_params(axis='x', labelsize=12)
-        ax.tick_params(axis='y', labelsize=12)
+        ax.set_xticklabels([approach_labels.get(a, a) for a in approach_order])
+        ax.tick_params(axis='x', labelsize=14)
+        ax.tick_params(axis='y', labelsize=14)
 
         # Grid
         ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
         ax.set_axisbelow(True)
 
         # Add annotations (median, IQR, n)
-        for i, approach in enumerate(approaches_to_plot):
+        for i, approach in enumerate(approach_order):
             approach_data = df_plot[df_plot['Approach'] == approach]
             if not approach_data.empty:
                 values = approach_data['RVE_Percent'].dropna()
@@ -2094,14 +2272,14 @@ class TestSetEvaluator:
                     color = approach_colors[approach]
 
                     ax.text(plot_positions[i], y_min - y_range * 0.02, label,
-                           ha='center', va='top', fontsize=10,
+                           ha='center', va='top', fontsize=12,
                            color=color, weight='bold',
                            bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                    alpha=0.9, edgecolor=color, linewidth=0.8))
 
                     # Sample size
                     ax.text(plot_positions[i], y_min - y_range * 0.12, f'n={n}',
-                           ha='center', va='top', fontsize=10,
+                           ha='center', va='top', fontsize=12,
                            color='black', weight='bold',
                            bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                    alpha=0.9, edgecolor='black', linewidth=0.8))
@@ -2112,19 +2290,25 @@ class TestSetEvaluator:
         new_y_min = current_ylim[0] - y_range * 0.25
         ax.set_ylim(new_y_min, current_ylim[1])
 
+        # Add significance brackets if available
+        if hasattr(self, 'volumewise_statistical_results'):
+            stats_df = self.volumewise_statistical_results.get('HC_RVE', None)
+            if stats_df is not None:
+                box_positions_dict = {approach: plot_positions[i] for i, approach in enumerate(approach_order)}
+                self._add_significance_brackets_approaches(ax, stats_df, list(box_positions_dict.values()),
+                                                          approach_order, position='below')
+
         # Add legend box (top right)
-        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size',
-               transform=ax.transAxes, fontsize=11,
+        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
+               transform=ax.transAxes, fontsize=12,
                verticalalignment='top', horizontalalignment='right',
                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
                         alpha=0.9, edgecolor='gray', linewidth=1.5))
 
-    def _plot_hc_hd95_subplot(self, ax, group_data, approach_colors, approach_labels):
-        """Plot HD95 boxplot for HC (Thresholding vs CBF only)"""
-        # Filter for Thresholding and CBF only
-        approaches_to_plot = ['Thresholding', 'CBF']
-        df_plot = group_data[group_data['Approach'].isin(approaches_to_plot)].copy()
-        df_plot = df_plot[df_plot['HD95_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+    def _plot_hc_hd95_subplot(self, ax, group_data, approach_order, approach_colors, approach_labels):
+        """Plot HD95 boxplot for HC (all approaches)"""
+        # Filter valid HD95 values
+        df_plot = group_data[group_data['HD95_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
 
         # Prepare box plot data
         plot_data_list = []
@@ -2132,7 +2316,7 @@ class TestSetEvaluator:
         plot_colors = []
         position = 0
 
-        for approach in approaches_to_plot:
+        for approach in approach_order:
             approach_data = df_plot[df_plot['Approach'] == approach]
             if not approach_data.empty:
                 plot_data_list.append(approach_data['HD95_mm'].values)
@@ -2141,7 +2325,7 @@ class TestSetEvaluator:
 
             plot_colors.append(approach_colors.get(approach, '#95a5a6'))
             plot_positions.append(position)
-            position += 0.8
+            position += 0.6
 
         # Create boxplot
         bp = ax.boxplot(
@@ -2149,7 +2333,7 @@ class TestSetEvaluator:
             positions=plot_positions,
             notch=False,
             patch_artist=True,
-            widths=0.6,
+            widths=0.5,
             medianprops=dict(color='black', linewidth=2)
         )
 
@@ -2161,22 +2345,22 @@ class TestSetEvaluator:
             patch.set_linewidth(1)
 
         # Subplot title and labels
-        ax.set_title('(D) 95th Percentile Hausdorff Distance per volume', fontsize=18, fontweight='bold', pad=15, loc='left')
-        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=14, fontweight='bold')
-        ax.set_ylabel('HD95 (mm) per volume', fontsize=14, fontweight='bold')
+        ax.set_title('(D) 95th Percentile Hausdorff Distance per volume', fontsize=22, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=16, fontweight='bold')
+        ax.set_ylabel('HD95 (mm) per volume', fontsize=16, fontweight='bold')
 
         # X-axis labels
         ax.set_xticks(plot_positions)
-        ax.set_xticklabels([approach_labels.get(a, a) for a in approaches_to_plot])
-        ax.tick_params(axis='x', labelsize=12)
-        ax.tick_params(axis='y', labelsize=12)
+        ax.set_xticklabels([approach_labels.get(a, a) for a in approach_order])
+        ax.tick_params(axis='x', labelsize=14)
+        ax.tick_params(axis='y', labelsize=14)
 
         # Grid
         ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
         ax.set_axisbelow(True)
 
         # Add annotations (median, IQR, n)
-        for i, approach in enumerate(approaches_to_plot):
+        for i, approach in enumerate(approach_order):
             approach_data = df_plot[df_plot['Approach'] == approach]
             if not approach_data.empty:
                 values = approach_data['HD95_mm'].dropna()
@@ -2194,14 +2378,14 @@ class TestSetEvaluator:
                     color = approach_colors[approach]
 
                     ax.text(plot_positions[i], y_min - y_range * 0.02, label,
-                           ha='center', va='top', fontsize=10,
+                           ha='center', va='top', fontsize=12,
                            color=color, weight='bold',
                            bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                    alpha=0.9, edgecolor=color, linewidth=0.8))
 
                     # Sample size
                     ax.text(plot_positions[i], y_min - y_range * 0.12, f'n={n}',
-                           ha='center', va='top', fontsize=10,
+                           ha='center', va='top', fontsize=12,
                            color='black', weight='bold',
                            bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                    alpha=0.9, edgecolor='black', linewidth=0.8))
@@ -2212,9 +2396,17 @@ class TestSetEvaluator:
         new_y_min = current_ylim[0] - y_range * 0.25
         ax.set_ylim(new_y_min, current_ylim[1])
 
+        # Add significance brackets if available
+        if hasattr(self, 'volumewise_statistical_results'):
+            stats_df = self.volumewise_statistical_results.get('HC_HD95', None)
+            if stats_df is not None:
+                box_positions_dict = {approach: plot_positions[i] for i, approach in enumerate(approach_order)}
+                self._add_significance_brackets_approaches(ax, stats_df, list(box_positions_dict.values()),
+                                                          approach_order, position='below')
+
         # Add legend box (top right)
-        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size',
-               transform=ax.transAxes, fontsize=11,
+        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
+               transform=ax.transAxes, fontsize=12,
                verticalalignment='top', horizontalalignment='right',
                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
                         alpha=0.9, edgecolor='gray', linewidth=1.5))
