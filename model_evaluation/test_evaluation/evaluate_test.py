@@ -587,12 +587,16 @@ class TestSetEvaluator:
             #     print("  Creating ASSD boxplots...")
             #     self._create_assd_boxplots(approach_order, timestamp)
 
-            # ====== Plot 3: Combined HC plot (DSC + ASSD) ======
+            # ====== Plot 3: Combined HC plot (DSC + ASSD + RVE + HD95) ======
             if self.slice_wise_data:
                 print("  Creating combined HC plot...")
                 self._create_combined_hc_plot(df, approach_order, timestamp)
             else:
                 print("  No slice-wise ASSD data available for plotting")
+
+            # ====== Plot 4: Combined Patient plot (DSC + RVE + ASSD + HD95) ======
+            print("  Creating combined Patient plot...")
+            self._create_combined_patient_plot(df, timestamp)
 
         except Exception as e:
             print(f"Error creating box plots: {e}")
@@ -1994,6 +1998,132 @@ class TestSetEvaluator:
 
         print(f"    Saved: {plot_file.name}")
 
+    def _create_combined_patient_plot(self, df, timestamp):
+        """Create a combined plot with DSC, RVE, ASSD, and HD95 for Patients
+        comparing Thresholding vs nnUNet w/ CBF
+        Grouped by Ipsilateral (pathological) vs Contralateral (healthy) hemispheres
+        """
+        import pandas as pd
+
+        # Load pathology mapping
+        pathology_file = self.output_dir.parent / 'data_completeness_report_20250820_171756.xlsx'
+        pathology_df = pd.read_excel(pathology_file)
+
+        # Filter and map patients
+        patient_mapping = pathology_df[pathology_df['Subject'].str.match('sub-p0(1[6-9]|2[0-3])', na=False)].copy()
+        patient_mapping = patient_mapping[patient_mapping['AVM/Stenose'] != 'x']
+        patient_mapping['PerfTerr_ID'] = patient_mapping['Subject'].str.replace('sub-p0', 'PerfTerr0')
+        visit_map = {'First_visit': 'v1', 'Second_visit': 'v2', 'Third_visit': 'v3'}
+        patient_mapping['Visit_Code'] = patient_mapping['Visit'].map(visit_map)
+
+        # Create lookup dictionary
+        pathology_lookup = {}
+        for _, row in patient_mapping.iterrows():
+            key = f"{row['PerfTerr_ID']}-{row['Visit_Code']}"
+            pathology_lookup[key] = row['AVM/Stenose']  # 'left' or 'right'
+
+        # Filter patient data (PerfTerr017-023, excluding 016 and 021)
+        patient_df = df[df['Base_Name'].str.contains('PerfTerr0(17|18|19|20|22|23)', regex=True)].copy()
+
+        # Only keep Thresholding and CBF approaches
+        patient_df = patient_df[patient_df['Approach'].isin(['Thresholding', 'CBF'])].copy()
+
+        if len(patient_df) == 0:
+            print("    No patient data available")
+            return
+
+        # Add pathology side and categorize as ipsilateral/contralateral
+        def categorize_hemisphere(row):
+            case_key = f"{row['Base_Name'].split('-L')[0].split('-R')[0]}"
+            pathology_side = pathology_lookup.get(case_key, None)
+
+            if pathology_side is None:
+                return None
+
+            # Determine actual hemisphere from filename
+            if '-L' in row['Base_Name']:
+                actual_hemi = 'left'
+            elif '-R' in row['Base_Name']:
+                actual_hemi = 'right'
+            else:
+                return None
+
+            # Categorize as ipsilateral (pathological) or contralateral (healthy)
+            if actual_hemi == pathology_side:
+                return 'Ipsilateral'
+            else:
+                return 'Contralateral'
+
+        patient_df['Hemisphere_Category'] = patient_df.apply(categorize_hemisphere, axis=1)
+        patient_df = patient_df[patient_df['Hemisphere_Category'].notna()].copy()
+
+        if len(patient_df) == 0:
+            print("    No patient data after categorization")
+            return
+
+        # Create figure with 2x2 subplots
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(20, 16))
+
+        # Common settings
+        approach_colors = {
+            'Thresholding': '#d62728',
+            'CBF': '#1f77b4'
+        }
+
+        approach_labels = {
+            'Thresholding': 'Thresholding',
+            'CBF': 'nnUNet w/\nCBF'
+        }
+
+        # ===== TOP LEFT SUBPLOT: DSC =====
+        self._plot_patient_dsc_subplot(ax1, patient_df, approach_colors, approach_labels)
+
+        # ===== TOP RIGHT SUBPLOT: Relative Volume Error =====
+        self._plot_patient_rve_subplot(ax2, patient_df, approach_colors, approach_labels)
+
+        # ===== BOTTOM LEFT SUBPLOT: ASSD (slice-wise) =====
+        # Prepare slice-wise patient data with ipsi/contra categorization
+        slice_df = pd.DataFrame(self.slice_wise_data)
+        patient_slice_df = slice_df[slice_df['Case'].str.contains('PerfTerr0(17|18|19|20|22|23)', regex=True)].copy()
+        patient_slice_df = patient_slice_df[patient_slice_df['Approach'].isin(['Thresholding', 'CBF'])].copy()
+
+        # Add hemisphere categorization to slice data
+        def categorize_hemisphere_slice(row):
+            case_key = f"{row['Case'].split('-L')[0].split('-R')[0]}"
+            pathology_side = pathology_lookup.get(case_key, None)
+
+            if pathology_side is None:
+                return None
+
+            # Get hemisphere from row (already has 'Left'/'Right')
+            actual_hemi = 'left' if row['Hemisphere'] == 'Left' else 'right'
+
+            # Categorize as ipsilateral (pathological) or contralateral (healthy)
+            if actual_hemi == pathology_side:
+                return 'Ipsilateral'
+            else:
+                return 'Contralateral'
+
+        patient_slice_df['Hemisphere_Category'] = patient_slice_df.apply(categorize_hemisphere_slice, axis=1)
+        patient_slice_df = patient_slice_df[patient_slice_df['Hemisphere_Category'].notna()].copy()
+
+        self._plot_patient_assd_subplot(ax3, patient_slice_df, approach_colors, approach_labels)
+
+        # ===== BOTTOM RIGHT SUBPLOT: HD95 =====
+        self._plot_patient_hd95_subplot(ax4, patient_df, approach_colors, approach_labels)
+
+        # Overall title
+        fig.suptitle('Patients Test Set Evaluation: Segmentation Approach / Hemispheres',
+                    fontsize=24, fontweight='bold', y=0.99)
+
+        plt.tight_layout(rect=[0, 0, 1, 0.98], h_pad=4, w_pad=4)
+
+        plot_file = self.output_dir / f"Patients_box-plots_{timestamp}.png"
+        plt.savefig(plot_file, dpi=300, bbox_inches='tight', facecolor='white')
+        plt.close()
+
+        print(f"    Saved: {plot_file.name}")
+
     def _plot_hc_dsc_subplot(self, ax, group_data, approach_order, approach_colors, approach_labels):
         """Plot DSC boxplot for HC in a subplot"""
         # Filter valid DSC values
@@ -2409,6 +2539,373 @@ class TestSetEvaluator:
         # Add legend box (top right)
         ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
                transform=ax.transAxes, fontsize=13,
+               verticalalignment='top', horizontalalignment='right',
+               bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
+                        alpha=0.9, edgecolor='gray', linewidth=1.5))
+
+    def _plot_patient_dsc_subplot(self, ax, patient_df, approach_colors, approach_labels):
+        """Plot DSC boxplot for patients (Ipsilateral vs Contralateral)"""
+        df_plot = patient_df[patient_df['DSC_Volume'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+        # Create box positions: Ipsi-Thresh, Ipsi-CBF | Contra-Thresh, Contra-CBF
+        positions = [0, 0.8, 1.8, 2.6]  # Reduced gap between ipsi and contra groups
+        box_data = []
+        box_colors = []
+        box_labels = []
+
+        for hemi_cat in ['Ipsilateral', 'Contralateral']:
+            for approach in ['Thresholding', 'CBF']:
+                data = df_plot[(df_plot['Hemisphere_Category'] == hemi_cat) &
+                             (df_plot['Approach'] == approach)]['DSC_Volume'].values
+                box_data.append(data if len(data) > 0 else [])
+                box_colors.append(approach_colors[approach])
+                hemi_label = 'Ipsi' if hemi_cat == 'Ipsilateral' else 'Contra'
+                box_labels.append(f"{approach_labels[approach]}\n{hemi_label}")
+
+        # Create boxplot
+        bp = ax.boxplot(box_data, positions=positions, patch_artist=True,
+                       widths=0.6, medianprops=dict(color='black', linewidth=2))
+
+        # Color boxes
+        for patch, color in zip(bp['boxes'], box_colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.7)
+            patch.set_edgecolor('black')
+            patch.set_linewidth(1)
+
+        # Subplot title and labels
+        ax.set_title('(A) DSC per volume', fontsize=22, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Approach / Hemisphere Category', fontsize=16, fontweight='bold')
+        ax.set_ylabel('DSC per volume', fontsize=16, fontweight='bold')
+
+        # X-axis setup
+        ax.set_xticks(positions)
+        ax.set_xticklabels(box_labels)
+        ax.tick_params(axis='x', labelsize=14)
+        ax.tick_params(axis='y', labelsize=14)
+
+        # Add vertical line to separate ipsi and contra
+        ax.axvline(x=1.3, color='gray', linestyle='--', linewidth=1.5, alpha=0.5)
+
+        # Grid
+        ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+        ax.set_axisbelow(True)
+
+        # Add annotations
+        for i, pos in enumerate(positions):
+            if len(box_data[i]) > 0:
+                values = box_data[i]
+                median = np.median(values)
+                q1, q3 = np.percentile(values, [25, 75])
+                iqr = q3 - q1
+                n = len(values)
+
+                y_max = ax.get_ylim()[1]
+                y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+
+                # Median [IQR] - positioned much higher in DSC subplot to avoid overlap
+                label = f'{median:.3f} [{iqr:.3f}]'
+                hemi_idx = i // 2
+                approach_idx = i % 2
+                color = approach_colors[['Thresholding', 'CBF'][approach_idx]]
+
+                ax.text(pos, y_max + y_range * 0.02, label,
+                       ha='center', va='bottom', fontsize=12,
+                       color=color, weight='bold',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                               alpha=0.8, edgecolor=color, linewidth=0.8))
+
+                # Sample size
+                ax.text(pos, y_max + y_range * 0.10, f'n={n}',
+                       ha='center', va='bottom', fontsize=12, fontweight='bold',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.7))
+
+        # Extend y-axis to accommodate annotations above the plot
+        current_ylim = ax.get_ylim()
+        y_range = current_ylim[1] - current_ylim[0]
+        new_y_max = current_ylim[1] + y_range * 0.20
+        ax.set_ylim(current_ylim[0], new_y_max)
+
+        # Add headers above the boxes (DSC subplot) - after extending y-axis
+        y_max = ax.get_ylim()[1]
+        y_min = ax.get_ylim()[0]
+        y_range = y_max - y_min
+        header_y = y_max - y_range * 0.03  # Position headers just below the top
+
+        ax.text(0.4, header_y, 'Ipsilateral', fontsize=14, fontweight='bold', ha='center', va='top')
+        ax.text(2.2, header_y, 'Contralateral', fontsize=14, fontweight='bold', ha='center', va='top')
+
+        # Legend
+        ax.text(0.98, 0.02, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
+               transform=ax.transAxes, fontsize=12,
+               verticalalignment='bottom', horizontalalignment='right',
+               bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
+                        alpha=0.9, edgecolor='gray', linewidth=1.5))
+
+    def _plot_patient_rve_subplot(self, ax, patient_df, approach_colors, approach_labels):
+        """Plot RVE boxplot for patients (Ipsilateral vs Contralateral)"""
+        df_plot = patient_df[patient_df['RVE_Percent'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+        positions = [0, 0.8, 1.8, 2.6]
+        box_data = []
+        box_colors = []
+        box_labels = []
+
+        for hemi_cat in ['Ipsilateral', 'Contralateral']:
+            for approach in ['Thresholding', 'CBF']:
+                data = df_plot[(df_plot['Hemisphere_Category'] == hemi_cat) &
+                             (df_plot['Approach'] == approach)]['RVE_Percent'].values
+                box_data.append(data if len(data) > 0 else [])
+                box_colors.append(approach_colors[approach])
+                hemi_label = 'Ipsi' if hemi_cat == 'Ipsilateral' else 'Contra'
+                box_labels.append(f"{approach_labels[approach]}\n{hemi_label}")
+
+        bp = ax.boxplot(box_data, positions=positions, patch_artist=True,
+                       widths=0.6, medianprops=dict(color='black', linewidth=2))
+
+        for patch, color in zip(bp['boxes'], box_colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.7)
+            patch.set_edgecolor('black')
+            patch.set_linewidth(1)
+
+        ax.set_title('(B) Relative Volume Error', fontsize=22, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Approach / Hemisphere Category', fontsize=16, fontweight='bold')
+        ax.set_ylabel('Relative Volume Error (%)', fontsize=16, fontweight='bold')
+
+        ax.set_xticks(positions)
+        ax.set_xticklabels(box_labels)
+        ax.tick_params(axis='x', labelsize=14)
+        ax.tick_params(axis='y', labelsize=14)
+
+        ax.axvline(x=1.3, color='gray', linestyle='--', linewidth=1.5, alpha=0.5)
+
+        ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+        ax.set_axisbelow(True)
+
+        # Annotations
+        for i, pos in enumerate(positions):
+            if len(box_data[i]) > 0:
+                values = box_data[i]
+                median = np.median(values)
+                q1, q3 = np.percentile(values, [25, 75])
+                iqr = q3 - q1
+                n = len(values)
+
+                y_min = ax.get_ylim()[0]
+                y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+
+                label = f'{median:.1f} [{iqr:.1f}]'
+                approach_idx = i % 2
+                color = approach_colors[['Thresholding', 'CBF'][approach_idx]]
+
+                ax.text(pos, y_min - y_range * 0.02, label,
+                       ha='center', va='top', fontsize=12,
+                       color=color, weight='bold',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                               alpha=0.9, edgecolor=color, linewidth=0.8))
+
+                ax.text(pos, y_min - y_range * 0.12, f'n={n}',
+                       ha='center', va='top', fontsize=12,
+                       color='black', weight='bold',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                               alpha=0.9, edgecolor='black', linewidth=0.8))
+
+        # Extend y-axis downward to accommodate annotations
+        current_ylim = ax.get_ylim()
+        y_range = current_ylim[1] - current_ylim[0]
+        new_y_min = current_ylim[0] - y_range * 0.25
+        ax.set_ylim(new_y_min, current_ylim[1])
+
+        # Add headers below the boxes (RVE subplot) - after extending y-axis
+        y_max = ax.get_ylim()[1]
+        y_min = ax.get_ylim()[0]
+        y_range = y_max - y_min
+        header_y = y_min + y_range * 0.03  # Position headers just above the bottom
+
+        ax.text(0.4, header_y, 'Ipsilateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
+        ax.text(2.2, header_y, 'Contralateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
+
+        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
+               transform=ax.transAxes, fontsize=12,
+               verticalalignment='top', horizontalalignment='right',
+               bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
+                        alpha=0.9, edgecolor='gray', linewidth=1.5))
+
+    def _plot_patient_assd_subplot(self, ax, patient_df, approach_colors, approach_labels):
+        """Plot ASSD boxplot for patients (Ipsilateral vs Contralateral)"""
+        df_plot = patient_df[patient_df['ASSD_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+        positions = [0, 0.8, 1.8, 2.6]
+        box_data = []
+        box_colors = []
+        box_labels = []
+
+        for hemi_cat in ['Ipsilateral', 'Contralateral']:
+            for approach in ['Thresholding', 'CBF']:
+                data = df_plot[(df_plot['Hemisphere_Category'] == hemi_cat) &
+                             (df_plot['Approach'] == approach)]['ASSD_mm'].values
+                box_data.append(data if len(data) > 0 else [])
+                box_colors.append(approach_colors[approach])
+                hemi_label = 'Ipsi' if hemi_cat == 'Ipsilateral' else 'Contra'
+                box_labels.append(f"{approach_labels[approach]}\n{hemi_label}")
+
+        bp = ax.boxplot(box_data, positions=positions, patch_artist=True,
+                       widths=0.6, medianprops=dict(color='black', linewidth=2))
+
+        for patch, color in zip(bp['boxes'], box_colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.7)
+            patch.set_edgecolor('black')
+            patch.set_linewidth(1)
+
+        ax.set_title('(C) ASSD per slice', fontsize=22, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Approach / Hemisphere Category', fontsize=16, fontweight='bold')
+        ax.set_ylabel('ASSD (mm) per slice', fontsize=16, fontweight='bold')
+
+        ax.set_xticks(positions)
+        ax.set_xticklabels(box_labels)
+        ax.tick_params(axis='x', labelsize=14)
+        ax.tick_params(axis='y', labelsize=14)
+
+        ax.axvline(x=1.3, color='gray', linestyle='--', linewidth=1.5, alpha=0.5)
+
+        ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+        ax.set_axisbelow(True)
+
+        for i, pos in enumerate(positions):
+            if len(box_data[i]) > 0:
+                values = box_data[i]
+                median = np.median(values)
+                q1, q3 = np.percentile(values, [25, 75])
+                iqr = q3 - q1
+                n = len(values)
+
+                y_min = ax.get_ylim()[0]
+                y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+
+                label = f'{median:.1f} [{iqr:.1f}]'
+                approach_idx = i % 2
+                color = approach_colors[['Thresholding', 'CBF'][approach_idx]]
+
+                ax.text(pos, y_min - y_range * 0.02, label,
+                       ha='center', va='top', fontsize=12,
+                       color=color, weight='bold',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                               alpha=0.9, edgecolor=color, linewidth=0.8))
+
+                ax.text(pos, y_min - y_range * 0.12, f'n={n}',
+                       ha='center', va='top', fontsize=12,
+                       color='black', weight='bold',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                               alpha=0.9, edgecolor='black', linewidth=0.8))
+
+        # Extend y-axis downward to accommodate annotations
+        current_ylim = ax.get_ylim()
+        y_range = current_ylim[1] - current_ylim[0]
+        new_y_min = current_ylim[0] - y_range * 0.25
+        ax.set_ylim(new_y_min, current_ylim[1])
+
+        # Add headers below the boxes (ASSD subplot) - after extending y-axis
+        y_max = ax.get_ylim()[1]
+        y_min = ax.get_ylim()[0]
+        y_range = y_max - y_min
+        header_y = y_min + y_range * 0.03  # Position headers just above the bottom
+
+        ax.text(0.4, header_y, 'Ipsilateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
+        ax.text(2.2, header_y, 'Contralateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
+
+        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
+               transform=ax.transAxes, fontsize=12,
+               verticalalignment='top', horizontalalignment='right',
+               bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
+                        alpha=0.9, edgecolor='gray', linewidth=1.5))
+
+    def _plot_patient_hd95_subplot(self, ax, patient_df, approach_colors, approach_labels):
+        """Plot HD95 boxplot for patients (Ipsilateral vs Contralateral)"""
+        df_plot = patient_df[patient_df['HD95_mm'].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+        positions = [0, 0.8, 1.8, 2.6]
+        box_data = []
+        box_colors = []
+        box_labels = []
+
+        for hemi_cat in ['Ipsilateral', 'Contralateral']:
+            for approach in ['Thresholding', 'CBF']:
+                data = df_plot[(df_plot['Hemisphere_Category'] == hemi_cat) &
+                             (df_plot['Approach'] == approach)]['HD95_mm'].values
+                box_data.append(data if len(data) > 0 else [])
+                box_colors.append(approach_colors[approach])
+                hemi_label = 'Ipsi' if hemi_cat == 'Ipsilateral' else 'Contra'
+                box_labels.append(f"{approach_labels[approach]}\n{hemi_label}")
+
+        bp = ax.boxplot(box_data, positions=positions, patch_artist=True,
+                       widths=0.6, medianprops=dict(color='black', linewidth=2))
+
+        for patch, color in zip(bp['boxes'], box_colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.7)
+            patch.set_edgecolor('black')
+            patch.set_linewidth(1)
+
+        ax.set_title('(D) 95th Percentile Hausdorff Distance per volume', fontsize=22, fontweight='bold', pad=15, loc='left')
+        ax.set_xlabel('Approach / Hemisphere Category', fontsize=16, fontweight='bold')
+        ax.set_ylabel('HD95 (mm) per volume', fontsize=16, fontweight='bold')
+
+        ax.set_xticks(positions)
+        ax.set_xticklabels(box_labels)
+        ax.tick_params(axis='x', labelsize=14)
+        ax.tick_params(axis='y', labelsize=14)
+
+        ax.axvline(x=1.3, color='gray', linestyle='--', linewidth=1.5, alpha=0.5)
+
+        ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
+        ax.set_axisbelow(True)
+
+        for i, pos in enumerate(positions):
+            if len(box_data[i]) > 0:
+                values = box_data[i]
+                median = np.median(values)
+                q1, q3 = np.percentile(values, [25, 75])
+                iqr = q3 - q1
+                n = len(values)
+
+                y_min = ax.get_ylim()[0]
+                y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+
+                label = f'{median:.1f} [{iqr:.1f}]'
+                approach_idx = i % 2
+                color = approach_colors[['Thresholding', 'CBF'][approach_idx]]
+
+                ax.text(pos, y_min - y_range * 0.02, label,
+                       ha='center', va='top', fontsize=12,
+                       color=color, weight='bold',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                               alpha=0.9, edgecolor=color, linewidth=0.8))
+
+                ax.text(pos, y_min - y_range * 0.12, f'n={n}',
+                       ha='center', va='top', fontsize=12,
+                       color='black', weight='bold',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                               alpha=0.9, edgecolor='black', linewidth=0.8))
+
+        # Extend y-axis downward to accommodate annotations
+        current_ylim = ax.get_ylim()
+        y_range = current_ylim[1] - current_ylim[0]
+        new_y_min = current_ylim[0] - y_range * 0.25
+        ax.set_ylim(new_y_min, current_ylim[1])
+
+        # Add headers below the boxes (HD95 subplot) - after extending y-axis
+        y_max = ax.get_ylim()[1]
+        y_min = ax.get_ylim()[0]
+        y_range = y_max - y_min
+        header_y = y_min + y_range * 0.03  # Position headers just above the bottom
+
+        ax.text(0.4, header_y, 'Ipsilateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
+        ax.text(2.2, header_y, 'Contralateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
+
+        ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
+               transform=ax.transAxes, fontsize=12,
                verticalalignment='top', horizontalalignment='right',
                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
                         alpha=0.9, edgecolor='gray', linewidth=1.5))
