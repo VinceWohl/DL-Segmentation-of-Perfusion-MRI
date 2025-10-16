@@ -67,10 +67,10 @@ class TestSetEvaluator:
         # Mapping from internal keys to display names
         self.approach_display_names = {
             'Thresholding': 'Thresholding',
-            'CBF': 'CBF',
-            'CBF_T1w': 'CBF+T1w',
-            'CBF_FLAIR': 'CBF+FLAIR',
-            'CBF_T1w_FLAIR': 'CBF+T1w+FLAIR'
+            'CBF': 'Perf.',
+            'CBF_T1w': 'Perf.+T1w',
+            'CBF_FLAIR': 'Perf.+FLAIR',
+            'CBF_T1w_FLAIR': 'Perf.+T1w+FLAIR'
         }
 
         # Mapping for Excel file naming
@@ -416,6 +416,7 @@ class TestSetEvaluator:
         print("\nPerforming statistical testing...")
         self.perform_statistical_testing()
         self.perform_volumewise_statistical_testing()
+        self.perform_patient_volumewise_statistical_testing()
 
         print("\nCreating box plots...")
         self.create_box_plots()
@@ -829,8 +830,8 @@ class TestSetEvaluator:
 
         stats_df = pd.concat(corrected_results, ignore_index=True)
 
-        # Save to Excel
-        stats_file = self.output_dir / f"test_statistical_comparison_{group_name}_{timestamp}.xlsx"
+        # Save to Excel with ASSD metric name
+        stats_file = self.output_dir / f"test_statistical_comparison_{group_name}_ASSD_{timestamp}.xlsx"
 
         with pd.ExcelWriter(stats_file, engine='openpyxl') as writer:
             # Main results sheet
@@ -1046,6 +1047,175 @@ class TestSetEvaluator:
         # Return the DataFrame for use in plotting
         return stats_df
 
+    def perform_patient_volumewise_statistical_testing(self):
+        """Perform Wilcoxon signed-rank test for patient volume-wise metrics (DSC, RVE, HD95)
+        comparing Thresholding vs Perf. across ipsilateral and contralateral hemispheres"""
+        from scipy import stats
+        import pandas as pd
+
+        if not self.results:
+            print("  No volume-wise data available for patient statistical testing")
+            return
+
+        print("\n  Performing Patient Volume-wise Statistical Testing (Thresholding vs Perf.)...")
+
+        df = pd.DataFrame(self.results)
+        df[['Subject_str', 'Visit', 'Hemisphere_Code']] = df['Base_Name'].str.extract(r'PerfTerr(\d+)-v(\d+)-([LR])')
+        df['Subject_Num'] = df['Subject_str'].astype(int)
+        df['Group'] = df['Subject_Num'].apply(lambda x: 'HC' if x in [14, 15] else 'Patients')
+
+        # Get patient data only
+        patient_data = df[df['Group'] == 'Patients'].copy()
+
+        if len(patient_data) == 0:
+            print("  No patient data available")
+            return
+
+        # Load pathology mapping to categorize hemispheres
+        pathology_file = self.output_dir.parent / 'data_completeness_report_20250820_171756.xlsx'
+        try:
+            pathology_df = pd.read_excel(pathology_file)
+            patient_mapping = pathology_df[pathology_df['Subject'].str.match('sub-p0(1[6-9]|2[0-3])', na=False)].copy()
+            patient_mapping = patient_mapping[patient_mapping['AVM/Stenose'] != 'x']
+            patient_mapping['PerfTerr_ID'] = patient_mapping['Subject'].str.replace('sub-p0', 'PerfTerr0')
+            visit_map = {'First_visit': 'v1', 'Second_visit': 'v2', 'Third_visit': 'v3'}
+            patient_mapping['Visit_Code'] = patient_mapping['Visit'].map(visit_map)
+
+            pathology_lookup = {}
+            for _, row in patient_mapping.iterrows():
+                key = f"{row['PerfTerr_ID']}-{row['Visit_Code']}"
+                pathology_lookup[key] = row['AVM/Stenose']
+
+            # Add hemisphere categorization
+            def categorize_hemisphere(row):
+                case_key = row['Base_Name'].rsplit('-', 1)[0]  # Remove -L or -R
+                pathology_side = pathology_lookup.get(case_key, None)
+                if pathology_side is None:
+                    return None
+                actual_hemi = 'left' if row['Base_Name'].endswith('-L') else 'right'
+                return 'Ipsilateral' if actual_hemi == pathology_side else 'Contralateral'
+
+            patient_data['Hemisphere_Category'] = patient_data.apply(categorize_hemisphere, axis=1)
+            patient_data = patient_data[patient_data['Hemisphere_Category'].notna()].copy()
+
+        except Exception as e:
+            print(f"  Error loading pathology mapping: {e}")
+            return
+
+        # Filter to only Thresholding and CBF
+        patient_data = patient_data[patient_data['Approach'].isin(['Thresholding', 'CBF'])].copy()
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        print(f"\n  Patient Statistical Analysis (Ipsilateral vs Contralateral):")
+        print(f"  {'-' * 60}")
+
+        # Test each metric separately
+        for metric_name, metric_col in [('DSC', 'DSC_Volume'), ('RVE', 'RVE_Percent'), ('HD95', 'HD95_mm')]:
+            print(f"\n    Testing {metric_name}...")
+
+            metric_data = patient_data[patient_data[metric_col].replace([np.inf, -np.inf], np.nan).notna()].copy()
+
+            if len(metric_data) == 0:
+                print(f"      No valid {metric_name} data")
+                continue
+
+            all_stats_results = []
+
+            # Test for each hemisphere category
+            for hemi_cat in ['Ipsilateral', 'Contralateral']:
+                hemi_data = metric_data[metric_data['Hemisphere_Category'] == hemi_cat]
+
+                # Get Thresholding and CBF data
+                thresh_data = hemi_data[hemi_data['Approach'] == 'Thresholding']
+                cbf_data = hemi_data[hemi_data['Approach'] == 'CBF']
+
+                # Find paired volumes (same case)
+                merged_df = thresh_data.merge(cbf_data, on='Base_Name', suffixes=('_Thresh', '_CBF'))
+
+                if len(merged_df) < 5:  # Minimum sample size
+                    print(f"      {hemi_cat}: Insufficient paired data (n={len(merged_df)})")
+                    continue
+
+                # Get paired data
+                paired_thresh = merged_df[f'{metric_col}_Thresh'].values
+                paired_cbf = merged_df[f'{metric_col}_CBF'].values
+
+                try:
+                    # Wilcoxon signed-rank test
+                    statistic, p_value = stats.wilcoxon(paired_thresh, paired_cbf, alternative='two-sided')
+
+                    # Calculate effect size
+                    n = len(paired_thresh)
+                    z_score = stats.norm.ppf(1 - p_value/2) if p_value > 0 else 5.0
+                    effect_size = z_score / np.sqrt(n)
+
+                    # Calculate medians
+                    median_thresh = np.median(paired_thresh)
+                    median_cbf = np.median(paired_cbf)
+                    median_diff = median_thresh - median_cbf
+
+                    # Determine significance
+                    if p_value < 0.001:
+                        significance = "***"
+                    elif p_value < 0.01:
+                        significance = "**"
+                    elif p_value < 0.05:
+                        significance = "*"
+                    else:
+                        significance = "ns"
+
+                    all_stats_results.append({
+                        'Hemisphere_Category': hemi_cat,
+                        'Approach1': 'Thresholding',
+                        'Approach2': 'CBF',
+                        'Median_Thresholding': median_thresh,
+                        'Median_CBF': median_cbf,
+                        'Median_Diff': median_diff,
+                        'Statistic': statistic,
+                        'P_Value': p_value,
+                        'Effect_Size': effect_size,
+                        'Significance': significance,
+                        'N_Paired': n,
+                        'N_Thresholding': len(thresh_data),
+                        'N_CBF': len(cbf_data)
+                    })
+
+                    print(f"      {hemi_cat}: n={n}, p={p_value:.4f} {significance}")
+
+                except Exception as e:
+                    print(f"      Error testing {hemi_cat}: {e}")
+
+            # Save results if we have any
+            if all_stats_results:
+                stats_df = pd.DataFrame(all_stats_results)
+
+                # Add effect size interpretation
+                stats_df['Effect_Size_Interpretation'] = stats_df['Effect_Size'].apply(
+                    lambda x: 'Large' if abs(x) >= 0.5 else ('Medium' if abs(x) >= 0.3 else 'Small')
+                )
+
+                # No Bonferroni correction needed (only 1 comparison per hemisphere category)
+                stats_df['P_Value_Bonferroni'] = stats_df['P_Value']
+                stats_df['Significance_Bonferroni'] = stats_df['Significance']
+
+                # Save to Excel
+                stats_file = self.output_dir / f"test_statistical_comparison_Patients_{metric_name}_{timestamp}.xlsx"
+                with pd.ExcelWriter(stats_file, engine='openpyxl') as writer:
+                    stats_df.to_excel(writer, sheet_name='All_Comparisons', index=False)
+
+                    if sum(stats_df['P_Value'] < 0.05) > 0:
+                        significant_df = stats_df[stats_df['P_Value'] < 0.05]
+                        significant_df.to_excel(writer, sheet_name='Significant', index=False)
+
+                print(f"      {metric_name} results saved: {stats_file.name}")
+                print(f"        Significant (p<0.05): {sum(stats_df['P_Value'] < 0.05)}/{len(stats_df)}")
+
+                # Store for plotting
+                if not hasattr(self, 'patient_statistical_results'):
+                    self.patient_statistical_results = {}
+                self.patient_statistical_results[metric_name] = stats_df
+
     def _create_dsc_boxplots(self, df, approach_order, timestamp):
         """Create DSC boxplots for HC and Patients separately - matching reference style
         For HC: combine left and right hemispheres
@@ -1168,10 +1338,10 @@ class TestSetEvaluator:
                 # Custom labels for each approach with descriptive names
                 approach_labels = {
                     'Thresholding': 'Thresholding',
-                    'CBF': 'nnUNet w/\nCBF',
-                    'CBF_T1w': 'nnUNet w/\nCBF+MP-RAGE',
-                    'CBF_FLAIR': 'nnUNet w/\nCBF+FLAIR',
-                    'CBF_T1w_FLAIR': 'nnUNet w/\nCBF+MP-RAGE+FLAIR'
+                    'CBF': 'nnUNet w/\nPerf.',
+                    'CBF_T1w': 'nnUNet w/\nPerf.+MP-RAGE',
+                    'CBF_FLAIR': 'nnUNet w/\nPerf.+FLAIR',
+                    'CBF_T1w_FLAIR': 'nnUNet w/\nPerf.+MP-RAGE+FLAIR'
                 }
                 tick_positions = [hemisphere_positions['Combined'][i] for i in range(len(approach_order))]
                 tick_labels = [approach_labels.get(a, a) for a in approach_order]
@@ -1821,10 +1991,10 @@ class TestSetEvaluator:
                 # Custom labels for each approach with descriptive names
                 approach_labels = {
                     'Thresholding': 'Thresholding',
-                    'CBF': 'nnUNet w/\nCBF',
-                    'CBF_T1w': 'nnUNet w/\nCBF+MP-RAGE',
-                    'CBF_FLAIR': 'nnUNet w/\nCBF+FLAIR',
-                    'CBF_T1w_FLAIR': 'nnUNet w/\nCBF+MP-RAGE+FLAIR'
+                    'CBF': 'nnUNet w/\nPerf.',
+                    'CBF_T1w': 'nnUNet w/\nPerf.+MP-RAGE',
+                    'CBF_FLAIR': 'nnUNet w/\nPerf.+FLAIR',
+                    'CBF_T1w_FLAIR': 'nnUNet w/\nPerf.+MP-RAGE+FLAIR'
                 }
                 tick_positions = [hemisphere_positions['Combined'][i] for i in range(len(approach_order))]
                 tick_labels = [approach_labels.get(a, a) for a in approach_order]
@@ -1966,10 +2136,10 @@ class TestSetEvaluator:
 
         approach_labels = {
             'Thresholding': 'Thresholding',
-            'CBF': 'nnUNet w/\nCBF',
-            'CBF_T1w': 'nnUNet w/\nCBF+MP-RAGE',
-            'CBF_FLAIR': 'nnUNet w/\nCBF+FLAIR',
-            'CBF_T1w_FLAIR': 'nnUNet w/\nCBF+MP-RAGE+FLAIR'
+            'CBF': 'nnUNet w/\nPerf.',
+            'CBF_T1w': 'nnUNet w/\nPerf.\n+MP-RAGE',
+            'CBF_FLAIR': 'nnUNet w/\nPerf.\n+FLAIR',
+            'CBF_T1w_FLAIR': 'nnUNet w/\nPerf.\n+MP-RAGE+FLAIR'
         }
 
         # ===== TOP LEFT SUBPLOT: DSC =====
@@ -1990,7 +2160,7 @@ class TestSetEvaluator:
 
         plt.tight_layout(rect=[0, 0, 1, 0.98])  # Leave space for suptitle
 
-        fig.subplots_adjust(hspace=0.29)
+        fig.subplots_adjust(hspace=0.33)  # Spacing between upper and lower subplots
 
         plot_file = self.output_dir / f"HC_box-plots_{timestamp}.png"
         plt.savefig(plot_file, dpi=300, bbox_inches='tight', facecolor='white')
@@ -2072,7 +2242,7 @@ class TestSetEvaluator:
 
         approach_labels = {
             'Thresholding': 'Thresholding',
-            'CBF': 'nnUNet w/\nCBF'
+            'CBF': 'nnUNet w/\nPerf.'
         }
 
         # ===== TOP LEFT SUBPLOT: DSC =====
@@ -2166,9 +2336,9 @@ class TestSetEvaluator:
             patch.set_linewidth(1)
 
         # Subplot title and labels
-        ax.set_title('(A) DSC per volume', fontsize=22, fontweight='bold', pad=15, loc='left')
+        ax.set_title('(A) Dice Similarity Coefficient per volume', fontsize=22, fontweight='bold', pad=15, loc='left')
         ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=16, fontweight='bold')
-        ax.set_ylabel('DSC per volume', fontsize=16, fontweight='bold')
+        ax.set_ylabel('Dice per volume', fontsize=16, fontweight='bold')
 
         # X-axis labels
         ax.set_xticks(plot_positions)
@@ -2543,6 +2713,36 @@ class TestSetEvaluator:
                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
                         alpha=0.9, edgecolor='gray', linewidth=1.5))
 
+    def _add_patient_significance_bracket(self, ax, pos1, pos2, y_pos, significance, metric='DSC', direction='down'):
+        """Add significance bracket between two positions for patient plot
+
+        Args:
+            direction: 'down' for downward-facing brackets (DSC subplot), 'up' for upward-facing (RVE, HD95 subplots)
+        """
+        if significance == 'ns':
+            return  # Don't show non-significant comparisons
+
+        # Bracket positions
+        x1, x2 = pos1, pos2
+        y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+
+        if direction == 'up':
+            # Upward-facing bracket: starts at y_pos, goes down, then back up
+            bracket_height = -0.02 * y_range  # Negative for downward tick
+            ax.plot([x1, x1, x2, x2], [y_pos, y_pos + bracket_height, y_pos + bracket_height, y_pos],
+                    lw=1.5, c='black')
+            # Stars below the bracket
+            ax.text((x1 + x2) * 0.5, y_pos + bracket_height - 0.01 * y_range,
+                    significance, ha='center', va='top', fontsize=14, fontweight='bold')
+        else:
+            # Downward-facing bracket: starts at y_pos, goes up, then back down
+            bracket_height = 0.02 * y_range  # Positive for upward tick
+            ax.plot([x1, x1, x2, x2], [y_pos, y_pos + bracket_height, y_pos + bracket_height, y_pos],
+                    lw=1.5, c='black')
+            # Stars above the bracket
+            ax.text((x1 + x2) * 0.5, y_pos + bracket_height + 0.01 * y_range,
+                    significance, ha='center', va='bottom', fontsize=14, fontweight='bold')
+
     def _plot_patient_dsc_subplot(self, ax, patient_df, approach_colors, approach_labels):
         """Plot DSC boxplot for patients (Ipsilateral vs Contralateral)"""
         df_plot = patient_df[patient_df['DSC_Volume'].replace([np.inf, -np.inf], np.nan).notna()].copy()
@@ -2574,9 +2774,9 @@ class TestSetEvaluator:
             patch.set_linewidth(1)
 
         # Subplot title and labels
-        ax.set_title('(A) DSC per volume', fontsize=22, fontweight='bold', pad=15, loc='left')
+        ax.set_title('(A) Dice Similarity Coefficient per volume', fontsize=22, fontweight='bold', pad=15, loc='left')
         ax.set_xlabel('Approach / Hemisphere Category', fontsize=16, fontweight='bold')
-        ax.set_ylabel('DSC per volume', fontsize=16, fontweight='bold')
+        ax.set_ylabel('Dice per volume', fontsize=16, fontweight='bold')
 
         # X-axis setup
         ax.set_xticks(positions)
@@ -2600,40 +2800,76 @@ class TestSetEvaluator:
                 iqr = q3 - q1
                 n = len(values)
 
-                y_max = ax.get_ylim()[1]
-                y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+                # Will add annotations after adjusting y-axis
+                pass
 
-                # Median [IQR] - positioned much higher in DSC subplot to avoid overlap
+        # Extend y-axis to accommodate annotations - both above and below
+        current_ylim = ax.get_ylim()
+        y_range = current_ylim[1] - current_ylim[0]
+        new_y_max = current_ylim[1] + y_range * 0.35  # More space for headers, brackets, medians
+        new_y_min = current_ylim[0] - y_range * 0.05  # Small space for sample sizes below
+        ax.set_ylim(new_y_min, new_y_max)
+
+        # Now add all annotations in proper order (top to bottom)
+        y_max = ax.get_ylim()[1]
+        y_min = ax.get_ylim()[0]
+        y_range = y_max - y_min
+
+        # 1. Headers at the very top
+        header_y = y_max - y_range * 0.015
+        ax.text(0.4, header_y, 'Ipsilateral', fontsize=14, fontweight='bold', ha='center', va='top')
+        ax.text(2.2, header_y, 'Contralateral', fontsize=14, fontweight='bold', ha='center', va='top')
+
+        # 2. Significance brackets below headers
+        if hasattr(self, 'patient_statistical_results') and 'DSC' in self.patient_statistical_results:
+            stats_df = self.patient_statistical_results['DSC']
+
+            # Ipsilateral comparison
+            ipsi_stats = stats_df[stats_df['Hemisphere_Category'] == 'Ipsilateral']
+            if not ipsi_stats.empty:
+                significance = ipsi_stats.iloc[0]['Significance']
+                if significance != 'ns':
+                    bracket_y = y_max - y_range * 0.075  # Closer to median boxes
+                    self._add_patient_significance_bracket(ax, positions[0], positions[1], bracket_y, significance, direction='down')
+
+            # Contralateral comparison
+            contra_stats = stats_df[stats_df['Hemisphere_Category'] == 'Contralateral']
+            if not contra_stats.empty:
+                significance = contra_stats.iloc[0]['Significance']
+                if significance != 'ns':
+                    bracket_y = y_max - y_range * 0.075  # Closer to median boxes
+                    self._add_patient_significance_bracket(ax, positions[2], positions[3], bracket_y, significance, direction='down')
+
+        # 3. Median [IQR] boxes below brackets
+        for i, pos in enumerate(positions):
+            if len(box_data[i]) > 0:
+                values = box_data[i]
+                median = np.median(values)
+                q1, q3 = np.percentile(values, [25, 75])
+                iqr = q3 - q1
+                n = len(values)
+
                 label = f'{median:.3f} [{iqr:.3f}]'
-                hemi_idx = i // 2
                 approach_idx = i % 2
                 color = approach_colors[['Thresholding', 'CBF'][approach_idx]]
 
-                ax.text(pos, y_max + y_range * 0.02, label,
-                       ha='center', va='bottom', fontsize=12,
+                # Position median boxes below brackets (closer now)
+                median_y = y_max - y_range * 0.12
+                ax.text(pos, median_y, label,
+                       ha='center', va='top', fontsize=12,
                        color=color, weight='bold',
                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                alpha=0.8, edgecolor=color, linewidth=0.8))
 
-                # Sample size
-                ax.text(pos, y_max + y_range * 0.10, f'n={n}',
-                       ha='center', va='bottom', fontsize=12, fontweight='bold',
+        # 4. Sample sizes below median boxes but above boxplots
+        for i, pos in enumerate(positions):
+            if len(box_data[i]) > 0:
+                n = len(box_data[i])
+                # Position sample sizes between medians and data
+                sample_y = y_max - y_range * 0.19  # Below medians with good spacing
+                ax.text(pos, sample_y, f'n={n}',
+                       ha='center', va='top', fontsize=12, fontweight='bold',
                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.7))
-
-        # Extend y-axis to accommodate annotations above the plot
-        current_ylim = ax.get_ylim()
-        y_range = current_ylim[1] - current_ylim[0]
-        new_y_max = current_ylim[1] + y_range * 0.20
-        ax.set_ylim(current_ylim[0], new_y_max)
-
-        # Add headers above the boxes (DSC subplot) - after extending y-axis
-        y_max = ax.get_ylim()[1]
-        y_min = ax.get_ylim()[0]
-        y_range = y_max - y_min
-        header_y = y_max - y_range * 0.03  # Position headers just below the top
-
-        ax.text(0.4, header_y, 'Ipsilateral', fontsize=14, fontweight='bold', ha='center', va='top')
-        ax.text(2.2, header_y, 'Contralateral', fontsize=14, fontweight='bold', ha='center', va='top')
 
         # Legend
         ax.text(0.98, 0.02, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
@@ -2683,7 +2919,19 @@ class TestSetEvaluator:
         ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
         ax.set_axisbelow(True)
 
-        # Annotations
+        # Extend y-axis downward to accommodate annotations and upward for legend
+        current_ylim = ax.get_ylim()
+        y_range = current_ylim[1] - current_ylim[0]
+        new_y_min = current_ylim[0] - y_range * 0.35  # More space for headers, brackets, sample sizes
+        new_y_max = current_ylim[1] + y_range * 0.18  # Add space at top for legend
+        ax.set_ylim(new_y_min, new_y_max)
+
+        # Now add annotations with properly calculated positions
+        y_max = ax.get_ylim()[1]
+        y_min = ax.get_ylim()[0]
+        y_range = y_max - y_min
+
+        # Add median and sample size annotations
         for i, pos in enumerate(positions):
             if len(box_data[i]) > 0:
                 values = box_data[i]
@@ -2692,40 +2940,48 @@ class TestSetEvaluator:
                 iqr = q3 - q1
                 n = len(values)
 
-                y_min = ax.get_ylim()[0]
-                y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
-
                 label = f'{median:.1f} [{iqr:.1f}]'
                 approach_idx = i % 2
                 color = approach_colors[['Thresholding', 'CBF'][approach_idx]]
 
-                ax.text(pos, y_min - y_range * 0.02, label,
-                       ha='center', va='top', fontsize=12,
+                # Position median boxes (moved up closer to brackets)
+                ax.text(pos, y_min + y_range * 0.115, label,
+                       ha='center', va='bottom', fontsize=12,
                        color=color, weight='bold',
                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                alpha=0.9, edgecolor=color, linewidth=0.8))
 
-                ax.text(pos, y_min - y_range * 0.12, f'n={n}',
-                       ha='center', va='top', fontsize=12,
+                # Position sample sizes above brackets
+                ax.text(pos, y_min + y_range * 0.19, f'n={n}',
+                       ha='center', va='bottom', fontsize=12,
                        color='black', weight='bold',
                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                alpha=0.9, edgecolor='black', linewidth=0.8))
 
-        # Extend y-axis downward to accommodate annotations
-        current_ylim = ax.get_ylim()
-        y_range = current_ylim[1] - current_ylim[0]
-        new_y_min = current_ylim[0] - y_range * 0.25
-        ax.set_ylim(new_y_min, current_ylim[1])
-
-        # Add headers below the boxes (RVE subplot) - after extending y-axis
+        # Add headers below the boxes (RVE subplot) - after extending y-axis with more spacing
         y_max = ax.get_ylim()[1]
         y_min = ax.get_ylim()[0]
         y_range = y_max - y_min
-        header_y = y_min + y_range * 0.03  # Position headers just above the bottom
+        header_y = y_min + y_range * 0.015  # Position headers at bottom
 
         ax.text(0.4, header_y, 'Ipsilateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
         ax.text(2.2, header_y, 'Contralateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
 
+        # Add significance brackets for RVE - upward-facing, closer to median boxes
+        if hasattr(self, 'patient_statistical_results') and 'RVE' in self.patient_statistical_results:
+            stats_df = self.patient_statistical_results['RVE']
+
+            for i, hemi_cat in enumerate(['Ipsilateral', 'Contralateral']):
+                hemi_stats = stats_df[stats_df['Hemisphere_Category'] == hemi_cat]
+                if not hemi_stats.empty:
+                    significance = hemi_stats.iloc[0]['Significance']
+                    if significance != 'ns':
+                        # Position upward-facing brackets closer to median boxes
+                        bracket_y = y_min + y_range * 0.075  # Moved up closer to medians
+                        pos1, pos2 = (positions[0], positions[1]) if i == 0 else (positions[2], positions[3])
+                        self._add_patient_significance_bracket(ax, pos1, pos2, bracket_y, significance, direction='up')
+
+        # Position legend in top-right corner (y-axis extended upward to avoid overlap)
         ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
                transform=ax.transAxes, fontsize=12,
                verticalalignment='top', horizontalalignment='right',
@@ -2803,17 +3059,20 @@ class TestSetEvaluator:
         # Extend y-axis downward to accommodate annotations
         current_ylim = ax.get_ylim()
         y_range = current_ylim[1] - current_ylim[0]
-        new_y_min = current_ylim[0] - y_range * 0.25
+        new_y_min = current_ylim[0] - y_range * 0.30
         ax.set_ylim(new_y_min, current_ylim[1])
 
-        # Add headers below the boxes (ASSD subplot) - after extending y-axis
+        # Add headers below the boxes (ASSD subplot) - after extending y-axis with more spacing
         y_max = ax.get_ylim()[1]
         y_min = ax.get_ylim()[0]
         y_range = y_max - y_min
-        header_y = y_min + y_range * 0.03  # Position headers just above the bottom
+        header_y = y_min + y_range * 0.02  # Position headers closer to the bottom
 
         ax.text(0.4, header_y, 'Ipsilateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
         ax.text(2.2, header_y, 'Contralateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
+
+        # Add significance brackets for ASSD (Note: ASSD uses slice-wise data, not in patient_statistical_results)
+        # ASSD statistical testing would need to be added separately if desired
 
         ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
                transform=ax.transAxes, fontsize=12,
@@ -2862,6 +3121,18 @@ class TestSetEvaluator:
         ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
         ax.set_axisbelow(True)
 
+        # Extend y-axis downward to accommodate annotations
+        current_ylim = ax.get_ylim()
+        y_range = current_ylim[1] - current_ylim[0]
+        new_y_min = current_ylim[0] - y_range * 0.35  # More space for headers, brackets, sample sizes
+        ax.set_ylim(new_y_min, current_ylim[1])
+
+        # Now add annotations with properly calculated positions
+        y_max = ax.get_ylim()[1]
+        y_min = ax.get_ylim()[0]
+        y_range = y_max - y_min
+
+        # Add median and sample size annotations
         for i, pos in enumerate(positions):
             if len(box_data[i]) > 0:
                 values = box_data[i]
@@ -2870,39 +3141,43 @@ class TestSetEvaluator:
                 iqr = q3 - q1
                 n = len(values)
 
-                y_min = ax.get_ylim()[0]
-                y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
-
                 label = f'{median:.1f} [{iqr:.1f}]'
                 approach_idx = i % 2
                 color = approach_colors[['Thresholding', 'CBF'][approach_idx]]
 
-                ax.text(pos, y_min - y_range * 0.02, label,
-                       ha='center', va='top', fontsize=12,
+                # Position median boxes (moved up closer to brackets)
+                ax.text(pos, y_min + y_range * 0.115, label,
+                       ha='center', va='bottom', fontsize=12,
                        color=color, weight='bold',
                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                alpha=0.9, edgecolor=color, linewidth=0.8))
 
-                ax.text(pos, y_min - y_range * 0.12, f'n={n}',
-                       ha='center', va='top', fontsize=12,
+                # Position sample sizes above brackets
+                ax.text(pos, y_min + y_range * 0.19, f'n={n}',
+                       ha='center', va='bottom', fontsize=12,
                        color='black', weight='bold',
                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                alpha=0.9, edgecolor='black', linewidth=0.8))
 
-        # Extend y-axis downward to accommodate annotations
-        current_ylim = ax.get_ylim()
-        y_range = current_ylim[1] - current_ylim[0]
-        new_y_min = current_ylim[0] - y_range * 0.25
-        ax.set_ylim(new_y_min, current_ylim[1])
-
-        # Add headers below the boxes (HD95 subplot) - after extending y-axis
-        y_max = ax.get_ylim()[1]
-        y_min = ax.get_ylim()[0]
-        y_range = y_max - y_min
-        header_y = y_min + y_range * 0.03  # Position headers just above the bottom
+        # Add headers below the boxes (HD95 subplot)
+        header_y = y_min + y_range * 0.015  # Position headers at bottom
 
         ax.text(0.4, header_y, 'Ipsilateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
         ax.text(2.2, header_y, 'Contralateral', fontsize=14, fontweight='bold', ha='center', va='bottom')
+
+        # Add significance brackets for HD95 - upward-facing, closer to median boxes
+        if hasattr(self, 'patient_statistical_results') and 'HD95' in self.patient_statistical_results:
+            stats_df = self.patient_statistical_results['HD95']
+
+            for i, hemi_cat in enumerate(['Ipsilateral', 'Contralateral']):
+                hemi_stats = stats_df[stats_df['Hemisphere_Category'] == hemi_cat]
+                if not hemi_stats.empty:
+                    significance = hemi_stats.iloc[0]['Significance']
+                    if significance != 'ns':
+                        # Position upward-facing brackets closer to median boxes
+                        bracket_y = y_min + y_range * 0.075  # Moved up closer to medians
+                        pos1, pos2 = (positions[0], positions[1]) if i == 0 else (positions[2], positions[3])
+                        self._add_patient_significance_bracket(ax, pos1, pos2, bracket_y, significance, direction='up')
 
         ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
                transform=ax.transAxes, fontsize=12,
