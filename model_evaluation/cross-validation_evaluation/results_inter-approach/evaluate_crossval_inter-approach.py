@@ -317,10 +317,10 @@ class CrossValInterApproachEvaluator:
                 iqr = q3 - q1
                 n = len(values)
 
-                if metric == 'RVE_Percent':
-                    label_text = f'{median:.1f} [{iqr:.1f}]'
-                else:
+                if metric == 'DSC_Volume' :
                     label_text = f'{median:.3f} [{iqr:.3f}]'
+                else:
+                    label_text = f'{median:.1f} [{iqr:.1f}]'
 
                 color = self.approach_colors[approach]
 
