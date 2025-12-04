@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-nnUNet Test Predictions Evaluation Script
-Evaluates nnUNet predictions against ground truth annotations.
+Enhanced Test Set Evaluation Script with Group-based Analysis
+Evaluates predictions against ground truth with separate sheets per group (HC, ICAS, AVM).
 
 Computes per datapoint:
 - Dice Similarity Coefficient (volume-wise)
@@ -9,12 +9,13 @@ Computes per datapoint:
 - ASSD (slice-wise average)
 - HD95 (volume-wise)
 
-Output: Excel file with one row per datapoint
+Output: Excel file with 6 sheets (3 groups x 2 sheets each)
 """
 
 import os
 import sys
 import numpy as np
+import pandas as pd
 from pathlib import Path
 from datetime import datetime
 from scipy import ndimage
@@ -28,22 +29,16 @@ except ImportError:
     print("ERROR: nibabel not available. Install with: pip install nibabel")
     sys.exit(1)
 
-try:
-    import pandas as pd
-    PANDAS_AVAILABLE = True
-except ImportError:
-    PANDAS_AVAILABLE = False
-    print("ERROR: pandas not available. Install with: pip install pandas openpyxl")
-    sys.exit(1)
 
+class GroupBasedTestEvaluator:
+    """Evaluator for test set predictions with group-based analysis"""
 
-class nnUNetTestEvaluator:
-    """Evaluator for nnUNet test set predictions"""
-
-    def __init__(self, predictions_dir, gt_dir, output_dir):
+    def __init__(self, predictions_dir, gt_dir, group_file, output_dir, output_name):
         self.predictions_dir = Path(predictions_dir)
         self.gt_dir = Path(gt_dir)
+        self.group_file = Path(group_file)
         self.output_dir = Path(output_dir)
+        self.output_name = output_name
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # Results storage
@@ -52,11 +47,27 @@ class nnUNetTestEvaluator:
         self.successful_count = 0
         self.failed_files = []
 
+        # Load group information
+        self.group_mapping = self.load_group_mapping()
+
         # Verify directories exist
         if not self.predictions_dir.exists():
             raise ValueError(f"Predictions directory does not exist: {predictions_dir}")
         if not self.gt_dir.exists():
             raise ValueError(f"Ground truth directory does not exist: {gt_dir}")
+        if not self.group_file.exists():
+            raise ValueError(f"Group file does not exist: {group_file}")
+
+    # ---------- Group Management ----------
+    def load_group_mapping(self):
+        """Load group mapping from Excel file"""
+        df = pd.read_excel(self.group_file)
+        # Create dictionary mapping Case_ID to Group
+        group_dict = dict(zip(df['Case_ID'], df['Group']))
+        print(f"Loaded group mapping for {len(group_dict)} cases")
+        print(f"Groups: {df['Group'].unique()}")
+        print(f"Group distribution: {df['Group'].value_counts().to_dict()}")
+        return group_dict
 
     # ---------- File Loading ----------
     def load_nifti_file(self, file_path):
@@ -193,6 +204,12 @@ class nnUNetTestEvaluator:
             print(f"    ERROR: Shape mismatch - GT: {gt_mask.shape}, Pred: {pred_mask.shape}")
             return None
 
+        # Get group for this case
+        group = self.group_mapping.get(base_name, 'Unknown')
+        if group == 'Unknown':
+            print(f"    WARNING: No group found for {base_name}, skipping")
+            return None
+
         # Calculate metrics
         dice = self.calculate_dice_score(gt_mask, pred_mask)
         rve = self.calculate_relative_volume_error(gt_mask, pred_mask, spacing)
@@ -202,10 +219,11 @@ class nnUNetTestEvaluator:
         # Extract hemisphere from filename
         hemisphere = 'Left' if base_name.endswith('-L') else 'Right'
 
-        print(f"    DSC: {dice:.4f}, RVE: {rve:.2f}%, ASSD: {assd:.3f}mm, HD95: {hd95:.2f}mm")
+        print(f"    Group: {group}, DSC: {dice:.4f}, RVE: {rve:.2f}%, ASSD: {assd:.3f}mm, HD95: {hd95:.2f}mm")
 
         return {
             'Case_ID': base_name,
+            'Group': group,
             'Hemisphere': hemisphere,
             'DSC': dice,
             'RVE_Percent': rve,
@@ -242,10 +260,11 @@ class nnUNetTestEvaluator:
     def run_evaluation(self):
         """Run complete evaluation"""
         print("\n" + "="*80)
-        print("nnUNet Test Set Evaluation")
+        print("Group-Based Test Set Evaluation")
         print("="*80)
         print(f"Predictions: {self.predictions_dir}")
         print(f"Ground Truth: {self.gt_dir}")
+        print(f"Group File: {self.group_file}")
         print(f"Output: {self.output_dir}")
         print("="*80 + "\n")
 
@@ -287,95 +306,136 @@ class nnUNetTestEvaluator:
             print("ERROR: No successful evaluations to save!")
 
     def save_results_to_excel(self):
-        """Save evaluation results to Excel file"""
+        """Save evaluation results to Excel file with group-based sheets"""
         print("Saving results to Excel...")
 
         # Create DataFrame
         df = pd.DataFrame(self.results)
 
-        # Sort by Case_ID
-        df = df.sort_values('Case_ID').reset_index(drop=True)
+        # Sort by Group and Case_ID
+        df = df.sort_values(['Group', 'Case_ID']).reset_index(drop=True)
 
         # Generate output filename with timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = self.output_dir / f"test_predictions_evaluation_{timestamp}.xlsx"
+        output_file = self.output_dir / f"{self.output_name}_{timestamp}.xlsx"
 
-        # Save to Excel
+        # Get unique groups
+        groups = ['HC', 'ICAS', 'AVM']  # Fixed order
+
+        # Save to Excel with multiple sheets
         with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
-            df.to_excel(writer, sheet_name='Test_Predictions', index=False)
+            for group in groups:
+                group_df = df[df['Group'] == group].copy()
 
-            # Calculate summary statistics
-            summary_data = {
-                'Metric': ['DSC', 'RVE_Percent', 'ASSD_mm', 'HD95_mm'],
-                'Mean': [
-                    df['DSC'].mean(),
-                    df['RVE_Percent'].mean(),
-                    df['ASSD_mm'].mean(),
-                    df['HD95_mm'].mean()
-                ],
-                'Std': [
-                    df['DSC'].std(),
-                    df['RVE_Percent'].std(),
-                    df['ASSD_mm'].std(),
-                    df['HD95_mm'].std()
-                ],
-                'Median': [
-                    df['DSC'].median(),
-                    df['RVE_Percent'].median(),
-                    df['ASSD_mm'].median(),
-                    df['HD95_mm'].median()
-                ],
-                'Min': [
-                    df['DSC'].min(),
-                    df['RVE_Percent'].min(),
-                    df['ASSD_mm'].min(),
-                    df['HD95_mm'].min()
-                ],
-                'Max': [
-                    df['DSC'].max(),
-                    df['RVE_Percent'].max(),
-                    df['ASSD_mm'].max(),
-                    df['HD95_mm'].max()
-                ]
-            }
-            summary_df = pd.DataFrame(summary_data)
-            summary_df.to_excel(writer, sheet_name='Summary_Statistics', index=False)
+                if len(group_df) == 0:
+                    print(f"  Warning: No data for group {group}")
+                    continue
 
-            # Per-hemisphere summary
-            hemisphere_summary = df.groupby('Hemisphere').agg({
-                'DSC': ['mean', 'std', 'median'],
-                'RVE_Percent': ['mean', 'std', 'median'],
-                'ASSD_mm': ['mean', 'std', 'median'],
-                'HD95_mm': ['mean', 'std', 'median']
-            }).round(4)
-            hemisphere_summary.to_excel(writer, sheet_name='Per_Hemisphere_Summary')
+                # Sheet 1: Group predictions (detailed per case)
+                sheet_name_pred = f"{group}_test_predictions"
+                group_df_pred = group_df[['Case_ID', 'Hemisphere', 'DSC', 'RVE_Percent', 'ASSD_mm', 'HD95_mm']].copy()
+                group_df_pred.to_excel(writer, sheet_name=sheet_name_pred, index=False)
 
-        print(f"Results saved to: {output_file}")
-        print(f"\nSummary Statistics:")
-        print(f"  DSC: {df['DSC'].mean():.4f} +/- {df['DSC'].std():.4f}")
-        print(f"  RVE: {df['RVE_Percent'].mean():.2f} +/- {df['RVE_Percent'].std():.2f}%")
-        print(f"  ASSD: {df['ASSD_mm'].mean():.3f} +/- {df['ASSD_mm'].std():.3f} mm")
-        print(f"  HD95: {df['HD95_mm'].mean():.2f} +/- {df['HD95_mm'].std():.2f} mm")
+                # Sheet 2: Group summary statistics
+                sheet_name_summary = f"{group}_test_summary"
+                summary_data = {
+                    'Metric': ['DSC', 'RVE_Percent', 'ASSD_mm', 'HD95_mm'],
+                    'Mean': [
+                        group_df['DSC'].mean(),
+                        group_df['RVE_Percent'].mean(),
+                        group_df['ASSD_mm'].mean(),
+                        group_df['HD95_mm'].mean()
+                    ],
+                    'Std': [
+                        group_df['DSC'].std(),
+                        group_df['RVE_Percent'].std(),
+                        group_df['ASSD_mm'].std(),
+                        group_df['HD95_mm'].std()
+                    ],
+                    'Median': [
+                        group_df['DSC'].median(),
+                        group_df['RVE_Percent'].median(),
+                        group_df['ASSD_mm'].median(),
+                        group_df['HD95_mm'].median()
+                    ],
+                    'Min': [
+                        group_df['DSC'].min(),
+                        group_df['RVE_Percent'].min(),
+                        group_df['ASSD_mm'].min(),
+                        group_df['HD95_mm'].min()
+                    ],
+                    'Max': [
+                        group_df['DSC'].max(),
+                        group_df['RVE_Percent'].max(),
+                        group_df['ASSD_mm'].max(),
+                        group_df['HD95_mm'].max()
+                    ],
+                    'N': [
+                        len(group_df),
+                        len(group_df),
+                        len(group_df),
+                        len(group_df)
+                    ]
+                }
+                summary_df = pd.DataFrame(summary_data)
+                summary_df.to_excel(writer, sheet_name=sheet_name_summary, index=False)
+
+                print(f"  {group}: {len(group_df)} cases - DSC: {group_df['DSC'].mean():.4f} +/- {group_df['DSC'].std():.4f}")
+
+        print(f"\nResults saved to: {output_file}")
+
+        # Print overall summary
+        print(f"\nOverall Summary Across All Groups:")
+        for group in groups:
+            group_df = df[df['Group'] == group]
+            if len(group_df) > 0:
+                print(f"  {group} (n={len(group_df)}):")
+                print(f"    DSC: {group_df['DSC'].mean():.4f} +/- {group_df['DSC'].std():.4f}")
+                print(f"    RVE: {group_df['RVE_Percent'].mean():.2f} +/- {group_df['RVE_Percent'].std():.2f}%")
+                print(f"    ASSD: {group_df['ASSD_mm'].mean():.3f} +/- {group_df['ASSD_mm'].std():.3f} mm")
+                print(f"    HD95: {group_df['HD95_mm'].mean():.2f} +/- {group_df['HD95_mm'].std():.2f} mm")
 
 
 def main():
     """Main execution"""
-    # Default paths
-    predictions_dir = "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories/nnUNetTrainer__nnUNetPlans__2d/fold_all/predictions"
-    gt_dir = "/home/ubuntu/DLSegPerf/data/nnUNet_raw/Dataset001_PerfusionTerritories/labelsTs"
-    output_dir = "/home/ubuntu/DLSegPerf/model_evaluation/test_evaluation/results"
+    # Paths
+    base_dir = Path("/home/ubuntu/DLSegPerf/data/nnUNet_raw/Dataset001_PerfusionTerritories")
+    gt_dir = base_dir / "labelsTs"
+    group_file = base_dir / "Group_distripution.xlsx"
+    output_dir = Path("/home/ubuntu/DLSegPerf/model_evaluation/test_evaluation/results_final_dataset")
 
-    # Allow command line arguments to override defaults
-    if len(sys.argv) > 1:
-        predictions_dir = sys.argv[1]
-    if len(sys.argv) > 2:
-        gt_dir = sys.argv[2]
-    if len(sys.argv) > 3:
-        output_dir = sys.argv[3]
+    # Evaluation configurations
+    evaluations = [
+        {
+            'name': 'nnUNet Predictions',
+            'predictions_dir': "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories/nnUNetTrainer__nnUNetPlans__2d/fold_all/predictions",
+            'output_name': 'test_results_nnUNet'
+        },
+        {
+            'name': 'Thresholding Baseline',
+            'predictions_dir': base_dir / "thresholded_labelsTs",
+            'output_name': 'test_results_thresholding'
+        }
+    ]
 
-    # Create evaluator and run
-    evaluator = nnUNetTestEvaluator(predictions_dir, gt_dir, output_dir)
-    evaluator.run_evaluation()
+    # Run evaluations
+    for config in evaluations:
+        print("\n" + "="*80)
+        print(f"Running Evaluation: {config['name']}")
+        print("="*80)
+
+        evaluator = GroupBasedTestEvaluator(
+            predictions_dir=config['predictions_dir'],
+            gt_dir=gt_dir,
+            group_file=group_file,
+            output_dir=output_dir,
+            output_name=config['output_name']
+        )
+        evaluator.run_evaluation()
+
+    print("\n" + "="*80)
+    print("All Evaluations Complete!")
+    print("="*80)
 
 
 if __name__ == "__main__":
