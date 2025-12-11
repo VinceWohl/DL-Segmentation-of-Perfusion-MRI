@@ -42,8 +42,13 @@ class StatisticalComparator:
 
         for approach in self.approaches:
             # Find most recent results file for this approach
-            pattern = f"test_results_{approach}_*.xlsx"
-            files = sorted(self.results_dir.glob(pattern))
+            # Filter to exact match to avoid "nnUNet_CBF" matching "nnUNet_CBF_T1w"
+            all_files = list(self.results_dir.glob("test_results_*.xlsx"))
+            files = sorted([
+                f for f in all_files
+                if f.stem.startswith(f"test_results_{approach}_") and
+                   f.stem.replace(f"test_results_{approach}_", "")[0].isdigit()
+            ])
 
             if len(files) == 0:
                 print(f"  ERROR: No results file found for {approach}")
