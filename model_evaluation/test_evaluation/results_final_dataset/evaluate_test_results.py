@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Enhanced Test Set Evaluation Script with Group-based Analysis
-Evaluates predictions against ground truth with separate sheets per group (HC, ICAS, AVM).
+Enhanced Test Set Evaluation Script with Per-Approach Analysis
+Evaluates predictions against ground truth for multiple approaches.
 
 Computes per datapoint:
 - Dice Similarity Coefficient (volume-wise)
@@ -9,7 +9,9 @@ Computes per datapoint:
 - ASSD (slice-wise average)
 - HD95 (volume-wise)
 
-Output: Excel file with 6 sheets (3 groups x 2 sheets each)
+Output: One Excel file per approach with 2 sheets:
+  - Per_Case: Detailed metrics for each test case
+  - Summary: Overall statistics grouped by patient cohort (HC, ICAS, AVM)
 """
 
 import os
@@ -33,12 +35,12 @@ except ImportError:
 class GroupBasedTestEvaluator:
     """Evaluator for test set predictions with group-based analysis"""
 
-    def __init__(self, predictions_dir, gt_dir, group_file, output_dir, output_name):
+    def __init__(self, predictions_dir, gt_dir, group_file, output_dir, approach_name):
         self.predictions_dir = Path(predictions_dir)
         self.gt_dir = Path(gt_dir)
         self.group_file = Path(group_file)
         self.output_dir = Path(output_dir)
-        self.output_name = output_name
+        self.approach_name = approach_name
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # Results storage
@@ -317,12 +319,12 @@ class GroupBasedTestEvaluator:
 
         # Generate output filename with timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = self.output_dir / f"{self.output_name}_{timestamp}.xlsx"
+        output_file = self.output_dir / f"test_results_{self.approach_name}_{timestamp}.xlsx"
 
-        # Get unique groups
-        groups = ['HC', 'ICAS', 'AVM']  # Fixed order
+        # Get unique groups in fixed order
+        groups = ['HC', 'ICAS', 'AVM']
 
-        # Save to Excel with multiple sheets
+        # Save to Excel with multiple sheets (Per_Case and Summary per group)
         with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
             for group in groups:
                 group_df = df[df['Group'] == group].copy()
@@ -331,13 +333,13 @@ class GroupBasedTestEvaluator:
                     print(f"  Warning: No data for group {group}")
                     continue
 
-                # Sheet 1: Group predictions (detailed per case)
-                sheet_name_pred = f"{group}_test_predictions"
-                group_df_pred = group_df[['Case_ID', 'Hemisphere', 'DSC', 'RVE_Percent', 'ASSD_mm', 'HD95_mm']].copy()
-                group_df_pred.to_excel(writer, sheet_name=sheet_name_pred, index=False)
+                # Sheet 1: Per_Case_{Group} - detailed per case metrics
+                sheet_name_per_case = f"Per_Case_{group}"
+                group_df_per_case = group_df[['Case_ID', 'Hemisphere', 'DSC', 'RVE_Percent', 'ASSD_mm', 'HD95_mm']].copy()
+                group_df_per_case.to_excel(writer, sheet_name=sheet_name_per_case, index=False)
 
-                # Sheet 2: Group summary statistics
-                sheet_name_summary = f"{group}_test_summary"
+                # Sheet 2: Summary_{Group} - summary statistics
+                sheet_name_summary = f"Summary_{group}"
                 summary_data = {
                     'Metric': ['DSC', 'RVE_Percent', 'ASSD_mm', 'HD95_mm'],
                     'Mean': [
@@ -385,7 +387,7 @@ class GroupBasedTestEvaluator:
         print(f"\nResults saved to: {output_file}")
 
         # Print overall summary
-        print(f"\nOverall Summary Across All Groups:")
+        print(f"\nSummary by Group:")
         for group in groups:
             group_df = df[df['Group'] == group]
             if len(group_df) > 0:
@@ -399,22 +401,27 @@ class GroupBasedTestEvaluator:
 def main():
     """Main execution"""
     # Paths
-    base_dir = Path("/home/ubuntu/DLSegPerf/data/nnUNet_raw/Dataset001_PerfusionTerritories")
-    gt_dir = base_dir / "labelsTs"
-    group_file = base_dir / "Group_distripution.xlsx"
-    output_dir = Path("/home/ubuntu/DLSegPerf/model_evaluation/test_evaluation/results_final_dataset")
+    test_results_dir = Path("/mnt/volume/TrainingResults-PerfTerr")
+    gt_dir = test_results_dir / "GT_labelsTs"
+    group_file = test_results_dir / "Group_distripution.xlsx"
+    output_dir = Path(__file__).parent  # Save results in script directory
 
     # Evaluation configurations
     evaluations = [
         {
-            'name': 'nnUNet Predictions',
-            'predictions_dir': "/home/ubuntu/DLSegPerf/data/nnUNet_results/Dataset001_PerfusionTerritories/nnUNetTrainer__nnUNetPlans__2d/fold_all/predictions",
-            'output_name': 'test_results_nnUNet'
+            'name': 'nnUNet CBF Model',
+            'predictions_dir': test_results_dir / "predictions_nnUNet_CBF",
+            'approach_name': 'nnUNet_CBF'
+        },
+        {
+            'name': 'nnUNet CBF+T1w Model',
+            'predictions_dir': test_results_dir / "predictions_nnUNet_CBF_T1w",
+            'approach_name': 'nnUNet_CBF_T1w'
         },
         {
             'name': 'Thresholding Baseline',
-            'predictions_dir': base_dir / "thresholded_labelsTs",
-            'output_name': 'test_results_thresholding'
+            'predictions_dir': test_results_dir / "thresholded_labelsTs",
+            'approach_name': 'thresholding'
         }
     ]
 
@@ -429,7 +436,7 @@ def main():
             gt_dir=gt_dir,
             group_file=group_file,
             output_dir=output_dir,
-            output_name=config['output_name']
+            approach_name=config['approach_name']
         )
         evaluator.run_evaluation()
 
