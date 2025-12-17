@@ -156,29 +156,38 @@ class GroupBasedTestEvaluator:
             print(f"Warning: Slice-wise ASSD calculation failed: {e}")
             return float('nan')
 
-    def get_surface_points_3d(self, mask, spacing):
-        """Get surface points for 3D volume"""
+    def get_surface_points_3d(self, mask):
+        """Get surface points for 3D volume in voxel coordinates"""
         structure = ndimage.generate_binary_structure(3, 1)
         eroded = ndimage.binary_erosion(mask, structure)
         boundary = mask & ~eroded
         coords = np.array(np.where(boundary)).T
-        if len(coords) > 0:
-            return coords * np.array(spacing)
         return coords
 
     def calculate_hausdorff_distance_95(self, gt_mask, pred_mask, spacing):
-        """Calculate 95th percentile Hausdorff Distance (volume-wise)"""
+        """Calculate 95th percentile Hausdorff Distance (volume-wise)
+
+        Calculates distances at voxel-level first, then applies spacing
+        to get more granular differentiation between cases.
+        """
         try:
-            gt_surface = self.get_surface_points_3d(gt_mask, spacing)
-            pred_surface = self.get_surface_points_3d(pred_mask, spacing)
+            # Get surface points in voxel coordinates (no spacing applied yet)
+            gt_surface = self.get_surface_points_3d(gt_mask)
+            pred_surface = self.get_surface_points_3d(pred_mask)
 
             if len(gt_surface) == 0 and len(pred_surface) == 0:
                 return 0.0
             elif len(gt_surface) == 0 or len(pred_surface) == 0:
                 return float('inf')
 
-            d1 = cdist(gt_surface, pred_surface).min(axis=1)
-            d2 = cdist(pred_surface, gt_surface).min(axis=1)
+            # Scale coordinates by spacing for proper Euclidean distance calculation
+            spacing_array = np.array(spacing)
+            gt_surface_scaled = gt_surface * spacing_array
+            pred_surface_scaled = pred_surface * spacing_array
+
+            # Calculate distances in physical space (mm)
+            d1 = cdist(gt_surface_scaled, pred_surface_scaled).min(axis=1)
+            d2 = cdist(pred_surface_scaled, gt_surface_scaled).min(axis=1)
             all_d = np.concatenate([d1, d2])
 
             return float(np.percentile(all_d, 95))
