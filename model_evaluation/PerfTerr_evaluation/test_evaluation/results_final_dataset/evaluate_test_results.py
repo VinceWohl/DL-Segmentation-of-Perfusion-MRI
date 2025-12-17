@@ -360,6 +360,12 @@ class GroupBasedTestEvaluator:
                         group_df['ASSD_mm'].median(),
                         group_df['HD95_mm'].median()
                     ],
+                    'IQR': [
+                        group_df['DSC'].quantile(0.75) - group_df['DSC'].quantile(0.25),
+                        group_df['RVE_Percent'].quantile(0.75) - group_df['RVE_Percent'].quantile(0.25),
+                        group_df['ASSD_mm'].quantile(0.75) - group_df['ASSD_mm'].quantile(0.25),
+                        group_df['HD95_mm'].quantile(0.75) - group_df['HD95_mm'].quantile(0.25)
+                    ],
                     'Min': [
                         group_df['DSC'].min(),
                         group_df['RVE_Percent'].min(),
