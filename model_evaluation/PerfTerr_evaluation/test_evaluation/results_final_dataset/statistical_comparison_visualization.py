@@ -4,7 +4,7 @@ Statistical Comparison Script for Test Results
 Performs paired Wilcoxon signed-rank testing with Bonferroni correction
 comparing three approaches: nnUNet_CBF, nnUNet_CBF_T1w, and thresholding
 
-Output: Excel file with 4 sheets (DSC, RVE, ASSD, HD95) showing significant comparisons
+Output: Excel file with 4 sheets (DSC, RVE, ASSD, HD95) showing ALL comparisons
 """
 
 import os
@@ -233,17 +233,15 @@ class StatisticalComparator:
 
         with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
             for metric in ['DSC', 'RVE', 'ASSD', 'HD95']:
-                # Filter for this metric and only significant comparisons after Bonferroni
+                # Filter for this metric and show ALL comparisons (not just significant)
                 metric_df = df[df['Metric'] == metric].copy()
                 significant_df = metric_df[metric_df['Significance_Bonferroni'] != 'ns'].copy()
 
+                # Report statistics but save all comparisons
                 if len(significant_df) == 0:
-                    print(f"  {metric}: No significant comparisons after Bonferroni correction")
-                    # Still save all comparisons for reference
-                    metric_df_sorted = metric_df.sort_values('P_Value_Bonferroni')
+                    print(f"  {metric}: No significant comparisons after Bonferroni correction (showing all {len(metric_df)} comparisons)")
                 else:
-                    print(f"  {metric}: {len(significant_df)} significant comparisons (from {len(metric_df)} total)")
-                    significant_df = significant_df.sort_values('P_Value_Bonferroni')
+                    print(f"  {metric}: {len(significant_df)} significant comparisons (showing all {len(metric_df)} comparisons)")
 
                 # Select columns to display
                 columns = [
@@ -256,11 +254,9 @@ class StatisticalComparator:
                     'N_Paired', 'N_Tests'
                 ]
 
-                # Save significant comparisons (or all if none significant)
-                if len(significant_df) > 0:
-                    significant_df[columns].to_excel(writer, sheet_name=metric, index=False)
-                else:
-                    metric_df[columns].sort_values('P_Value_Bonferroni').to_excel(writer, sheet_name=metric, index=False)
+                # Save ALL comparisons sorted by Bonferroni-corrected p-value
+                metric_df_sorted = metric_df.sort_values('P_Value_Bonferroni')
+                metric_df_sorted[columns].to_excel(writer, sheet_name=metric, index=False)
 
         print(f"\nResults saved successfully!")
         return output_file
