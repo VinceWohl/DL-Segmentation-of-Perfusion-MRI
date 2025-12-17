@@ -418,22 +418,28 @@ class StatisticalComparator:
         # Assign bracket heights
         bracket_heights = []
         bracket_height_increment = y_range * 0.045
-        # Adjust base offset - HC needs more space below for annotations
+        # Adjust base offset - group and position specific
         # For HC below: annotations at 0.01 (median) and -0.06 (n), so brackets start at ~0.15 for more clearance
         # For other groups below: annotations at 0.08 (median) and 0.01 (n), so brackets start at ~0.13
-        # For above: annotations at 0.03-0.08 range, brackets start at ~0.10
+        # For above: annotations vary by group
         if position == 'below' and group == 'HC':
             bracket_base_offset = y_range * 0.15  # More space for HC
         elif position == 'below':
             bracket_base_offset = y_range * 0.13
-        else:  # above
+        elif position == 'above' and group == 'ICAS':
+            bracket_base_offset = y_range * 0.07  # ICAS DSC: user-specified value
+        else:  # above for other groups
             bracket_base_offset = y_range * 0.10
 
         for pair in significant_pairs:
             level = 0
             while True:
                 if position == 'above':
-                    height = y_max + bracket_base_offset + (level * bracket_height_increment)
+                    # For ICAS DSC, position brackets BELOW y_max to stay within 1.10 limit
+                    if group == 'ICAS' and metric_name == 'DSC':
+                        height = y_max - bracket_base_offset - (level * bracket_height_increment)
+                    else:
+                        height = y_max + bracket_base_offset + (level * bracket_height_increment)
                 else:  # below
                     height = y_min - bracket_base_offset - (level * bracket_height_increment)
 
@@ -483,16 +489,30 @@ class StatisticalComparator:
             if position == 'above':
                 max_bracket_height = max(h for _, h in bracket_heights)
                 new_y_max = max_bracket_height + y_range * 0.05
-                ax.set_ylim(y_min, new_y_max)
+                # For ICAS DSC, keep the fixed y_max=1.10 to avoid extending beyond
+                if group == 'ICAS' and metric_name == 'DSC':
+                    ax.set_ylim(y_min, 1.10)  # Keep fixed y_max
+                else:
+                    ax.set_ylim(y_min, new_y_max)
             else:  # below
                 min_bracket_height = min(h for _, h in bracket_heights)
-                new_y_min = min_bracket_height - y_range * 0.05
+                # ICAS needs extra space below - annotations are at y_min - 0.25*y_range
+                if group == 'ICAS':
+                    # Extend below to include annotations at y_min - 0.25*y_range
+                    # Need to extend down by at least 0.35 from original y_min
+                    new_y_min = min(min_bracket_height - y_range * 0.05, y_min - y_range * 0.60)
+                else:
+                    new_y_min = min_bracket_height - y_range * 0.05
                 ax.set_ylim(new_y_min, y_max)
         else:
             # No brackets, but still need space for annotations
             if position == 'below':
                 # Extend below to accommodate median + sample size boxes
-                new_y_min = y_min - y_range * 0.25
+                # ICAS annotations are at y_min - 0.25*y_range, need significant extension
+                if group == 'ICAS':
+                    new_y_min = y_min - y_range * 0.60  # Extend plot area well below for annotations
+                else:
+                    new_y_min = y_min - y_range * 0.25
                 ax.set_ylim(new_y_min, y_max)
             else:  # above
                 # Extend above to accommodate median + sample size boxes
@@ -558,6 +578,27 @@ class StatisticalComparator:
             current_ylim = ax.get_ylim()
             ax.set_ylim(current_ylim[0] - 0.02, current_ylim[1])
 
+        # PRE-EXTEND y-axis for ICAS plots with specific limits
+        if group == 'ICAS':
+            current_ylim = ax.get_ylim()
+            y_max_current = current_ylim[1]
+            y_min_current = current_ylim[0]
+
+            if sig_position == 'above' and metric_col == 'DSC':
+                # (A) DSC: Set y_min=0.72, y_max=1.10
+                ax.set_ylim(0.72, 1.10)
+            elif sig_position == 'below':
+                # (B, C, D): Set specific y_min values for each metric
+                if metric_col == 'RVE_Percent':
+                    new_y_min = -35  # User-specified y_min for RVE
+                elif metric_col == 'ASSD_mm':
+                    new_y_min = -1   # User-specified y_min for ASSD
+                elif metric_col == 'HD95_mm':
+                    new_y_min = -10  # User-specified y_min for HD95
+                else:
+                    new_y_min = y_min_current - (y_max_current - y_min_current) * 0.25
+                ax.set_ylim(new_y_min, y_max_current)
+
         # Add annotations (median, IQR, n)
         y_max = ax.get_ylim()[1]
         y_min = ax.get_ylim()[0]
@@ -581,13 +622,17 @@ class StatisticalComparator:
 
                     # Match reference positioning - annotations INSIDE plot area but OUTSIDE data range
                     if sig_position == 'above':  # DSC plots - annotations above whiskers
-                        # HC-specific adjustments
+                        # Group-specific adjustments
                         if group == 'HC':
-                            # Move BOTH boxes even HIGHER
-                            median_offset = 0.03  # move even higher (was 0.04)
-                            sample_offset = 0.08  # move even higher (was 0.09)
+                            # HC (A) DSC: Move median boxes higher
+                            median_offset = -0.02  # set to -0.02 as requested
+                            sample_offset = 0.06  # keep same
+                        elif group == 'ICAS':
+                            # ICAS (A) DSC: User-specified values
+                            median_offset = 0.20  # user-specified value
+                            sample_offset = 0.26  # user-specified value
                         else:
-                            # Default for other groups
+                            # Default for AVM and other groups
                             median_offset = 0.08
                             sample_offset = 0.17
 
@@ -601,13 +646,17 @@ class StatisticalComparator:
                                ha='center', va='bottom', fontsize=13, fontweight='bold',
                                bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.7))
                     else:  # RVE, ASSD, HD95 - annotations below whiskers
-                        # HC-specific adjustments for B, C, D
+                        # Group-specific adjustments for B, C, D
                         if group == 'HC':
-                            # Move BOTH boxes even LOWER (farther away from whiskers)
-                            median_offset = 0.01  # move even lower (was 0.03)
-                            sample_offset = -0.06  # move even lower (was -0.04, more negative = lower)
+                            # HC (B, C, D): Keep median position, move sample size boxes minimally higher
+                            median_offset = 0.01  # keep same position
+                            sample_offset = -0.07  # minimally higher (was -0.08, less negative = higher on y-axis)
+                        elif group == 'ICAS':
+                            # ICAS (B, C, D): Move median lower (+), sample size lower (+)
+                            median_offset = 0.12  # Position lower (was 0.14) - smaller = lower on y-axis
+                            sample_offset = 0.06  # Position lower (was 0.08) - smaller = lower on y-axis
                         else:
-                            # Default for other groups
+                            # Default for AVM and other groups
                             median_offset = 0.08
                             sample_offset = 0.01
 
