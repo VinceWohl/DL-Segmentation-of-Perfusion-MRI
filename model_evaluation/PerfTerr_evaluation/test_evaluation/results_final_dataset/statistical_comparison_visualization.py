@@ -326,7 +326,7 @@ class StatisticalComparator:
             fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(20, 16))
 
             # Plot each metric - adjust DSC ylim for AVM to prevent legend overlap
-            dsc_ylim = (0.7, 1.0) if group != 'AVM' else (0.72, 1.0)
+            dsc_ylim = (0.7, 1.0) if group != 'AVM' else (0.65, 1.05)
             self._plot_metric_subplot(ax1, group, 'DSC', '(A) Dice Similarity Coefficient',
                                      'Dice per volume', approach_order, approach_colors,
                                      approach_labels, ylim=dsc_ylim, sig_position='above')
@@ -413,7 +413,12 @@ class StatisticalComparator:
             return
 
         # Sort by span
-        significant_pairs.sort(key=lambda x: x['span'])
+        # For ICAS DSC (above position with downward brackets), sort descending so longer brackets are higher
+        # For other cases, sort ascending (shorter brackets closer to data)
+        if position == 'above' and group == 'ICAS' and metric_name == 'DSC':
+            significant_pairs.sort(key=lambda x: x['span'], reverse=True)  # Longest first (highest position)
+        else:
+            significant_pairs.sort(key=lambda x: x['span'])  # Shortest first
 
         # Assign bracket heights
         bracket_heights = []
@@ -424,6 +429,8 @@ class StatisticalComparator:
         # For above: annotations vary by group
         if position == 'below' and group == 'HC':
             bracket_base_offset = y_range * 0.15  # More space for HC
+        elif position == 'below' and group == 'AVM' and metric_name == 'RVE':
+            bracket_base_offset = y_range * -0.1  # AVM RVE: Negative offset positions brackets above y_min
         elif position == 'below':
             bracket_base_offset = y_range * 0.13
         elif position == 'above' and group == 'ICAS':
@@ -492,6 +499,9 @@ class StatisticalComparator:
                 # For ICAS DSC, keep the fixed y_max=1.10 to avoid extending beyond
                 if group == 'ICAS' and metric_name == 'DSC':
                     ax.set_ylim(y_min, 1.10)  # Keep fixed y_max
+                # For AVM DSC, keep the fixed y_min=0.6 to avoid legend overlap
+                elif group == 'AVM' and metric_name == 'DSC':
+                    ax.set_ylim(0.6, new_y_max)  # Keep fixed y_min
                 else:
                     ax.set_ylim(y_min, new_y_max)
             else:  # below
@@ -501,9 +511,13 @@ class StatisticalComparator:
                     # Extend below to include annotations at y_min - 0.25*y_range
                     # Need to extend down by at least 0.35 from original y_min
                     new_y_min = min(min_bracket_height - y_range * 0.05, y_min - y_range * 0.60)
+                    ax.set_ylim(new_y_min, y_max)
+                # For AVM RVE, keep the fixed y_min=-150
+                elif group == 'AVM' and metric_name == 'RVE':
+                    ax.set_ylim(-130, y_max)  # Keep fixed y_min
                 else:
                     new_y_min = min_bracket_height - y_range * 0.05
-                ax.set_ylim(new_y_min, y_max)
+                    ax.set_ylim(new_y_min, y_max)
         else:
             # No brackets, but still need space for annotations
             if position == 'below':
@@ -511,13 +525,21 @@ class StatisticalComparator:
                 # ICAS annotations are at y_min - 0.25*y_range, need significant extension
                 if group == 'ICAS':
                     new_y_min = y_min - y_range * 0.60  # Extend plot area well below for annotations
+                    ax.set_ylim(new_y_min, y_max)
+                # For AVM RVE, keep the fixed y_min=-150
+                elif group == 'AVM' and metric_name == 'RVE':
+                    ax.set_ylim(-130, y_max)  # Keep fixed y_min
                 else:
                     new_y_min = y_min - y_range * 0.25
-                ax.set_ylim(new_y_min, y_max)
+                    ax.set_ylim(new_y_min, y_max)
             else:  # above
                 # Extend above to accommodate median + sample size boxes
                 new_y_max = y_max + y_range * 0.15
-                ax.set_ylim(y_min, new_y_max)
+                # For AVM DSC, keep the fixed y_min=0.6 to avoid legend overlap
+                if group == 'AVM' and metric_name == 'DSC':
+                    ax.set_ylim(0.6, new_y_max)  # Keep fixed y_min
+                else:
+                    ax.set_ylim(y_min, new_y_max)
 
     def _plot_metric_subplot(self, ax, group, metric_col, title, ylabel,
                             approach_order, approach_colors, approach_labels, ylim=None, sig_position='above'):
@@ -570,13 +592,24 @@ class StatisticalComparator:
         ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
         ax.set_axisbelow(True)
 
-        # Y-axis limits - adjust for AVM DSC to prevent legend overlap
+        # Y-axis limits - adjust for AVM to prevent overlaps
         if ylim is not None:
             ax.set_ylim(ylim)
-        elif group == 'AVM' and metric_col == 'DSC':
-            # Extend y-axis range for AVM DSC to prevent legend overlap with whiskers
+        elif group == 'AVM':
+            # Set specific y-axis limits for AVM plots
             current_ylim = ax.get_ylim()
-            ax.set_ylim(current_ylim[0] - 0.02, current_ylim[1])
+            if metric_col == 'DSC':
+                # (A) DSC: Set y_min=0.6 to enlarge plot area and prevent legend overlap
+                ax.set_ylim(0.6, current_ylim[1])
+            elif metric_col == 'RVE_Percent':
+                # (B) RVE: Set y_min=-130, y_max=45
+                ax.set_ylim(-130, 45)
+            elif metric_col == 'ASSD_mm':
+                # (C) ASSD: Set y_min=-1.5 for adequate space
+                ax.set_ylim(-1.5, current_ylim[1])
+            elif metric_col == 'HD95_mm':
+                # (D) HD95: Set y_min=-10 for adequate space
+                ax.set_ylim(-10, current_ylim[1])
 
         # PRE-EXTEND y-axis for ICAS plots with specific limits
         if group == 'ICAS':
@@ -631,8 +664,12 @@ class StatisticalComparator:
                             # ICAS (A) DSC: User-specified values
                             median_offset = 0.20  # user-specified value
                             sample_offset = 0.26  # user-specified value
+                        elif group == 'AVM':
+                            # AVM (A) DSC: Move sample size boxes higher on y-axis
+                            median_offset = 0.08
+                            sample_offset = 0.14  # decreased to move boxes UP (closer to y_max)
                         else:
-                            # Default for AVM and other groups
+                            # Default for other groups
                             median_offset = 0.08
                             sample_offset = 0.17
 
@@ -655,8 +692,21 @@ class StatisticalComparator:
                             # ICAS (B, C, D): Move median lower (+), sample size lower (+)
                             median_offset = 0.12  # Position lower (was 0.14) - smaller = lower on y-axis
                             sample_offset = 0.06  # Position lower (was 0.08) - smaller = lower on y-axis
+                        elif group == 'AVM':
+                            # AVM (B, C, D): Adjust based on metric
+                            if metric_col == 'RVE_Percent':
+                                # (B) RVE: Adjust median and sample boxes positioning
+                                median_offset = 0.23
+                                sample_offset = 0.17
+                            elif metric_col in ['ASSD_mm', 'HD95_mm']:
+                                # (C) ASSD and (D) HD95: Move median and sample boxes higher (++)
+                                median_offset = 0.12  # increased from 0.04 to move higher
+                                sample_offset = 0.06  # increased from -0.02 to move higher
+                            else:
+                                median_offset = 0.08
+                                sample_offset = 0.01
                         else:
-                            # Default for AVM and other groups
+                            # Default for other groups
                             median_offset = 0.08
                             sample_offset = 0.01
 
