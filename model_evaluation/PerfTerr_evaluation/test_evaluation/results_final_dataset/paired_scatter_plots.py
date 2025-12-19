@@ -151,11 +151,6 @@ def plot_paired_scatter(paired_data, group_name, output_file):
             ax.plot([0, 1], [row['Ipsi'], row['Contra']],
                    color=COLOR, alpha=0.5, linewidth=1.2, zorder=1)
 
-            # Dotted line showing the median between the two points
-            median_point = (row['Ipsi'] + row['Contra']) / 2
-            ax.plot([0, 1], [median_point, median_point],
-                   color=COLOR, linestyle=':', linewidth=1.5, alpha=0.3, zorder=0)
-
         # Plot individual points
         # All ipsilateral points at x=0
         ax.scatter([0] * len(df), df['Ipsi'], color=COLOR,
@@ -166,10 +161,21 @@ def plot_paired_scatter(paired_data, group_name, output_file):
                   s=100, alpha=0.8,
                   marker='s', edgecolors='black', linewidths=0.8, zorder=2)
 
+        # Plot mean lines for ipsilateral and contralateral
+        mean_ipsi = df['Ipsi'].mean()
+        mean_contra = df['Contra'].mean()
+
+        # Red dotted line at ipsilateral mean (centered at x=0, short horizontal line)
+        ax.plot([-0.15, 0.15], [mean_ipsi, mean_ipsi],
+               color='red', linestyle=':', linewidth=2, zorder=3)
+        # Red dotted line at contralateral mean (centered at x=1, short horizontal line)
+        ax.plot([0.85, 1.15], [mean_contra, mean_contra],
+               color='red', linestyle=':', linewidth=2, zorder=3)
+
         # Customize subplot - match box-plot styling
         ax.set_xlabel('Hemisphere Pairs', fontsize=12, fontweight='bold')
         ax.set_ylabel(y_label, fontsize=12, fontweight='bold')
-        ax.set_title(subplot_title, fontsize=13, fontweight='bold', pad=10)
+        ax.set_title(subplot_title, fontsize=15, fontweight='bold', pad=10, loc='left')
         ax.grid(True, alpha=0.3, linestyle='--', axis='y')
 
         # Set x-axis with only two positions
@@ -186,10 +192,10 @@ def plot_paired_scatter(paired_data, group_name, output_file):
     else:  # AVM
         title = f'AVM Test Set Evaluation: nnUNet with Perf. - Hemisphere Comparison (n={n_pairs})'
 
-    fig.suptitle(title, fontsize=18, fontweight='bold', y=0.96)
+    fig.suptitle(title, fontsize=18, fontweight='bold', y=0.955)
 
-    # Adjust spacing to match box-plots
-    plt.tight_layout(rect=[0, 0, 1, 0.97])
+    # Adjust spacing - increase vertical spacing between subplots
+    plt.tight_layout(rect=[0, 0, 1, 0.95], h_pad=2.0)
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"\nSaved: {output_file}")
     plt.close()
