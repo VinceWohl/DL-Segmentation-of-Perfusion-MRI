@@ -345,7 +345,7 @@ class StatisticalComparator:
 
             # Overall title - positioned higher to avoid overlap
             fig.suptitle(f'{group} Test Set Evaluation: Segmentation Approach / Input Configuration',
-                        fontsize=24, fontweight='bold', y=0.995)
+                        fontsize=26, fontweight='bold', y=0.995)
 
             # Use tight_layout with rect to leave room for title
             plt.tight_layout(rect=[0, 0, 1, 0.98], h_pad=4, w_pad=2.5)
