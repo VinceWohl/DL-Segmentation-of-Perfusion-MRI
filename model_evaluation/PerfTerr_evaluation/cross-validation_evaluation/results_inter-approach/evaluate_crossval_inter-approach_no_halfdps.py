@@ -36,6 +36,14 @@ class CrossValInterApproachEvaluator:
             'Multi-label': '#2ca02c'
         }
 
+        # Approach display labels for x-axis (two lines)
+        self.approach_labels = {
+            'Thresholding': 'Thresholding',
+            'Single-class': 'nnUNet w/\nsingle-class',
+            'Multi-class': 'nnUNet w/\nmulti-class',
+            'Multi-label': 'nnUNet w/\nmulti-label'
+        }
+
         self.data = {}
         self.statistical_results = {}
 
@@ -43,6 +51,13 @@ class CrossValInterApproachEvaluator:
         """Load all pre-computed results from Excel files"""
         print("\nLoading Pre-computed Results...")
         print("="*80)
+
+        # First, load Single-class to get the reference cases for filtering Thresholding
+        reference_cases = None
+        singleclass_file = self.results_dir / self.excel_files['Single-class']
+        if singleclass_file.exists():
+            df_ref = pd.read_excel(singleclass_file, sheet_name='Per_Case_Details')
+            reference_cases = set(df_ref['Base_Name'].unique())
 
         for approach, filename in self.excel_files.items():
             filepath = self.results_dir / filename
@@ -61,13 +76,13 @@ class CrossValInterApproachEvaluator:
 
             df = pd.read_excel(filepath, sheet_name=sheet_name)
 
-            # Filter out severe outliers from Thresholding (DSC < 0.5)
-            if approach == 'Thresholding' and 'DSC_Volume' in df.columns:
+            # Filter Thresholding to only include cases matching Single-class
+            if approach == 'Thresholding' and reference_cases is not None:
                 n_before = len(df)
-                df = df[df['DSC_Volume'] >= 0.5].copy()
+                df = df[df['Base_Name'].isin(reference_cases)].copy()
                 n_after = len(df)
                 if n_before > n_after:
-                    print(f"  Filtered {n_before - n_after} severe outlier(s) (DSC < 0.5) from {approach}")
+                    print(f"  Filtered Thresholding to {n_after} cases (matching Single-class)")
 
             # Store data (combining left and right hemispheres for analysis)
             self.data[approach] = df
@@ -232,7 +247,7 @@ class CrossValInterApproachEvaluator:
             if approach in self.data:
                 values = self.data[approach][metric].dropna()
                 plot_data.append(values)
-                plot_labels.append(approach)
+                plot_labels.append(self.approach_labels[approach])
                 plot_colors.append(self.approach_colors[approach])
 
         if not plot_data:
@@ -257,7 +272,7 @@ class CrossValInterApproachEvaluator:
         ax.set_xlabel('Segmentation Approach', fontsize=18, fontweight='bold')
         ax.set_ylabel(ylabel, fontsize=18, fontweight='bold')
         ax.set_xticks(positions)
-        ax.set_xticklabels(plot_labels, rotation=15, ha='right')
+        ax.set_xticklabels(plot_labels, rotation=0, ha='center')
         ax.tick_params(axis='x', labelsize=15)
         ax.tick_params(axis='y', labelsize=15)
         ax.grid(True, alpha=0.6, linestyle='-', linewidth=0.8)
