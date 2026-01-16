@@ -8,6 +8,7 @@ for ICAS and AVM patient groups across different segmentation approaches.
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 from pathlib import Path
 from datetime import datetime
 
@@ -29,6 +30,7 @@ METRICS = [
 
 # Color for the approach
 COLOR = '#1f77b4'  # Blue
+MEAN_COLOR = '#d62728'  # Red (matching thresholding box plots)
 
 def load_data():
     """Load test results and group distribution data."""
@@ -167,21 +169,49 @@ def plot_paired_scatter(paired_data, group_name, output_file):
 
         # Red dotted line at ipsilateral mean (centered at x=0, short horizontal line)
         ax.plot([-0.15, 0.15], [mean_ipsi, mean_ipsi],
-               color='red', linestyle=':', linewidth=2, zorder=3)
+               color=MEAN_COLOR, linestyle=':', linewidth=2, zorder=3)
         # Red dotted line at contralateral mean (centered at x=1, short horizontal line)
         ax.plot([0.85, 1.15], [mean_contra, mean_contra],
-               color='red', linestyle=':', linewidth=2, zorder=3)
+               color=MEAN_COLOR, linestyle=':', linewidth=2, zorder=3)
+
+        # Calculate y-axis limits with padding for mean boxes at top
+        y_min = min(df['Ipsi'].min(), df['Contra'].min())
+        y_max = max(df['Ipsi'].max(), df['Contra'].max())
+        y_range = y_max - y_min
+        y_padding = y_range * 0.20  # Add 20% padding at top for boxes
+        ax.set_ylim(y_min - y_range * 0.05, y_max + y_padding)
+
+        # Position both mean boxes at same height (near top of plot, with margin from border)
+        box_y_position = y_max + y_range * 0.08
+
+        # Red outlined box with mean value for ipsilateral (at x=0)
+        ax.text(0, box_y_position, f'{mean_ipsi:.3f}',
+               ha='center', va='bottom', fontsize=9, fontweight='bold',
+               color=MEAN_COLOR,
+               bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor=MEAN_COLOR, linewidth=1.5),
+               zorder=4)
+
+        # Red outlined box with mean value for contralateral (at x=1)
+        ax.text(1, box_y_position, f'{mean_contra:.3f}',
+               ha='center', va='bottom', fontsize=9, fontweight='bold',
+               color=MEAN_COLOR,
+               bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor=MEAN_COLOR, linewidth=1.5),
+               zorder=4)
+
+        # Add legend in bottom right corner
+        legend_box = Patch(facecolor='white', edgecolor=MEAN_COLOR, linewidth=1.5, label='Mean')
+        ax.legend(handles=[legend_box], loc='lower right', fontsize=9, framealpha=0.9)
 
         # Customize subplot - match box-plot styling
         ax.set_xlabel('Hemisphere Pairs', fontsize=12, fontweight='bold')
-        ax.set_ylabel(y_label, fontsize=12, fontweight='bold')
+        ax.set_ylabel(y_label, fontsize=14, fontweight='bold')
         ax.set_title(subplot_title, fontsize=15, fontweight='bold', pad=10, loc='left')
         ax.grid(True, alpha=0.3, linestyle='--', axis='y')
 
         # Set x-axis with only two positions
         ax.set_xlim(-0.3, 1.3)
         ax.set_xticks([0, 1])
-        ax.set_xticklabels(['Ipsi', 'Contra'], fontsize=11)
+        ax.set_xticklabels(['Ipsi', 'Contra'], fontsize=14)
 
         # Tick label sizes to match box-plots
         ax.tick_params(axis='both', which='major', labelsize=10)
