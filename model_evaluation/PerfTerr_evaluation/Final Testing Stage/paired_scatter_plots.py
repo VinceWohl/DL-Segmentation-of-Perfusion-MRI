@@ -137,8 +137,8 @@ def plot_paired_scatter(paired_data, group_name, output_file):
         group_name: 'ICAS' or 'AVM'
         output_file: Path to save the figure
     """
-    # Create figure with same size as box-plots
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    # Create figure with reduced height
+    fig, axes = plt.subplots(2, 2, figsize=(14, 9))
     axes = axes.flatten()
 
     n_pairs = 0  # Track number of pairs for title
