@@ -12,6 +12,16 @@ from matplotlib.patches import Patch
 from pathlib import Path
 from datetime import datetime
 
+# Set Times New Roman (or Liberation Serif as compatible alternative) as default font
+import matplotlib.font_manager as fm
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf')
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf')
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf')
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-BoldItalic.ttf')
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['Liberation Serif', 'Times New Roman', 'DejaVu Serif']
+plt.rcParams['mathtext.fontset'] = 'stix'
+
 # Define paths
 SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = Path('/home/ubuntu/DLSegPerf/data/test_results')
@@ -186,35 +196,36 @@ def plot_paired_scatter(paired_data, group_name, output_file):
 
         # Red outlined box with mean value for ipsilateral (at x=0)
         ax.text(0, box_y_position, f'{mean_ipsi:.3f}',
-               ha='center', va='bottom', fontsize=9, fontweight='bold',
+               ha='center', va='bottom', fontsize=14, fontweight='bold',
                color=MEAN_COLOR,
                bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor=MEAN_COLOR, linewidth=1.5),
                zorder=4)
 
         # Red outlined box with mean value for contralateral (at x=1)
         ax.text(1, box_y_position, f'{mean_contra:.3f}',
-               ha='center', va='bottom', fontsize=9, fontweight='bold',
+               ha='center', va='bottom', fontsize=14, fontweight='bold',
                color=MEAN_COLOR,
                bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor=MEAN_COLOR, linewidth=1.5),
                zorder=4)
 
-        # Add legend in bottom right corner
+        # Add legend in bottom right corner with reduced width
         legend_box = Patch(facecolor='white', edgecolor=MEAN_COLOR, linewidth=1.5, label='Mean')
-        ax.legend(handles=[legend_box], loc='lower right', fontsize=9, framealpha=0.9)
+        leg = ax.legend(handles=[legend_box], loc='lower right', fontsize=12, framealpha=0.9,
+                       handlelength=1.0, handletextpad=0.5)
 
         # Customize subplot - match box-plot styling
-        ax.set_xlabel('Hemisphere Pairs', fontsize=12, fontweight='bold')
-        ax.set_ylabel(y_label, fontsize=14, fontweight='bold')
-        ax.set_title(subplot_title, fontsize=15, fontweight='bold', pad=10, loc='left')
+        ax.set_xlabel('Hemisphere Pairs', fontsize=18, fontweight='bold')
+        ax.set_ylabel(y_label, fontsize=18, fontweight='bold')
+        ax.set_title(subplot_title, fontsize=18, fontweight='bold', pad=10, loc='left')
         ax.grid(True, alpha=0.3, linestyle='--', axis='y')
 
         # Set x-axis with only two positions
         ax.set_xlim(-0.3, 1.3)
         ax.set_xticks([0, 1])
-        ax.set_xticklabels(['Ipsi', 'Contra'], fontsize=14)
+        ax.set_xticklabels(['Ipsi', 'Contra'], fontsize=18)
 
-        # Tick label sizes to match box-plots
-        ax.tick_params(axis='both', which='major', labelsize=10)
+        # Tick label sizes for y-axis scale
+        ax.tick_params(axis='both', which='major', labelsize=14)
 
     # Overall title - customize based on group
     if group_name == 'ICAS':
@@ -222,10 +233,11 @@ def plot_paired_scatter(paired_data, group_name, output_file):
     else:  # AVM
         title = f'AVM Test Set Evaluation: nnUNet with Perf. - Hemisphere Comparison (n={n_pairs})'
 
-    fig.suptitle(title, fontsize=18, fontweight='bold', y=0.955)
+    fig.suptitle(title, fontsize=20, fontweight='bold', y=0.995)
 
-    # Adjust spacing - increase vertical spacing between subplots
-    plt.tight_layout(rect=[0, 0, 1, 0.95], h_pad=2.0)
+    # Adjust spacing - increase vertical spacing between subplots/title, decrease horizontal spacing
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
+    plt.subplots_adjust(hspace=0.30, wspace=0.18, top=0.91)
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"\nSaved: {output_file}")
     plt.close()
