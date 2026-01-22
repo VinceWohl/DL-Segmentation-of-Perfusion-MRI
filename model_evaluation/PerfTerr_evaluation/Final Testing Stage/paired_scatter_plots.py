@@ -12,15 +12,30 @@ from matplotlib.patches import Patch
 from pathlib import Path
 from datetime import datetime
 
-# Set Times New Roman (or Liberation Serif as compatible alternative) as default font
+# Font setup
 import matplotlib.font_manager as fm
+# Add Liberation Serif fonts (Times New Roman compatible)
 fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf')
 fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf')
 fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf')
 fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-BoldItalic.ttf')
-plt.rcParams['font.family'] = 'serif'
-plt.rcParams['font.serif'] = ['Liberation Serif', 'Times New Roman', 'DejaVu Serif']
-plt.rcParams['mathtext.fontset'] = 'stix'
+# Add Liberation Sans fonts (Arial compatible)
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf')
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf')
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSans-Italic.ttf')
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSans-BoldItalic.ttf')
+
+def set_font_times_new_roman():
+    """Set font to Times New Roman (Liberation Serif)."""
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.serif'] = ['Liberation Serif', 'Times New Roman', 'DejaVu Serif']
+    plt.rcParams['mathtext.fontset'] = 'stix'
+
+def set_font_arial():
+    """Set font to Arial (Liberation Sans)."""
+    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['font.sans-serif'] = ['Liberation Sans', 'Arial', 'DejaVu Sans']
+    plt.rcParams['mathtext.fontset'] = 'stixsans'
 
 # Define paths
 SCRIPT_DIR = Path(__file__).parent
@@ -267,11 +282,18 @@ def main():
 
         # Generate output filename with timestamp
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        output_file = SCRIPT_DIR / f'{group}_scatter-plots_{timestamp}.png'
 
-        # Create plots
-        print(f"\nCreating plots for {group}...")
-        plot_paired_scatter(paired_data, group, output_file)
+        # Create Times New Roman version
+        set_font_times_new_roman()
+        output_file_tnr = SCRIPT_DIR / f'{group}_scatter-plots_{timestamp}.png'
+        print(f"\nCreating Times New Roman plots for {group}...")
+        plot_paired_scatter(paired_data, group, output_file_tnr)
+
+        # Create Arial version
+        set_font_arial()
+        output_file_arial = SCRIPT_DIR / f'{group}_scatter-plots_arial_{timestamp}.png'
+        print(f"\nCreating Arial plots for {group}...")
+        plot_paired_scatter(paired_data, group, output_file_arial)
 
     print("\n" + "="*80)
     print("Paired scatter plots generation complete!")
