@@ -8,10 +8,20 @@ Excludes 'Single-class halfdps' approach
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 from pathlib import Path
 from datetime import datetime
 from scipy import stats
 from itertools import combinations
+
+# Set Times New Roman (Liberation Serif) as default font
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf')
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf')
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf')
+fm.fontManager.addfont('/usr/share/fonts/truetype/liberation/LiberationSerif-BoldItalic.ttf')
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['Liberation Serif', 'Times New Roman', 'DejaVu Serif']
+plt.rcParams['mathtext.fontset'] = 'stix'
 
 class CrossValInterApproachEvaluator:
     def __init__(self, results_dir, output_dir):
@@ -205,7 +215,7 @@ class CrossValInterApproachEvaluator:
 
         # Setup figure
         fig, axes = plt.subplots(2, 2, figsize=(20, 16))
-        fig.suptitle('Cross-Validation Evaluation: Segmentation Approaches (solely Perfusion Maps as Input)',
+        fig.suptitle('Five-Fold Cross-Validation Evaluation: Segmentation Approaches (solely Perfusion Maps as Input)',
                      fontsize=24, fontweight='bold', y=0.995)
 
         # Define metrics
@@ -223,9 +233,9 @@ class CrossValInterApproachEvaluator:
             self._plot_metric_subplot(ax, metric, title, ylabel, label, ylim,
                                      approach_order, annotation_position)
 
-        # Adjust layout
-        plt.tight_layout(rect=[0, 0, 1, 0.98], h_pad=5, w_pad=3)
-        fig.subplots_adjust(hspace=0.35, wspace=0.20)
+        # Adjust layout - reduced spacing between subplots
+        plt.tight_layout(rect=[0, 0, 1, 0.98], h_pad=3, w_pad=2)
+        fig.subplots_adjust(hspace=0.26, wspace=0.15, top=0.92)
 
         # Save
         plot_file = self.output_dir / f"crossval_combined_boxplot_no_halfdps_{timestamp}.png"
@@ -267,8 +277,8 @@ class CrossValInterApproachEvaluator:
             patch.set_edgecolor('black')
             patch.set_linewidth(1)
 
-        # Title and labels
-        ax.set_title(f'{label} {title}', fontsize=22, fontweight='bold', pad=15, loc='left')
+        # Title and labels (include n=60 in title)
+        ax.set_title(f'{label} {title} (n=60)', fontsize=22, fontweight='bold', pad=15, loc='left')
         ax.set_xlabel('Segmentation Approach', fontsize=18, fontweight='bold')
         ax.set_ylabel(ylabel, fontsize=18, fontweight='bold')
         ax.set_xticks(positions)
@@ -311,12 +321,8 @@ class CrossValInterApproachEvaluator:
                 n_display = n * 14 if metric == 'ASSD_mm' else n
 
                 if annotation_position == 'above':
-                    # Sample size lower position (moved very close to boxplot top)
-                    ax.text(positions[i], y_max_initial - y_range_initial * 0.005, f'n={n_display}',
-                           ha='center', va='bottom', fontsize=13, fontweight='bold',
-                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.7))
-                    # Median higher position (moved up further)
-                    ax.text(positions[i], y_max_initial + y_range_initial * 0.08, label_text,
+                    # Median box above boxplot
+                    ax.text(positions[i], y_max_initial + y_range_initial * 0.04, label_text,
                            ha='center', va='bottom', fontsize=13,
                            color=color, weight='bold',
                            bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
@@ -328,11 +334,6 @@ class CrossValInterApproachEvaluator:
                            color=color, weight='bold',
                            bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                    alpha=0.9, edgecolor=color, linewidth=0.8))
-                    # Sample size below median
-                    ax.text(positions[i], y_min_initial - y_range_initial * 0.12, f'n={n_display}',
-                           ha='center', va='top', fontsize=13, fontweight='bold',
-                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
-                                   alpha=0.9, edgecolor='black', linewidth=0.8))
 
         # Add significance brackets
         if metric in self.statistical_results:
@@ -342,13 +343,13 @@ class CrossValInterApproachEvaluator:
 
         # Add legend
         if annotation_position == 'above':
-            ax.text(0.98, 0.02, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
+            ax.text(0.98, 0.02, 'Median [IQR]\n* p<0.05, ** p<0.01, *** p<0.001',
                    transform=ax.transAxes, fontsize=15,
                    verticalalignment='bottom', horizontalalignment='right',
                    bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
                             alpha=0.9, edgecolor='gray', linewidth=1.5))
         else:
-            ax.text(0.98, 0.98, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
+            ax.text(0.98, 0.98, 'Median [IQR]\n* p<0.05, ** p<0.01, *** p<0.001',
                    transform=ax.transAxes, fontsize=15,
                    verticalalignment='top', horizontalalignment='right',
                    bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
@@ -392,7 +393,11 @@ class CrossValInterApproachEvaluator:
         # Assign bracket heights
         bracket_heights = []
         bracket_height_increment = y_range * 0.045
-        bracket_base_offset = y_range * 0.008
+        # Different base offsets for above vs below positioning
+        if annotation_position == 'above':
+            bracket_base_offset = y_range * 0.005  # Lower brackets for subplot A
+        else:
+            bracket_base_offset = y_range * -0.1  # Higher brackets for subplots B, C, D (negative moves up)
 
         for pair in significant_pairs:
             level = 0
@@ -465,8 +470,8 @@ def main():
     print("="*80)
 
     # Setup paths
-    results_dir = Path("/home/ubuntu/DLSegPerf/model_evaluation/PerfTerr_evaluation/cross-validation_evaluation/crossval_evaluation_results")
-    output_dir = Path("/home/ubuntu/DLSegPerf/model_evaluation/PerfTerr_evaluation/cross-validation_evaluation/results_inter-approach")
+    results_dir = Path("/home/ubuntu/DLSegPerf/model_evaluation/PerfTerr_evaluation/Development Stage/cross-validation_evaluation/crossval_evaluation_results")
+    output_dir = Path("/home/ubuntu/DLSegPerf/model_evaluation/PerfTerr_evaluation/Development Stage/cross-validation_evaluation/results_inter-approach")
 
     # Create evaluator
     evaluator = CrossValInterApproachEvaluator(results_dir, output_dir)
