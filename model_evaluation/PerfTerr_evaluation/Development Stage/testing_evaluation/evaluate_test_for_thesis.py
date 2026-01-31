@@ -1705,7 +1705,7 @@ class TestSetEvaluator:
         self._plot_hc_hd95_subplot(ax4, group_data, approach_order, approach_colors, approach_labels)
 
         # Overall title
-        fig.suptitle('HC Test Set Evaluation: Input Configuration',
+        fig.suptitle('HC Test Set Evaluation: Input Configurations',
                     fontsize=24, fontweight='bold', y=0.99)
 
         plt.tight_layout(rect=[0, 0, 1, 0.98], h_pad=4, w_pad=2.5)  # Reduced horizontal spacing
@@ -1840,7 +1840,7 @@ class TestSetEvaluator:
         self._plot_patient_hd95_subplot(ax4, patient_df, approach_colors, approach_labels)
 
         # Overall title
-        fig.suptitle('Patients Test Set Evaluation: Segmentation Approach',
+        fig.suptitle('Patients Test Set Evaluation: Segmentation Approaches',
                     fontsize=24, fontweight='bold', y=0.99)
 
         plt.tight_layout(rect=[0, 0, 1, 0.98], h_pad=4, w_pad=4)
