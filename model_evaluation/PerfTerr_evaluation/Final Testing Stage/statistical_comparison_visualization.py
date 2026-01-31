@@ -19,8 +19,15 @@ from itertools import combinations
 try:
     import matplotlib.pyplot as plt
     import matplotlib
+    import matplotlib as mpl
     matplotlib.use('Agg')  # Use non-interactive backend
     PLOTTING_AVAILABLE = True
+    # Set Times New Roman font (Liberation Serif on Linux)
+    mpl.rcParams.update({
+        'font.family': 'serif',
+        'font.serif': ['Liberation Serif', 'DejaVu Serif'],
+        'mathtext.fontset': 'stix',
+    })
 except ImportError:
     PLOTTING_AVAILABLE = False
     print("Warning: matplotlib not available. Plotting will be skipped.")
@@ -344,15 +351,19 @@ class StatisticalComparator:
                                      approach_labels, ylim=None, sig_position='below')
 
             # Overall title - positioned higher to avoid overlap
-            fig.suptitle(f'{group} Test Set Evaluation: Segmentation Approach / Input Configuration',
-                        fontsize=26, fontweight='bold', y=0.995)
+            if group == 'HC':
+                fig.suptitle('HC Test Set Evaluation: Segmentation Approaches / Input Configurations',
+                            fontsize=26, fontweight='bold', y=0.995)
+            else:
+                fig.suptitle(f'{group} Test Set Evaluation: Segmentation Approach / Input Configuration',
+                            fontsize=26, fontweight='bold', y=0.995)
 
             # Use tight_layout with rect to leave room for title
             plt.tight_layout(rect=[0, 0, 1, 0.98], h_pad=4, w_pad=2.5)
             fig.subplots_adjust(hspace=0.33)  # Adjust vertical spacing between subplots
 
             # Save figure - bbox_inches='tight' will automatically include all annotations
-            plot_file = self.output_dir / f"{group}_box-plots_{timestamp}.png"
+            plot_file = self.output_dir / f"{group}_box-plots_for_thesis_{timestamp}.png"
             plt.savefig(plot_file, dpi=300, bbox_inches='tight', facecolor='white', pad_inches=0.2)
             plt.close()
 
@@ -428,7 +439,7 @@ class StatisticalComparator:
         # For other groups below: annotations at 0.08 (median) and 0.01 (n), so brackets start at ~0.13
         # For above: annotations vary by group
         if position == 'below' and group == 'HC':
-            bracket_base_offset = y_range * 0.15  # More space for HC
+            bracket_base_offset = y_range * 0.10  # Moved brackets higher (reduced from 0.15)
         elif position == 'below' and group == 'AVM' and metric_name == 'RVE':
             bracket_base_offset = y_range * -0.1  # AVM RVE: Negative offset positions brackets above y_min
         elif position == 'below':
@@ -548,17 +559,23 @@ class StatisticalComparator:
         plot_data_list = []
         plot_positions = []
         plot_colors = []
+        sample_sizes = []
 
         for i, approach in enumerate(approach_order):
             df = self.results_data[approach][group]
             if metric_col in df.columns:
                 values = df[metric_col].replace([np.inf, -np.inf], np.nan).dropna().values
                 plot_data_list.append(values)
+                sample_sizes.append(len(values))
             else:
                 plot_data_list.append([])
+                sample_sizes.append(0)
 
             plot_positions.append(i)
             plot_colors.append(approach_colors.get(approach, '#95a5a6'))
+
+        # Get sample size for title (use max sample size across approaches)
+        sample_size = max(sample_sizes) if sample_sizes else 0
 
         # Create boxplot
         bp = ax.boxplot(
@@ -577,8 +594,9 @@ class StatisticalComparator:
             patch.set_edgecolor('black')
             patch.set_linewidth(1)
 
-        # Subplot title and labels
-        ax.set_title(title, fontsize=22, fontweight='bold', pad=15, loc='left')
+        # Subplot title and labels (include sample size in title)
+        title_with_n = f"{title} (n={sample_size})"
+        ax.set_title(title_with_n, fontsize=22, fontweight='bold', pad=15, loc='left')
         ax.set_xlabel('Segmentation Approach / Input Configuration', fontsize=18, fontweight='bold')
         ax.set_ylabel(ylabel, fontsize=18, fontweight='bold')
 
@@ -657,8 +675,8 @@ class StatisticalComparator:
                     if sig_position == 'above':  # DSC plots - annotations above whiskers
                         # Group-specific adjustments
                         if group == 'HC':
-                            # HC (A) DSC: Move median boxes higher
-                            median_offset = -0.02  # set to -0.02 as requested
+                            # HC (A) DSC: Move median boxes lower on y-axis
+                            median_offset = 0.0  # adjusted to move boxes lower
                             sample_offset = 0.06  # keep same
                         elif group == 'ICAS':
                             # ICAS (A) DSC: User-specified values
@@ -678,10 +696,7 @@ class StatisticalComparator:
                                color=color, weight='bold',
                                bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                        alpha=0.8, edgecolor=color, linewidth=0.8))
-
-                        ax.text(plot_positions[i], y_max - y_range * sample_offset, f'n={n}',
-                               ha='center', va='bottom', fontsize=13, fontweight='bold',
-                               bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.7))
+                        # Sample size boxes removed - now shown in subplot title
                     else:  # RVE, ASSD, HD95 - annotations below whiskers
                         # Group-specific adjustments for B, C, D
                         if group == 'HC':
@@ -715,10 +730,7 @@ class StatisticalComparator:
                                color=color, weight='bold',
                                bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                                        alpha=0.8, edgecolor=color, linewidth=0.8))
-
-                        ax.text(plot_positions[i], y_min + y_range * sample_offset, f'n={n}',
-                               ha='center', va='top', fontsize=13, fontweight='bold',
-                               bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.7))
+                        # Sample size boxes removed - now shown in subplot title
 
         # Add significance brackets
         metric_name_map = {'DSC': 'DSC', 'RVE_Percent': 'RVE', 'ASSD_mm': 'ASSD', 'HD95_mm': 'HD95'}
@@ -737,7 +749,7 @@ class StatisticalComparator:
             legend_ha = 'right'
             legend_va = 'top'
 
-        ax.text(legend_x, legend_y, 'Median [IQR]\nn = sample size\n* p<0.05, ** p<0.01, *** p<0.001',
+        ax.text(legend_x, legend_y, 'Median [IQR]\n* p<0.05, ** p<0.01, *** p<0.001',
                transform=ax.transAxes, fontsize=15,
                verticalalignment=legend_va, horizontalalignment=legend_ha,
                bbox=dict(boxstyle='round,pad=0.5', facecolor='white',
